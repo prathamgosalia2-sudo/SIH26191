@@ -499,7 +499,7 @@ window.APP = (function() {
         const mapLabel = document.getElementById('map-nav-label');
         const mapBadge = document.getElementById('map-nav-badge');
         if (mapIcon) mapIcon.textContent = meta.icon;
-        if (mapLabel) mapLabel.textContent = meta.label === 'Overview' ? 'Tactical Nav: Overview' : meta.label;
+        if (mapLabel) mapLabel.textContent = meta.label;
         if (mapBadge) {
             mapBadge.style.display = meta.badge ? 'inline-block' : 'none';
             if (meta.badge) mapBadge.textContent = meta.badge;
