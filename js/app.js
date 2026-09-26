@@ -469,42 +469,6 @@ window.APP = (function() {
     function navigateTo(pageId) {
         currentActivePage = pageId;
 
-        // Metadata mapping for dropdown labels, icons, and status badges
-        const PAGE_META = {
-            overview: { icon: '📊', label: 'Overview', badge: '7 RED' },
-            hazard: { icon: '⚠️', label: 'Hazard Assessment' },
-            capacity: { icon: '⚖️', label: 'Carrying Capacity' },
-            evacuation: { icon: '🚨', label: 'Evacuation' },
-            relocation: { icon: '🔄', label: 'Relocation' },
-            resources: { icon: '🏥', label: 'Resources' },
-            historical: { icon: '📈', label: 'Historical Analysis' },
-            simulation: { icon: '⚡', label: 'Simulation' }
-        };
-
-        const meta = PAGE_META[pageId] || { icon: '🧭', label: pageId };
-
-        // Update Header Dropdown Trigger
-        const headerIcon = document.getElementById('header-nav-icon');
-        const headerLabel = document.getElementById('header-nav-label');
-        const headerBadge = document.getElementById('header-nav-badge');
-        if (headerIcon) headerIcon.textContent = meta.icon;
-        if (headerLabel) headerLabel.textContent = meta.label;
-        if (headerBadge) {
-            headerBadge.style.display = meta.badge ? 'inline-block' : 'none';
-            if (meta.badge) headerBadge.textContent = meta.badge;
-        }
-
-        // Update Map Stage Dropdown Trigger
-        const mapIcon = document.getElementById('map-nav-icon');
-        const mapLabel = document.getElementById('map-nav-label');
-        const mapBadge = document.getElementById('map-nav-badge');
-        if (mapIcon) mapIcon.textContent = meta.icon;
-        if (mapLabel) mapLabel.textContent = meta.label;
-        if (mapBadge) {
-            mapBadge.style.display = meta.badge ? 'inline-block' : 'none';
-            if (meta.badge) mapBadge.textContent = meta.badge;
-        }
-
         closeNavDropdowns();
 
         // Update active nav item

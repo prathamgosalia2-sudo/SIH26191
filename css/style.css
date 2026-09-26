@@ -300,15 +300,16 @@ html, body {
 .nav-dropdown-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 6px;
     background: rgba(15, 23, 42, 0.94);
     border: 1px solid rgba(56, 189, 248, 0.4);
     border-radius: 8px;
-    padding: 0 12px;
+    padding: 0 14px;
     height: 36px;
     color: #F1F5F9;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
     backdrop-filter: blur(12px);
     transition: all 0.2s ease;
@@ -318,14 +319,8 @@ html, body {
 }
 
 .map-nav-trigger {
-    max-width: 220px;
-}
-
-.map-nav-trigger .nav-dropdown-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 120px;
+    min-width: 76px;
+    max-width: 90px;
 }
 
 .nav-dropdown-trigger:hover,
@@ -568,7 +563,7 @@ html, body {
 .top-dashboard-cluster {
     position: absolute;
     top: 12px;
-    left: 270px;
+    left: 110px;
     right: 280px;
     display: flex;
     flex-direction: column;
@@ -674,10 +669,8 @@ html, body {
     color: #FFFFFF !important;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
     letter-spacing: 0.25px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     line-height: 1.4;
+    white-space: normal;
 }
 
 /* ==========================================================================

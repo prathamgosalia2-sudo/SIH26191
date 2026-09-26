@@ -7,7 +7,7 @@
     <meta name="description" content="PRISM: Predictive Risk Intelligence &amp; Spatial Management. Red Zone Carrying Capacity, Hazard Assessment and Relocation Command using Uber H3 Hexagonal Spatial Indexing over Sikkim Teesta Basin (SIH26191).">
     <!-- Leaflet Real Satellite Map Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3.1">
 </head>
 <body>
 
@@ -26,10 +26,8 @@
 
         <!-- Tactical Navigation Dropdown (Header Bar) -->
         <div class="header-nav-dropdown-container">
-            <button id="btn-header-nav" class="nav-dropdown-trigger header-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Switch Tactical View">
-                <span class="nav-dropdown-icon" id="header-nav-icon">📊</span>
-                <span class="nav-dropdown-label" id="header-nav-label">Overview</span>
-                <span class="nav-badge-pill" id="header-nav-badge">7 RED</span>
+            <button id="btn-header-nav" class="nav-dropdown-trigger header-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Menu">
+                <span class="nav-dropdown-label">Menu</span>
                 <span class="nav-dropdown-arrow">▼</span>
             </button>
             <div id="header-nav-menu" class="nav-dropdown-menu header-dropdown-menu" style="display: none;">
@@ -95,10 +93,8 @@
 
         <!-- Floating Tactical Navigation Dropdown (Top-Left of Map Stage) -->
         <div class="map-nav-dropdown-container" id="map-nav-dropdown-container">
-            <button id="btn-map-nav" class="nav-dropdown-trigger map-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Click to Switch Tactical View">
-                <span class="nav-dropdown-icon" id="map-nav-icon">📊</span>
-                <span class="nav-dropdown-label" id="map-nav-label">Overview</span>
-                <span class="nav-badge-pill" id="map-nav-badge">7 RED</span>
+            <button id="btn-map-nav" class="nav-dropdown-trigger map-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Menu">
+                <span class="nav-dropdown-label">Menu</span>
                 <span class="nav-dropdown-arrow">▼</span>
             </button>
             <div id="map-nav-menu" class="nav-dropdown-menu map-dropdown-menu" style="display: none;">
@@ -196,7 +192,7 @@
                 <div class="emergency-alert-ticker">
                     <div class="ticker-tag">FLASH ALERT</div>
                     <div class="ticker-text">
-                        <strong style="color: #FDE047;">⚠️ SIKKIM TEESTA GLOF ALERT:</strong> Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. <span style="color: #FCA5A5; font-weight: 700;">Mandatory relocation dispatched to Gangtok &amp; Pakyong safe high-ground ridges.</span>
+                        <strong style="color: #FDE047;">⚠️ SOUTH LHONAK GLOF:</strong> Dam breach (+5.2m surge). Mandatory evacuation active for Singtam &amp; Rangpo.
                     </div>
                 </div>
             </div>
@@ -845,7 +841,7 @@
     <script src="js/gis-map.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/simulation.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=3.1"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
