@@ -117,57 +117,60 @@
         <!-- Center GIS Command Theater -->
         <main class="command-stage">
 
-            <!-- Top KPI Ribbon Bar -->
-            <div class="kpi-ribbon-bar">
-                <div class="kpi-card kpi-card-danger">
-                    <div class="kpi-label">Population at Risk</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-pop-at-risk" class="kpi-number">182,400</span>
-                        <span class="kpi-sub">Citizens</span>
+            <!-- Top Dashboard Cluster (KPI Cards + Flash Alert Ticker directly below) -->
+            <div class="top-dashboard-cluster">
+                <!-- Top KPI Ribbon Bar -->
+                <div class="kpi-ribbon-bar">
+                    <div class="kpi-card kpi-card-danger">
+                        <div class="kpi-label">Population at Risk</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-pop-at-risk" class="kpi-number">182,400</span>
+                            <span class="kpi-sub">Citizens</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-card-danger">
+                        <div class="kpi-label">Critical H3 Cells</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-critical-cells" class="kpi-number">7</span>
+                            <span class="kpi-sub">Red Zones</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-card-warning">
+                        <div class="kpi-label">Evacuation Required</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-evac-required" class="kpi-number">98,200</span>
+                            <span class="kpi-sub">Immediate</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-card-warning">
+                        <div class="kpi-label">Relocation Need</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-reloc-requirement" class="kpi-number">142,600</span>
+                            <span class="kpi-sub">Deficit Pax</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-card-safe">
+                        <div class="kpi-label">Safe Shelter Capacity</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-shelter-capacity" class="kpi-number">185,200</span>
+                            <span class="kpi-sub">High Ground</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card kpi-card-accent">
+                        <div class="kpi-label">Active Emergency Fleets</div>
+                        <div class="kpi-value-row">
+                            <span id="kpi-active-resources" class="kpi-number">280</span>
+                            <span class="kpi-sub">Boats/Buses</span>
+                        </div>
                     </div>
                 </div>
-                <div class="kpi-card kpi-card-danger">
-                    <div class="kpi-label">Critical H3 Cells</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-critical-cells" class="kpi-number">7</span>
-                        <span class="kpi-sub">Red Zones</span>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-card-warning">
-                    <div class="kpi-label">Evacuation Required</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-evac-required" class="kpi-number">98,200</span>
-                        <span class="kpi-sub">Immediate</span>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-card-warning">
-                    <div class="kpi-label">Relocation Need</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-reloc-requirement" class="kpi-number">142,600</span>
-                        <span class="kpi-sub">Deficit Pax</span>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-card-safe">
-                    <div class="kpi-label">Safe Shelter Capacity</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-shelter-capacity" class="kpi-number">185,200</span>
-                        <span class="kpi-sub">High Ground</span>
-                    </div>
-                </div>
-                <div class="kpi-card kpi-card-accent">
-                    <div class="kpi-label">Active Emergency Fleets</div>
-                    <div class="kpi-value-row">
-                        <span id="kpi-active-resources" class="kpi-number">280</span>
-                        <span class="kpi-sub">Boats/Buses</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Live Emergency Alert Ticker -->
-            <div class="emergency-alert-ticker">
-                <div class="ticker-tag">FLASH ALERT</div>
-                <div class="ticker-text">
-                    ⚠️ SIKKIM TEESTA GLOF ALERT: Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. Mandatory relocation dispatched to Gangtok & Pakyong safe high-ground ridges.
+                <!-- Live Emergency Alert Ticker: Always sits directly below the dashboard -->
+                <div class="emergency-alert-ticker">
+                    <div class="ticker-tag">FLASH ALERT</div>
+                    <div class="ticker-text">
+                        ⚠️ SIKKIM TEESTA GLOF ALERT: Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. Mandatory relocation dispatched to Gangtok &amp; Pakyong safe high-ground ridges.
+                    </div>
                 </div>
             </div>
 

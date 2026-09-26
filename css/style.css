@@ -521,16 +521,27 @@ html, body {
     overflow: hidden;
 }
 
-/* Top KPI Ribbon Bar */
-.kpi-ribbon-bar {
+/* ==========================================================================
+   Top Dashboard Cluster (KPI Cards + Flash Alert Ticker directly below)
+   ========================================================================== */
+.top-dashboard-cluster {
     position: absolute;
     top: 12px;
     left: 235px;
     right: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 25;
+    pointer-events: none;
+}
+
+/* Top KPI Ribbon Bar */
+.kpi-ribbon-bar {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    z-index: 25;
+    gap: 8px;
+    width: 100%;
     pointer-events: none;
 }
 
@@ -582,21 +593,19 @@ html, body {
 .kpi-card-safe .kpi-number { color: var(--risk-safe); }
 .kpi-card-accent .kpi-number { color: var(--accent-cyan); }
 
-/* Live Alert Ticker */
+/* Live Emergency Alert Ticker: Always sits directly below the KPI cards */
 .emergency-alert-ticker {
-    position: absolute;
-    top: calc(var(--kpi-ribbon-height) + 16px);
-    left: 235px;
-    right: 280px;
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    width: 100%;
+    pointer-events: auto;
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.4);
     border-radius: 6px;
     padding: 6px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    z-index: 24;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .ticker-tag {
