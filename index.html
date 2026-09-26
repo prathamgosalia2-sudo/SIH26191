@@ -164,6 +164,7 @@
 
             <!-- Floating Map Navigation Tools (Bottom Right) -->
             <div class="map-floating-hud-tools">
+                <button id="btn-map-locate" class="map-control-btn" title="Center on User Location Pin">📍</button>
                 <button id="btn-map-zoom-in" class="map-control-btn" title="Zoom In">+</button>
                 <button id="btn-map-zoom-out" class="map-control-btn" title="Zoom Out">−</button>
                 <button id="btn-map-reset" class="map-control-btn" title="Reset View Center">⌂</button>
@@ -172,13 +173,14 @@
             <!-- Floating Map Basemap Switcher (Bottom Left) -->
             <div class="map-layer-panel">
                 <div class="panel-heading">
-                    <span>SATELLITE GIS BASEMAP</span>
+                    <span>GIS BASEMAP SELECTION</span>
                     <span class="text-xs text-accent">H3 Hex Res 7</span>
                 </div>
                 <select id="select-basemap-mode" class="basemap-dropdown">
-                    <option value="satellite" selected>Basemap: ESRI Real Satellite (Sikkim Terrain)</option>
+                    <option value="osm" selected>Basemap: OpenStreetMap (Standard)</option>
+                    <option value="hot">Basemap: OpenStreetMap Humanitarian (Disaster)</option>
+                    <option value="satellite">Basemap: ESRI Real Satellite (Sikkim Terrain)</option>
                     <option value="tactical">Basemap: Tactical Dark Matter</option>
-                    <option value="elevation">Basemap: Topography Elevation</option>
                 </select>
             </div>
 
@@ -778,9 +780,8 @@
     <script src="https://unpkg.com/h3-js@4.1.0/dist/h3-js.umd.js"></script>
 
     <!-- Application Scripts -->
-    <script src="js/data.js"></script>
     <script src="js/h3-engine.js"></script>
-    <script src="js/sounds.js"></script>
+    <script src="js/data.js"></script>
     <script src="js/gis-map.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/simulation.js"></script>

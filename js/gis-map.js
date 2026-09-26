@@ -16,15 +16,20 @@ window.GIS_MAP = (function() {
 
     // Tile Layers
     let tileLayers = {};
-    let currentBasemap = 'satellite';
+    let currentBasemap = 'osm';
 
     // Feature Layer Groups
     let hexLayerGroup = null;
+    let userPinGroup = null;
     let roadLayerGroup = null;
     let evacLayerGroup = null;
     let relocLayerGroup = null;
     let resourceLayerGroup = null;
     let riverSurgeGroup = null;
+
+    // User Pinpoint Location (Google Maps Red Drop Pin)
+    let userMarker = null;
+    let userCoords = [27.2380, 88.5020]; // Default in Singtam Hazard Zone
 
     // Layer visibility state
     const layerVisibility = {
@@ -62,13 +67,32 @@ window.GIS_MAP = (function() {
         map = L.map(mapDiv, {
             center: SIKKIM_CENTER,
             zoom: DEFAULT_ZOOM,
-            minZoom: 9,
+            minZoom: 8,
             maxZoom: 18,
             zoomControl: false, // We use custom command-center HUD zoom controls
             attributionControl: true
         });
 
-        // 1. Satellite Basemap (ESRI World Imagery - High Resolution Real Satellite Terrain)
+        // 1. OpenStreetMap (Standard OpenStreetMap - Worldwide, ultra-reliable, zero key)
+        tileLayers.osm = L.tileLayer(
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }
+        );
+
+        // 2. OpenStreetMap Humanitarian (HOT - high contrast terrain & disaster response)
+        tileLayers.hot = L.tileLayer(
+            'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+            {
+                attribution: '&copy; OpenStreetMap contributors, Tiles style by HOT',
+                maxZoom: 19,
+                subdomains: ['a', 'b', 'c']
+            }
+        );
+
+        // 3. Satellite Basemap (ESRI World Imagery - High Resolution Real Satellite Terrain)
         tileLayers.satellite = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             {
@@ -78,7 +102,7 @@ window.GIS_MAP = (function() {
             }
         );
 
-        // 2. Tactical Dark Basemap (CartoDB Dark Matter)
+        // 4. Tactical Dark Basemap (CartoDB Dark Matter)
         tileLayers.tactical = L.tileLayer(
             'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
             {
@@ -88,22 +112,14 @@ window.GIS_MAP = (function() {
             }
         );
 
-        // 3. Topographic Elevation Basemap (ESRI World Topo)
-        tileLayers.elevation = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-            {
-                attribution: '&copy; ESRI World Topo',
-                maxZoom: 18
-            }
-        );
-
-        // Add default basemap
+        // Add default basemap (OpenStreetMap)
         tileLayers[currentBasemap].addTo(map);
 
-        // Initialize Layer Groups (Only Hexagon Layer is active)
+        // Initialize Layer Groups (Hexagon Grid and User Pinpoint Marker)
+        hexLayerGroup = L.layerGroup().addTo(map);
+        userPinGroup = L.layerGroup().addTo(map);
         riverSurgeGroup = L.layerGroup().addTo(map);
         roadLayerGroup = L.layerGroup().addTo(map);
-        hexLayerGroup = L.layerGroup().addTo(map);
         evacLayerGroup = L.layerGroup().addTo(map);
         relocLayerGroup = L.layerGroup().addTo(map);
         resourceLayerGroup = L.layerGroup().addTo(map);
@@ -123,9 +139,25 @@ window.GIS_MAP = (function() {
             if (map) map.invalidateSize();
         });
 
+        // Trigger immediate and staggered invalidateSize to guarantee tiles render when flex/absolute dimensions resolve
         setTimeout(() => {
-            if (map) map.invalidateSize();
-        }, 200);
+            if (map) {
+                map.invalidateSize();
+                map.setView(SIKKIM_CENTER, DEFAULT_ZOOM);
+            }
+        }, 50);
+
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        }, 250);
+
+        setTimeout(() => {
+            if (map) {
+                map.invalidateSize();
+            }
+        }, 700);
     }
 
     /**
@@ -220,20 +252,23 @@ window.GIS_MAP = (function() {
     }
 
     /**
-     * Main Render Function: Clears all clutter and renders ONLY Uber H3 Hexagons
+     * Main Render Function: Clears clutter, renders seamless non-overlapping H3 hexagons and Google Maps Red Drop Pin
      */
     function render() {
         if (!map) return;
 
-        // Clear any auxiliary layers so only hexagons are visible
+        // Clear any auxiliary layers
         if (riverSurgeGroup) riverSurgeGroup.clearLayers();
         if (roadLayerGroup) roadLayerGroup.clearLayers();
         if (evacLayerGroup) evacLayerGroup.clearLayers();
         if (relocLayerGroup) relocLayerGroup.clearLayers();
         if (resourceLayerGroup) resourceLayerGroup.clearLayers();
 
-        // Render ONLY Uber H3 Hexagonal Grid as requested
+        // 1. Render mathematically non-overlapping Uber H3 Hexagons
         renderH3Hexagons();
+
+        // 2. Render Google Maps Red Drop Pin for User Pinpoint Location
+        renderUserLocationPin();
     }
 
     /**
@@ -346,11 +381,18 @@ window.GIS_MAP = (function() {
     }
 
     /**
-     * Render Uber H3 Hexagonal Grid over Sikkim
+     * Render Uber H3 Hexagonal Grid over Sikkim (Mathematically non-overlapping seamless tessellation)
      */
     function renderH3Hexagons() {
         if (!hexLayerGroup) return;
         hexLayerGroup.clearLayers();
+
+        // Ensure non-overlapping tessellated grid is loaded
+        if (window.H3_ENGINE && typeof window.H3_ENGINE.generateSikkimHexGrid === 'function') {
+            if (!window.DISASTER_DATA.h3Cells || window.DISASTER_DATA.h3Cells.length < 50) {
+                window.DISASTER_DATA.h3Cells = window.H3_ENGINE.generateSikkimHexGrid();
+            }
+        }
 
         const cells = window.DISASTER_DATA.h3Cells || [];
 
@@ -358,36 +400,44 @@ window.GIS_MAP = (function() {
             const risk = cell.currentRisk || cell.baselineRisk;
             const classification = window.H3_ENGINE.getRiskClassification(risk);
             
-            // Hexagon boundary vertices (~0.032 degrees for realistic valley/mountain resolution)
-            const boundary = window.H3_ENGINE.getHexagonBoundary(cell.lat, cell.lng, 0.032);
+            // Use exact precomputed non-overlapping boundary vertices (zero gap, zero overlap)
+            const boundary = cell.boundary || window.H3_ENGINE.getHexagonBoundary(cell.lat, cell.lng, 0.0215);
 
-            let fillColor = classification.color;
-            let fillOpacity = 0.40;
-            let strokeColor = classification.strokeColor;
-            let strokeWeight = 2.0;
+            let fillColor = '#10B981';
+            let fillOpacity = 0.28;
+            let strokeColor = '#00FF88';
+            let strokeWeight = 1.6;
 
             if (classification.level === 'critical') {
-                fillOpacity = 0.65;
-                strokeWeight = 3.0;
+                fillColor = '#EF4444';
+                fillOpacity = 0.55;
+                strokeWeight = 2.4;
                 strokeColor = '#FF2222';
-            } else if (classification.level === 'safe') {
-                fillOpacity = 0.35;
-                strokeColor = '#00FF88';
+            } else if (classification.level === 'orange') {
+                fillColor = '#F97316';
+                fillOpacity = 0.40;
+                strokeWeight = 2.0;
+                strokeColor = '#FB923C';
+            } else if (classification.level === 'moderate') {
+                fillColor = '#F59E0B';
+                fillOpacity = 0.30;
+                strokeWeight = 1.6;
+                strokeColor = '#FCD34D';
             }
 
             if (selectedCellId === cell.id) {
                 strokeColor = '#FFFFFF';
-                strokeWeight = 4.0;
+                strokeWeight = 3.6;
                 fillOpacity = 0.75;
             }
 
-            // Create Leaflet Polygon
+            // Create Leaflet Polygon with smoothFactor 0.1 so borders match to exact millimeter
             const poly = L.polygon(boundary, {
                 color: strokeColor,
                 weight: strokeWeight,
                 fillColor: fillColor,
                 fillOpacity: fillOpacity,
-                smoothFactor: 0.5,
+                smoothFactor: 0.1,
                 className: `h3-hex-${classification.level}`
             }).addTo(hexLayerGroup);
 
@@ -401,39 +451,17 @@ window.GIS_MAP = (function() {
 
             // Hover effects
             poly.on('mouseover', () => {
-                poly.setStyle({ fillOpacity: 0.85, weight: strokeWeight + 1.5 });
+                poly.setStyle({ fillOpacity: 0.85, weight: strokeWeight + 1.2 });
             });
             poly.on('mouseout', () => {
                 poly.setStyle({ fillOpacity: selectedCellId === cell.id ? 0.75 : fillOpacity, weight: strokeWeight });
             });
 
-            // Center Badge Marker (Score & Name)
-            const capacityAnalysis = window.H3_ENGINE.evaluateCarryingCapacity(cell);
-            const badgeIcon = L.divIcon({
-                className: 'h3-leaflet-badge',
-                html: `
-                    <div style="
-                        background: rgba(10, 15, 28, 0.88);
-                        backdrop-filter: blur(8px);
-                        border: 1.5px solid ${classification.color};
-                        border-radius: 6px;
-                        padding: 3px 8px;
-                        text-align: center;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-                        pointer-events: none;
-                        white-space: nowrap;
-                    ">
-                        <div style="font-size: 13px; font-weight: 800; color: #FFFFFF; font-family: monospace;">${risk}</div>
-                        <div style="font-size: 9.5px; font-weight: 600; color: ${classification.textColor};">${cell.name.split(' ')[0]}</div>
-                    </div>
-                `,
-                iconSize: [80, 36],
-                iconAnchor: [40, 18]
-            });
+            // Rich Tooltip on hover
+            const deficitText = cell.capacityDeficit > 0 
+                ? `<span style="color:#EF4444; font-weight:bold;">${cell.capacityDeficit.toLocaleString()} Pax DEFICIT</span>`
+                : `<span style="color:#10B981; font-weight:bold;">${(cell.surplusCapacity || 15000).toLocaleString()} Pax SURPLUS</span>`;
 
-            const marker = L.marker([cell.lat, cell.lng], { icon: badgeIcon, interactive: false }).addTo(hexLayerGroup);
-
-            // Rich Tooltip
             poly.bindTooltip(`
                 <div style="font-family: sans-serif; padding: 4px; min-width: 200px;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
@@ -445,10 +473,10 @@ window.GIS_MAP = (function() {
                         <div>Risk: <strong>${risk}/100</strong></div>
                         <div>Elevation: <strong>${cell.elevation}m</strong></div>
                         <div>Pop: <strong>${cell.population.toLocaleString()}</strong></div>
-                        <div>Safe Cap: <strong>${capacityAnalysis.effectiveSafeCapacity.toLocaleString()}</strong></div>
+                        <div>Status: ${deficitText}</div>
                     </div>
-                    <div style="margin-top:6px; font-size:11px; font-weight:bold; color:${capacityAnalysis.isDeficit ? '#F87171' : '#34D399'};">
-                        ${capacityAnalysis.statusLabel}: ${capacityAnalysis.isDeficit ? capacityAnalysis.deficit.toLocaleString() + ' DEFICIT' : capacityAnalysis.surplusCapacity.toLocaleString() + ' SURPLUS'}
+                    <div style="margin-top:6px; font-size:10.5px; color:#38BDF8;">
+                        Nearest Safe Shelter: <strong>${cell.nearestShelter}</strong>
                     </div>
                 </div>
             `, {
@@ -456,6 +484,128 @@ window.GIS_MAP = (function() {
                 className: 'tactical-map-tooltip'
             });
         });
+    }
+
+    /**
+     * Render Google Maps Style Red Drop Pin for User's Pinpoint Location
+     */
+    function renderUserLocationPin() {
+        if (!userPinGroup) return;
+        userPinGroup.clearLayers();
+
+        // Detect which cell contains the user
+        const currentCell = findCellContaining(userCoords[0], userCoords[1]) || (window.DISASTER_DATA.h3Cells || [])[0];
+        const isHazard = currentCell && (currentCell.riskLevel === 'critical' || currentCell.riskLevel === 'orange');
+
+        const pinHtml = `
+            <div class="gmap-pin-container">
+                <div class="gmap-pin-pulse ${isHazard ? 'pulse-hazard' : 'pulse-safe'}"></div>
+                <div class="gmap-pin-shadow"></div>
+                <svg class="gmap-red-pin" viewBox="0 0 38 52" width="38" height="52">
+                    <defs>
+                        <filter id="gmapDropShadow" x="-30%" y="-30%" width="160%" height="160%">
+                            <feDropShadow dx="0" dy="5" stdDeviation="3.5" flood-color="rgba(0,0,0,0.7)" />
+                        </filter>
+                        <radialGradient id="redPinGrad" cx="35%" cy="30%" r="70%">
+                            <stop offset="0%" stop-color="#FF5252" />
+                            <stop offset="50%" stop-color="#E53935" />
+                            <stop offset="100%" stop-color="#B71C1C" />
+                        </radialGradient>
+                    </defs>
+                    <!-- Classic Google Maps Teardrop Shape -->
+                    <path d="M19 0 C8.5 0 0 8.5 0 19 C0 31.5 15.5 48.5 18.2 51.3 C18.6 51.7 19.4 51.7 19.8 51.3 C22.5 48.5 38 31.5 38 19 C38 8.5 29.5 0 19 0 Z" 
+                          fill="url(#redPinGrad)" filter="url(#gmapDropShadow)" stroke="#FFFFFF" stroke-width="2" />
+                    <!-- Inner White Disc -->
+                    <circle cx="19" cy="19" r="8.5" fill="#FFFFFF" />
+                    <!-- User silhouette in center -->
+                    <circle cx="19" cy="16" r="3.2" fill="#D32F2F" />
+                    <path d="M13 24.5 C13 21 16 20.5 19 20.5 C22 20.5 25 21 25 24.5 Z" fill="#D32F2F" />
+                </svg>
+                <!-- Callout Badges exactly as in user reference picture -->
+                <div class="gmap-pin-callout">
+                    <div class="gmap-pill-position">
+                        <span class="gmap-dot-icon">📍</span> CURRENT POSITION
+                    </div>
+                    <div class="gmap-pill-status ${isHazard ? 'status-hazard' : 'status-safe'}">
+                        ${isHazard ? '⚠️ HAZARD' : '✓ SAFE'}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const icon = L.divIcon({
+            className: 'gmap-leaflet-div-icon',
+            html: pinHtml,
+            iconSize: [38, 52],
+            iconAnchor: [19, 52] // Pin pointed tip touches exact coordinate
+        });
+
+        userMarker = L.marker(userCoords, {
+            icon: icon,
+            draggable: true,
+            zIndexOffset: 1200
+        }).addTo(userPinGroup);
+
+        userMarker.bindTooltip(`
+            <div style="font-family:sans-serif; text-align:center; padding:4px;">
+                <div style="font-weight:bold; color:#FFFFFF; margin-bottom:2px;">📍 YOUR PINPOINT LOCATION</div>
+                <div style="font-size:11px; color:#cbd5e1;">${userCoords[0].toFixed(4)}° N, ${userCoords[1].toFixed(4)}° E</div>
+                <div style="font-size:11px; font-weight:bold; color:${isHazard ? '#F87171' : '#34D399'}; margin-top:2px;">
+                    ${isHazard ? '⚠️ IN FLOOD HAZARD RED ZONE' : '✓ IN SAFE REFUGE ZONE'}
+                </div>
+                <div style="font-size:10px; color:#94a3b8; margin-top:4px;">Drag pin to test safe vs hazard zone detection</div>
+            </div>
+        `, {
+            direction: 'top',
+            offset: [0, -56],
+            className: 'tactical-map-tooltip'
+        });
+
+        userMarker.on('click', (e) => {
+            if (e) L.DomEvent.stop(e);
+            if (currentCell) {
+                selectCell(currentCell.id);
+            }
+        });
+
+        userMarker.on('dragend', (e) => {
+            const latlng = e.target.getLatLng();
+            userCoords = [latlng.lat, latlng.lng];
+            renderUserLocationPin();
+            const newCell = findCellContaining(latlng.lat, latlng.lng);
+            if (newCell) {
+                selectCell(newCell.id);
+            }
+        });
+    }
+
+    /**
+     * Find nearest cell enclosing given lat, lng
+     */
+    function findCellContaining(lat, lng) {
+        const cells = window.DISASTER_DATA.h3Cells || [];
+        let nearest = null;
+        let minDist = 999999;
+        for (const c of cells) {
+            const d = window.H3_ENGINE.calculateDistanceKm(lat, lng, c.lat, c.lng);
+            if (d < minDist) {
+                minDist = d;
+                nearest = c;
+            }
+        }
+        return nearest;
+    }
+
+    /**
+     * Recenter map on user location pin
+     */
+    function recenterUserLocation() {
+        if (map) {
+            map.setView(userCoords, 13, { animate: true });
+            if (userMarker) {
+                userMarker.openTooltip();
+            }
+        }
     }
 
     /**
@@ -611,6 +761,8 @@ window.GIS_MAP = (function() {
         zoomIn,
         zoomOut,
         resetView,
+        recenterUserLocation,
+        invalidateSize: () => { if (map) map.invalidateSize(); },
         toggleLayer,
         setBasemap,
         setActivePage,

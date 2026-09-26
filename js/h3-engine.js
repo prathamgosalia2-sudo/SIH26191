@@ -221,12 +221,202 @@ window.H3_ENGINE = (function() {
         };
     }
 
+    /**
+     * Generate mathematically non-overlapping regular hexagonal tessellation grid across Sikkim
+     */
+    function generateSikkimHexGrid() {
+        const REF_LAT = 27.38;
+        const cosLat = Math.cos(REF_LAT * Math.PI / 180);
+        
+        // Exact regular hexagon sizing (radius in latitude and longitude)
+        const R_LAT = 0.0215; // ~2.38 km radius
+        const R_LNG = R_LAT / cosLat; // ~0.02421 degrees
+
+        const DELTA_LAT = 1.5 * R_LAT; // Vertical step between rows = 0.03225
+        const DELTA_LNG = Math.sqrt(3) * R_LNG; // Horizontal step between columns = 0.04193
+        const ODD_ROW_OFFSET = 0.5 * DELTA_LNG; // 0.02096
+
+        const START_LAT = 27.56;
+        const START_LNG = 88.38;
+        const ROWS = 12;
+        const COLS = 10;
+
+        // Teesta River flood surge spine coordinates
+        const teestaSpine = [
+            { lat: 27.60, lng: 88.65, name: 'Chungthang' },
+            { lat: 27.52, lng: 88.62, name: 'Toong' },
+            { lat: 27.42, lng: 88.53, name: 'Dikchu' },
+            { lat: 27.33, lng: 88.51, name: 'Singtam North' },
+            { lat: 27.24, lng: 88.50, name: 'Singtam' },
+            { lat: 27.17, lng: 88.53, name: 'Rangpo' }
+        ];
+
+        const cells = [];
+        let idCounter = 1;
+
+        for (let r = 0; r < ROWS; r++) {
+            const centerLat = START_LAT - r * DELTA_LAT;
+            const rowOffset = (r % 2 === 1) ? ODD_ROW_OFFSET : 0;
+
+            for (let c = 0; c < COLS; c++) {
+                const centerLng = START_LNG + c * DELTA_LNG + rowOffset;
+
+                // Calculate exact 6 vertices sharing borders with adjacent hexagons with 0 overlap
+                const boundary = [];
+                for (let i = 0; i < 6; i++) {
+                    const angleRad = (60 * i + 30) * Math.PI / 180;
+                    const vLat = centerLat + R_LAT * Math.sin(angleRad);
+                    const vLng = centerLng + R_LNG * Math.cos(angleRad);
+                    boundary.push([vLat, vLng]);
+                }
+
+                // Calculate distance to nearest point on Teesta River spine
+                let minDistKm = 999;
+                for (const pt of teestaSpine) {
+                    const d = calculateDistanceKm(centerLat, centerLng, pt.lat, pt.lng);
+                    if (d < minDistKm) {
+                        minDistKm = d;
+                    }
+                }
+
+                // Topography & flood physics classification
+                let riskScore, riskLevel, hazardType, roadStatus, capacityDeficit, waterLevelM;
+                let elevation, pop, safeCap, currentCap;
+
+                const hexId = '886189' + (idCounter.toString(16).padStart(4, '0')) + 'fffff';
+                idCounter++;
+
+                if (minDistKm <= 2.2) {
+                    // Critical Inundation & GLOF Dam Breach Zone (Teesta Riverbed)
+                    riskScore = Math.min(98, Math.round(96 - (minDistKm * 4) + (Math.sin(r + c) * 2)));
+                    riskLevel = 'critical';
+                    hazardType = 'GLOF / Flash Flood';
+                    elevation = Math.round(340 + minDistKm * 80);
+                    pop = Math.round(14000 + (r * 1100) % 12000);
+                    safeCap = Math.round(pop * 0.9);
+                    currentCap = Math.round(pop * 0.1); // Capacity collapsed
+                    capacityDeficit = pop - currentCap;
+                    waterLevelM = +(3.8 + (Math.sin(r) + 1) * 0.7).toFixed(1);
+                    roadStatus = 'Submerged';
+                } else if (minDistKm <= 4.5) {
+                    // High Risk Landslide & Surge Buffer Zone
+                    riskScore = Math.min(80, Math.max(62, Math.round(78 - (minDistKm - 2.2) * 7)));
+                    riskLevel = 'orange';
+                    hazardType = 'Landslide / Surge Buffer';
+                    elevation = Math.round(650 + minDistKm * 120);
+                    pop = Math.round(9000 + (c * 900) % 8000);
+                    safeCap = Math.round(pop * 1.1);
+                    currentCap = Math.round(pop * 0.5);
+                    capacityDeficit = Math.max(0, pop - currentCap);
+                    waterLevelM = +(1.0 + (Math.cos(c) + 1) * 0.6).toFixed(1);
+                    roadStatus = 'Congested';
+                } else if (minDistKm <= 7.5) {
+                    // Moderate Watch Slope Zone
+                    riskScore = Math.min(58, Math.max(38, Math.round(56 - (minDistKm - 4.5) * 5)));
+                    riskLevel = 'moderate';
+                    hazardType = 'Hydrological Watch';
+                    elevation = Math.round(1100 + minDistKm * 90);
+                    pop = Math.round(7500 + (r * 700) % 6000);
+                    safeCap = Math.round(pop * 1.2);
+                    currentCap = safeCap;
+                    capacityDeficit = 0;
+                    waterLevelM = 0;
+                    roadStatus = 'Open';
+                } else {
+                    // Safe High-Ground Mountain Refuge Sanctuary (Gangtok, Pakyong, Namchi, Ravangla ridges)
+                    riskScore = Math.min(32, Math.max(12, Math.round(28 - (minDistKm - 7.5) * 2)));
+                    riskLevel = 'safe';
+                    hazardType = 'Safe Refuge Center';
+                    elevation = Math.round(1450 + (minDistKm * 80) % 650);
+                    pop = Math.round(18000 + (c * 1500) % 18000);
+                    safeCap = Math.round(pop * 2.2); // Large safe capacity
+                    currentCap = safeCap;
+                    capacityDeficit = 0;
+                    waterLevelM = 0;
+                    roadStatus = 'Open';
+                }
+
+                // Descriptive location name based on geography
+                let cellName = '';
+                if (centerLat > 27.50 && centerLng > 88.58) {
+                    cellName = (riskLevel === 'critical' ? 'Chungthang Dam Breach Reach' : (riskLevel === 'orange' ? 'Toong Valley Sector' : 'Lachen High Slope'));
+                } else if (centerLat > 27.38 && centerLng > 88.56) {
+                    cellName = (riskLevel === 'safe' ? 'Gangtok Upper Ridge' : (riskLevel === 'critical' ? 'Dikchu Surge Basin' : 'Mangan District Flank'));
+                } else if (centerLat > 27.30 && centerLng > 88.56) {
+                    cellName = (riskLevel === 'safe' ? 'Gangtok Capital Safe Ridge' : (riskLevel === 'critical' ? 'Ranipool Flood Basin' : 'Tadong Mid-Slope'));
+                } else if (centerLat < 27.28 && centerLat > 27.20 && centerLng > 88.45 && centerLng < 88.55) {
+                    cellName = (riskLevel === 'critical' ? 'Singtam Riverine Market Basin' : 'Singtam Buffer Zone');
+                } else if (centerLat <= 27.20 && centerLng > 88.48 && centerLng < 88.56) {
+                    cellName = (riskLevel === 'critical' ? 'Rangpo Border Gorge' : 'Majitar Lowland Basin');
+                } else if (centerLng >= 88.58 && centerLat <= 27.26) {
+                    cellName = 'Pakyong High Plateau Sanctuary';
+                } else if (centerLng <= 88.45 && centerLat <= 27.24) {
+                    cellName = 'Namchi Mountain Sanctuary';
+                } else if (centerLng <= 88.45 && centerLat > 27.25) {
+                    cellName = 'Ravangla High Crest Refuge';
+                } else {
+                    const sectorDir = centerLng > 88.58 ? 'East' : (centerLng < 88.50 ? 'West' : 'Central');
+                    const sectorElev = centerLat > 27.40 ? 'North' : 'South';
+                    cellName = `${sectorElev} Sikkim ${sectorDir} Sector ${r + 1}-${c + 1}`;
+                }
+
+                cells.push({
+                    id: hexId,
+                    name: cellName,
+                    sector: `${centerLat > 27.38 ? 'North' : 'South'} Sikkim Teesta Basin`,
+                    lat: centerLat,
+                    lng: centerLng,
+                    row: r,
+                    col: c,
+                    boundary: boundary,
+                    elevation: elevation,
+                    baselineRisk: riskScore,
+                    currentRisk: riskScore,
+                    riskLevel: riskLevel,
+                    hazardType: hazardType,
+                    population: pop,
+                    vulnerablePopulation: {
+                        total: Math.round(pop * 0.28),
+                        infants: Math.round(pop * 0.07),
+                        elderly: Math.round(pop * 0.11),
+                        disabled: Math.round(pop * 0.04),
+                        pregnant: Math.round(pop * 0.06)
+                    },
+                    carryingCapacity: currentCap,
+                    safeCapacityThreshold: safeCap,
+                    capacityDeficit: capacityDeficit,
+                    surplusCapacity: Math.max(0, currentCap - pop),
+                    nearestShelter: riskLevel === 'safe' ? `${cellName} Community Center` : 'Paljor Stadium Safe Ridge, Gangtok',
+                    shelterCapacity: riskLevel === 'safe' ? 12000 : 4500,
+                    shelterDistanceKm: Math.round((minDistKm + 1.2) * 10) / 10,
+                    evacuationTimeHours: +(1.5 + minDistKm * 0.6).toFixed(1),
+                    nearbyHospitals: ['STNM Central Hospital Gangtok', 'Singtam District Unit'],
+                    roadStatus: roadStatus,
+                    primaryRoad: roadStatus === 'Submerged' ? 'NH-10 (Submerged at Mile 19)' : 'Ridge Bypass Open',
+                    waterLevelM: waterLevelM,
+                    rainfallMm: Math.round(280 + (r * 15) % 120),
+                    factors: {
+                        historicalDisasters: Math.round(riskScore / 12),
+                        rainfallImpact: Math.min(100, riskScore + 5),
+                        elevationVulnerability: Math.max(10, 100 - Math.round(elevation / 20)),
+                        populationDensity: Math.round((pop / 30000) * 100),
+                        infrastructureVulnerability: riskScore,
+                        distanceToEmergencyServices: Math.round(minDistKm * 8),
+                        roadAccessibility: roadStatus === 'Submerged' ? 15 : 85
+                    }
+                });
+            }
+        }
+        return cells;
+    }
+
     return {
         calculateDistanceKm,
         getHexagonBoundary,
         getRiskClassification,
         calculateMCDARiskScore,
         evaluateCarryingCapacity,
-        findOptimalRelocationDestinations
+        findOptimalRelocationDestinations,
+        generateSikkimHexGrid
     };
 })();

@@ -47,6 +47,12 @@ window.APP = (function() {
         updateKPICards();
         navigateTo('overview');
 
+        setTimeout(() => {
+            if (window.GIS_MAP && typeof window.GIS_MAP.invalidateSize === 'function') {
+                window.GIS_MAP.invalidateSize();
+            }
+        }, 150);
+
         // Setup Simulation event listeners
         setupSimulationView();
     }
@@ -124,6 +130,11 @@ window.APP = (function() {
         // Refresh view-specific content
         if (pageId === 'overview') {
             updateKPICards();
+            setTimeout(() => {
+                if (window.GIS_MAP && typeof window.GIS_MAP.invalidateSize === 'function') {
+                    window.GIS_MAP.invalidateSize();
+                }
+            }, 60);
         } else if (pageId === 'hazard') {
             refreshHazardView();
         } else if (pageId === 'capacity') {
@@ -185,14 +196,17 @@ window.APP = (function() {
      * Setup Map Control Buttons & Layer Toggles
      */
     function setupMapControls() {
+        const btnLocate = document.getElementById('btn-map-locate');
+        if (btnLocate) btnLocate.addEventListener('click', () => { if (window.GIS_MAP && typeof window.GIS_MAP.recenterUserLocation === 'function') window.GIS_MAP.recenterUserLocation(); });
+
         const btnZoomIn = document.getElementById('btn-map-zoom-in');
-        if (btnZoomIn) btnZoomIn.addEventListener('click', () => { window.GIS_MAP.zoomIn(); if (window.APP_SOUNDS) window.APP_SOUNDS.playBeep(); });
+        if (btnZoomIn) btnZoomIn.addEventListener('click', () => { window.GIS_MAP.zoomIn(); });
 
         const btnZoomOut = document.getElementById('btn-map-zoom-out');
-        if (btnZoomOut) btnZoomOut.addEventListener('click', () => { window.GIS_MAP.zoomOut(); if (window.APP_SOUNDS) window.APP_SOUNDS.playBeep(); });
+        if (btnZoomOut) btnZoomOut.addEventListener('click', () => { window.GIS_MAP.zoomOut(); });
 
         const btnReset = document.getElementById('btn-map-reset');
-        if (btnReset) btnReset.addEventListener('click', () => { window.GIS_MAP.resetView(); if (window.APP_SOUNDS) window.APP_SOUNDS.playBeep(); });
+        if (btnReset) btnReset.addEventListener('click', () => { window.GIS_MAP.resetView(); });
 
         // Basemap switcher
         const basemapSelect = document.getElementById('select-basemap-mode');

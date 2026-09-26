@@ -920,8 +920,14 @@ window.DISASTER_DATA = (function() {
         }
     ];
 
+    // If H3 Engine is loaded, use mathematically non-overlapping hexagonal tessellation grid
+    const tessellatedGrid = (window.H3_ENGINE && typeof window.H3_ENGINE.generateSikkimHexGrid === 'function')
+        ? window.H3_ENGINE.generateSikkimHexGrid()
+        : h3Cells;
+
     return {
-        h3Cells,
+        h3Cells: tessellatedGrid,
+        fallbackH3Cells: h3Cells,
         roadNetwork,
         shelters,
         hospitals,

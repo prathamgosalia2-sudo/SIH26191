@@ -373,9 +373,8 @@ html, body {
     flex: 1;
     position: relative;
     height: 100%;
+    width: 100%;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
 /* Top KPI Ribbon Bar */
@@ -383,7 +382,7 @@ html, body {
     position: absolute;
     top: 12px;
     left: 16px;
-    right: 16px;
+    right: 345px;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
@@ -444,7 +443,7 @@ html, body {
     position: absolute;
     top: calc(var(--kpi-ribbon-height) + 16px);
     left: 16px;
-    right: 16px;
+    right: 345px;
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.35);
     border-radius: 6px;
@@ -480,19 +479,27 @@ html, body {
    Tactical GIS Map Viewport & Controls
    ========================================================================== */
 .map-canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
-    position: relative;
+    z-index: 1;
     background: #070B14;
 }
 
 #leaflet-map-inner {
-    width: 100%;
-    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
     background: #0A0E17;
+    z-index: 1;
 }
 
 .leaflet-container {
@@ -537,6 +544,153 @@ html, body {
 
 .pulsing-leaflet-ring div {
     animation: ringPulse 2.2s infinite ease-out;
+}
+
+/* ==========================================================================
+   Google Maps Style Red Teardrop Location Pin
+   ========================================================================== */
+.gmap-leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.gmap-pin-container {
+    position: relative;
+    width: 38px;
+    height: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: grab;
+}
+
+.gmap-pin-container:active {
+    cursor: grabbing;
+}
+
+/* Pulsing ground radar wave beneath pin point */
+.gmap-pin-pulse {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 12px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: gmapRadarPulse 2s infinite ease-out;
+}
+
+.gmap-pin-pulse.pulse-hazard {
+    background: rgba(239, 68, 68, 0.45);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.9);
+    border: 1.5px solid #EF4444;
+}
+
+.gmap-pin-pulse.pulse-safe {
+    background: rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.9);
+    border: 1.5px solid #10B981;
+}
+
+@keyframes gmapRadarPulse {
+    0% {
+        transform: translateX(-50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-50%) scale(2.8);
+        opacity: 0;
+    }
+}
+
+/* Shadow at pin tip */
+.gmap-pin-shadow {
+    position: absolute;
+    bottom: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    filter: blur(1.5px);
+}
+
+/* Red Drop Pin SVG */
+.gmap-red-pin {
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
+    animation: gmapPinBounce 2.5s infinite ease-in-out;
+    transform-origin: bottom center;
+}
+
+@keyframes gmapPinBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* Callout pill badges above the pin */
+.gmap-pin-callout {
+    position: absolute;
+    bottom: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.gmap-pill-position {
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid #38BDF8;
+    color: #F8FAFC;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.gmap-dot-icon {
+    font-size: 11px;
+}
+
+.gmap-pill-status {
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.gmap-pill-status.status-hazard {
+    background: #DC2626;
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
+    border: 1px solid #FFA8A8;
+    animation: hazardPillFlash 1.5s infinite ease-in-out;
+}
+
+.gmap-pill-status.status-safe {
+    background: #059669;
+    color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(5, 150, 105, 0.6);
+    border: 1px solid #A7F3D0;
+}
+
+@keyframes hazardPillFlash {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.88; transform: scale(1.04); }
 }
 
 /* Custom Leaflet Controls */
@@ -635,19 +789,20 @@ html, body {
    ========================================================================== */
 .map-floating-legend-topright {
     position: absolute;
-    top: calc(var(--kpi-ribbon-height) + 62px);
-    right: 20px;
-    width: 330px;
-    background: rgba(10, 16, 30, 0.95);
+    top: 12px;
+    right: 16px;
+    width: 320px;
+    background: rgba(10, 16, 30, 0.96);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 12px;
-    padding: 14px 16px;
-    z-index: 35;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 1px rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 10px;
+    padding: 12px 14px;
+    z-index: 50;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.15);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    pointer-events: auto;
 }
 
 .legend-header {
