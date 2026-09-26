@@ -258,57 +258,133 @@ html, body {
 /* ==========================================================================
    Master Command Layout: Sidebar + Main Stage
    ========================================================================== */
+/* Master Command Layout: Full-Screen Viewport */
 .command-viewport {
     height: calc(100vh - var(--header-height));
-    display: flex;
-    overflow: hidden;
+    width: 100%;
     position: relative;
+    overflow: hidden;
 }
 
-/* Left Tactical Sidebar */
+/* Left Tactical Sidebar (Compact Floating Draggable Panel) */
 .command-sidebar {
-    width: var(--sidebar-width);
-    background: rgba(12, 18, 30, 0.98);
-    border-right: 1px solid var(--border-subtle);
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    width: 205px;
+    max-height: calc(100vh - var(--header-height) - 30px);
+    background: rgba(10, 16, 30, 0.95);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.15);
+    z-index: 45;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    flex-shrink: 0;
-    z-index: 40;
+    overflow: hidden;
+    user-select: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+.command-sidebar.minimized {
+    display: none !important;
+}
+
+/* Drag Header on the Sidebar */
+.sidebar-drag-header {
+    background: rgba(15, 23, 42, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: grab;
+    user-select: none;
+}
+
+.sidebar-drag-header:active {
+    cursor: grabbing;
+}
+
+.drag-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.drag-grip {
+    color: var(--accent-cyan);
+    font-size: 13px;
+    cursor: grab;
+    line-height: 1;
+}
+
+.sidebar-drag-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: #94A3B8;
+    text-transform: uppercase;
+}
+
+.btn-sidebar-minimize {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+
+.btn-sidebar-minimize:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #EF4444;
+    color: #FFFFFF;
+}
+
+/* Compact Nav Items */
 .sidebar-nav-list {
     list-style: none;
-    padding: 12px 8px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .sidebar-nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
+    gap: 8px;
+    padding: 6px 9px;
+    border-radius: 6px;
     color: #94A3B8;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 11.5px;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
     border: 1px solid transparent;
     cursor: pointer;
     position: relative;
 }
 
 .sidebar-nav-item:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.05);
     color: #F8FAFC;
     transform: translateX(2px);
 }
 
 .sidebar-nav-item.active {
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.18), rgba(56, 189, 248, 0.04));
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.2), rgba(56, 189, 248, 0.04));
     color: #38BDF8;
     border-color: rgba(56, 189, 248, 0.35);
     font-weight: 600;
@@ -318,52 +394,120 @@ html, body {
     content: '';
     position: absolute;
     left: 0;
-    top: 6px;
-    bottom: 6px;
+    top: 4px;
+    bottom: 4px;
     width: 3px;
     background: var(--accent-cyan);
-    border-radius: 0 4px 4px 0;
-    box-shadow: 0 0 8px var(--accent-cyan);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 6px var(--accent-cyan);
 }
 
 .nav-icon {
-    font-size: 16px;
-    width: 20px;
+    font-size: 13px;
+    width: 16px;
     display: inline-flex;
     justify-content: center;
 }
 
+.nav-text {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .nav-badge-pill {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 10px;
-    background: rgba(239, 68, 68, 0.2);
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.25);
     color: #F87171;
     border: 1px solid rgba(239, 68, 68, 0.4);
 }
 
+/* Sidebar Footer */
 .sidebar-footer {
-    padding: 14px 16px;
+    padding: 8px 10px;
     border-top: 1px solid var(--border-subtle);
-    background: rgba(8, 12, 22, 0.6);
+    background: rgba(8, 12, 22, 0.7);
 }
 
 .mha-seal-block {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .mha-seal-icon {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .mha-seal-text {
-    font-size: 10px;
+    font-size: 9px;
     color: #64748B;
-    line-height: 1.3;
+    line-height: 1.25;
+}
+
+/* Floating Minimized Draggable Pill Icon */
+.floating-nav-pill {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    background: rgba(10, 16, 30, 0.94);
+    backdrop-filter: blur(14px);
+    border: 1.5px solid #38BDF8;
+    border-radius: 24px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    z-index: 46;
+    color: #F8FAFC;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75), 0 0 14px rgba(56, 189, 248, 0.4);
+    user-select: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.floating-nav-pill:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+.floating-nav-pill:hover {
+    border-color: #7DD3FC;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85), 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+.floating-pill-grip {
+    color: #38BDF8;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.floating-pill-icon {
+    font-size: 14px;
+}
+
+.floating-pill-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.floating-pill-badge {
+    font-size: 9px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #DC2626;
+    color: #FFFFFF;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
 }
 
 /* ==========================================================================
@@ -381,7 +525,7 @@ html, body {
 .kpi-ribbon-bar {
     position: absolute;
     top: 12px;
-    left: 16px;
+    left: 235px;
     right: 345px;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -442,7 +586,7 @@ html, body {
 .emergency-alert-ticker {
     position: absolute;
     top: calc(var(--kpi-ribbon-height) + 16px);
-    left: 16px;
+    left: 235px;
     right: 345px;
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.35);

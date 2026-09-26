@@ -50,8 +50,15 @@
          ========================================================================== -->
     <div class="command-viewport">
 
-        <!-- Left Tactical Sidebar -->
-        <aside class="command-sidebar">
+        <!-- Left Tactical Sidebar (Compact Floating Draggable Panel) -->
+        <aside class="command-sidebar" id="command-sidebar">
+            <div class="sidebar-drag-header" id="sidebar-drag-header" title="Drag to move navigation anywhere on map">
+                <div class="drag-header-left">
+                    <span class="drag-grip">⠿</span>
+                    <span class="sidebar-drag-title">TACTICAL NAV</span>
+                </div>
+                <button class="btn-sidebar-minimize" id="btn-sidebar-minimize" title="Minimize to Floating Icon">−</button>
+            </div>
             <ul class="sidebar-nav-list">
                 <li class="sidebar-nav-item active" data-page="overview" id="nav-overview">
                     <span class="nav-icon">📊</span>
@@ -93,12 +100,19 @@
                     <div class="mha-seal-icon">🛡️</div>
                     <div class="mha-seal-text">
                         <strong>NEOC Decision Support</strong><br>
-                        H3 Spatial Resolution: 7/8<br>
-                        Sector: Sikkim Teesta Basin (GLOF)
+                        H3 Spatial Res: 7/8 | Sikkim
                     </div>
                 </div>
             </div>
         </aside>
+
+        <!-- Floating Minimized Draggable Icon (Visible when minimized, draggable anywhere) -->
+        <div class="floating-nav-pill" id="floating-nav-pill" style="display: none;" title="Drag anywhere or click to expand Navigation">
+            <span class="floating-pill-grip">⠿</span>
+            <span class="floating-pill-icon">🧭</span>
+            <span class="floating-pill-label">NAV MENU</span>
+            <span class="floating-pill-badge" id="floating-pill-badge">7 RED</span>
+        </div>
 
         <!-- Center GIS Command Theater -->
         <main class="command-stage">
