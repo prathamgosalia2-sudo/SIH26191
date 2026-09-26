@@ -198,11 +198,15 @@
                 </select>
             </div>
 
-            <!-- Floating Map Legend: Color Meanings (Right Upper Corner) -->
+            <!-- Floating Map Legend: Color Meanings (Right Box - Draggable & Minimizable) -->
             <div class="map-floating-legend-topright" id="map-color-legend">
-                <div class="legend-header">
-                    <span class="legend-badge">CLASSIFICATION</span>
-                    <span class="legend-title">H3 COLOR MEANINGS</span>
+                <div class="legend-header" id="legend-drag-header" title="Drag to move color legend anywhere on map">
+                    <div class="drag-header-left">
+                        <span class="drag-grip">⠿</span>
+                        <span class="legend-badge">CLASSIFICATION</span>
+                        <span class="legend-title">H3 COLOR MEANINGS</span>
+                    </div>
+                    <button class="btn-legend-minimize" id="btn-legend-minimize" title="Minimize to Floating Icon">−</button>
                 </div>
                 <div class="legend-list">
                     <div class="legend-row">
@@ -245,6 +249,19 @@
                             <div class="legend-desc">High absorption capacity; designated safe relocation destination</div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Floating Minimized Draggable Legend Icon (Visible when minimized, draggable anywhere) -->
+            <div class="floating-legend-pill" id="floating-legend-pill" style="display: none;" title="Drag anywhere or click to expand Color Legend">
+                <span class="floating-pill-grip">⠿</span>
+                <span class="floating-pill-icon">🎨</span>
+                <span class="floating-pill-label">COLOR LEGEND</span>
+                <div class="legend-mini-dots">
+                    <span class="mini-dot dot-critical-mini"></span>
+                    <span class="mini-dot dot-high-mini"></span>
+                    <span class="mini-dot dot-moderate-mini"></span>
+                    <span class="mini-dot dot-safe-mini"></span>
                 </div>
             </div>
 

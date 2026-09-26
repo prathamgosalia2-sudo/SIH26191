@@ -99,6 +99,7 @@ window.APP = (function() {
 
         // Initialize floating, draggable & minimizable navigation controller
         setupFloatingSidebar();
+        setupFloatingLegend();
     }
 
     /**
@@ -227,6 +228,154 @@ window.APP = (function() {
             dragHeader.addEventListener('touchstart', (e) => {
                 if (e.touches && e.touches[0]) {
                     startDrag(e.touches[0].clientX, e.touches[0].clientY, sidebar);
+                }
+            }, { passive: true });
+        }
+
+        if (floatingPill) {
+            floatingPill.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) {
+                    startDrag(e.touches[0].clientX, e.touches[0].clientY, floatingPill);
+                }
+            }, { passive: true });
+        }
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches && e.touches[0]) {
+                onMove(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        window.addEventListener('touchend', endDrag);
+    }
+
+    /**
+     * Setup Floating, Minimizable & Draggable Right Color Legend Box
+     */
+    function setupFloatingLegend() {
+        const legend = document.getElementById('map-color-legend');
+        const dragHeader = document.getElementById('legend-drag-header');
+        const btnMinimize = document.getElementById('btn-legend-minimize');
+        const floatingPill = document.getElementById('floating-legend-pill');
+        const viewport = document.querySelector('.command-viewport') || document.body;
+
+        if (!legend) return;
+
+        let currentX = null;
+        let currentY = 12;
+        let isDragging = false;
+        let startClientX = 0;
+        let startClientY = 0;
+        let startElemX = 0;
+        let startElemY = 0;
+        let dragTarget = null;
+        let dragDistance = 0;
+
+        function updatePosition(elem, newX, newY) {
+            const vpRect = viewport.getBoundingClientRect();
+            const elemWidth = elem.offsetWidth || 250;
+            const elemHeight = elem.offsetHeight || 60;
+            const maxX = Math.max(0, vpRect.width - elemWidth - 10);
+            const maxY = Math.max(0, vpRect.height - elemHeight - 10);
+
+            const boundedX = Math.max(8, Math.min(newX, maxX));
+            const boundedY = Math.max(8, Math.min(newY, maxY));
+
+            elem.style.left = `${boundedX}px`;
+            elem.style.top = `${boundedY}px`;
+            elem.style.right = 'auto';
+            elem.style.bottom = 'auto';
+            currentX = boundedX;
+            currentY = boundedY;
+        }
+
+        function ensureInitialCoords() {
+            if (currentX === null) {
+                const vpRect = viewport.getBoundingClientRect();
+                const elemWidth = legend.offsetWidth || 250;
+                currentX = Math.max(10, vpRect.width - elemWidth - 16);
+                currentY = 12;
+                legend.style.left = `${currentX}px`;
+                legend.style.top = `${currentY}px`;
+                legend.style.right = 'auto';
+            }
+        }
+
+        setTimeout(ensureInitialCoords, 100);
+
+        function minimizeLegend() {
+            ensureInitialCoords();
+            legend.classList.add('minimized');
+            if (floatingPill) {
+                floatingPill.style.display = 'flex';
+                updatePosition(floatingPill, currentX, currentY);
+            }
+        }
+
+        function expandLegend() {
+            ensureInitialCoords();
+            if (floatingPill) floatingPill.style.display = 'none';
+            legend.classList.remove('minimized');
+            updatePosition(legend, currentX, currentY);
+        }
+
+        if (btnMinimize) {
+            btnMinimize.addEventListener('click', (e) => {
+                e.stopPropagation();
+                minimizeLegend();
+            });
+        }
+
+        function startDrag(clientX, clientY, targetElem) {
+            ensureInitialCoords();
+            isDragging = true;
+            dragDistance = 0;
+            dragTarget = targetElem;
+            startClientX = clientX;
+            startClientY = clientY;
+            startElemX = targetElem.offsetLeft;
+            startElemY = targetElem.offsetTop;
+            document.body.style.userSelect = 'none';
+        }
+
+        function onMove(clientX, clientY) {
+            if (!isDragging || !dragTarget) return;
+            const deltaX = clientX - startClientX;
+            const deltaY = clientY - startClientY;
+            dragDistance += Math.hypot(deltaX, deltaY);
+            updatePosition(dragTarget, startElemX + deltaX, startElemY + deltaY);
+        }
+
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.style.userSelect = '';
+            if (dragTarget === floatingPill && dragDistance < 6) {
+                expandLegend();
+            }
+            dragTarget = null;
+        }
+
+        if (dragHeader) {
+            dragHeader.addEventListener('mousedown', (e) => {
+                if (e.target.closest('#btn-legend-minimize')) return;
+                startDrag(e.clientX, e.clientY, legend);
+            });
+        }
+
+        if (floatingPill) {
+            floatingPill.addEventListener('mousedown', (e) => {
+                startDrag(e.clientX, e.clientY, floatingPill);
+            });
+        }
+
+        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', endDrag);
+
+        if (dragHeader) {
+            dragHeader.addEventListener('touchstart', (e) => {
+                if (e.touches && e.touches[0]) {
+                    startDrag(e.touches[0].clientX, e.touches[0].clientY, legend);
                 }
             }, { passive: true });
         }

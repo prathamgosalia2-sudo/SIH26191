@@ -526,7 +526,7 @@ html, body {
     position: absolute;
     top: 12px;
     left: 235px;
-    right: 345px;
+    right: 280px;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
@@ -587,7 +587,7 @@ html, body {
     position: absolute;
     top: calc(var(--kpi-ribbon-height) + 16px);
     left: 235px;
-    right: 345px;
+    right: 280px;
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.35);
     border-radius: 6px;
@@ -929,47 +929,83 @@ html, body {
 }
 
 /* ==========================================================================
-   Floating Map Legend: Color Meanings (Right Upper Corner)
+   Floating Map Legend: Color Meanings (Right Box - Draggable & Minimizable)
    ========================================================================== */
 .map-floating-legend-topright {
     position: absolute;
     top: 12px;
     right: 16px;
-    width: 320px;
-    background: rgba(10, 16, 30, 0.96);
+    width: 250px;
+    background: rgba(10, 16, 30, 0.95);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(56, 189, 248, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.35);
     border-radius: 10px;
-    padding: 12px 14px;
+    padding: 9px 12px;
     z-index: 50;
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 15px rgba(56, 189, 248, 0.15);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
     pointer-events: auto;
+    user-select: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.map-floating-legend-topright.minimized {
+    display: none !important;
 }
 
 .legend-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 6px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
+    cursor: grab;
+    user-select: none;
+}
+
+.legend-header:active {
+    cursor: grabbing;
+}
+
+.btn-legend-minimize {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+
+.btn-legend-minimize:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #EF4444;
+    color: #FFFFFF;
 }
 
 .legend-badge {
     background: rgba(56, 189, 248, 0.15);
     color: var(--accent-cyan);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    font-size: 9.5px;
+    font-size: 8.5px;
     font-weight: 800;
-    padding: 2px 6px;
+    padding: 1px 5px;
     border-radius: 4px;
     letter-spacing: 0.5px;
 }
 
 .legend-title {
-    font-size: 11.5px;
+    font-size: 10px;
     font-weight: 700;
     color: #F1F5F9;
     letter-spacing: 0.5px;
@@ -978,49 +1014,49 @@ html, body {
 .legend-list {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 6px;
 }
 
 .legend-row {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
 }
 
 .legend-indicator {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
+    width: 11px;
+    height: 11px;
+    border-radius: 3px;
     flex-shrink: 0;
     margin-top: 2px;
-    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .legend-indicator.dot-critical {
     background: #EF4444;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
 }
 
 .legend-indicator.dot-high {
     background: #F97316;
-    box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
 }
 
 .legend-indicator.dot-moderate {
     background: #F59E0B;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.45);
 }
 
 .legend-indicator.dot-safe {
     background: #10B981;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
 }
 
 .legend-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .legend-label-row {
@@ -1030,16 +1066,16 @@ html, body {
 }
 
 .legend-label-name {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: #FFFFFF;
 }
 
 .legend-range-pill {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     font-family: var(--font-mono);
-    padding: 1px 6px;
+    padding: 1px 5px;
     border-radius: 4px;
 }
 
@@ -1068,10 +1104,62 @@ html, body {
 }
 
 .legend-desc {
-    font-size: 10.5px;
+    font-size: 9.5px;
     color: #94A3B8;
-    line-height: 1.35;
+    line-height: 1.25;
 }
+
+/* Floating Minimized Draggable Legend Icon */
+.floating-legend-pill {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: rgba(10, 16, 30, 0.94);
+    backdrop-filter: blur(14px);
+    border: 1.5px solid #38BDF8;
+    border-radius: 24px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: grab;
+    z-index: 50;
+    color: #F8FAFC;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75), 0 0 14px rgba(56, 189, 248, 0.4);
+    user-select: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.floating-legend-pill:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+.floating-legend-pill:hover {
+    border-color: #7DD3FC;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85), 0 0 20px rgba(56, 189, 248, 0.6);
+}
+
+.legend-mini-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mini-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-critical-mini { background: #EF4444; box-shadow: 0 0 4px #EF4444; }
+.dot-high-mini { background: #F97316; box-shadow: 0 0 4px #F97316; }
+.dot-moderate-mini { background: #F59E0B; box-shadow: 0 0 4px #F59E0B; }
+.dot-safe-mini { background: #10B981; box-shadow: 0 0 4px #10B981; }
 
 /* Animated Pulsing alert ring for critical cells */
 @keyframes ringPulse {
