@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHA-NDMA RESILIENT-HEX | Disaster Carrying Capacity & Relocation Command (SIH26191)</title>
+    <meta name="description" content="Intelligent Identification of Hazard Based Red Zone Carrying Capacity, Assessment and Relocation Needs for Ministry of Home Affairs / Disaster Management using Uber H3 Hexagonal Spatial Indexing.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==========================================================================
+         TOP COMMAND HEADER
+         ========================================================================== -->
+    <header class="command-header">
+        <div class="header-left-brand">
+            <div class="national-emblem" title="Government of India">🏛️</div>
+            <div class="brand-text-col">
+                <span class="gov-sub-title">Ministry of Home Affairs • National Disaster Management Authority</span>
+                <h1 class="main-system-title">
+                    RESILIENT-HEX COMMAND
+                    <span class="sih-code-tag">SIH26191</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="header-center-status">
+            <div id="header-defcon-badge" class="status-defcon defcon-critical">
+                ● ALERT LEVEL 4: CRITICAL BASIN BREACH
+            </div>
+            <div id="header-military-clock" class="header-clock-military">
+                <span class="clock-ist">IST --:--:--</span> | <span class="clock-utc">UTC --:--:--</span>
+            </div>
+        </div>
+
+        <div class="header-right-actions">
+            <button id="btn-open-pipeline" class="btn btn-secondary" title="View Decision Pipeline Architecture">
+                <span>⚡</span> SIH Workflow Pipeline
+            </button>
+            <button id="btn-open-sitrep" class="btn btn-primary" title="Export Operational Situation Report">
+                <span>📄</span> Export SITREP
+            </button>
+            <button id="btn-audio-toggle" class="btn btn-audio" title="Toggle Sound Feedback">
+                🔊 Sound: ON
+            </button>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         MASTER VIEWPORT (SIDEBAR + MAIN COMMAND THEATER)
+         ========================================================================== -->
+    <div class="command-viewport">
+
+        <!-- Left Tactical Sidebar -->
+        <aside class="command-sidebar">
+            <ul class="sidebar-nav-list">
+                <li class="sidebar-nav-item active" data-page="overview" id="nav-overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Overview</span>
+                    <span class="nav-badge-pill" id="sidebar-red-count">7 RED</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="hazard" id="nav-hazard">
+                    <span class="nav-icon">⚠️</span>
+                    <span class="nav-text">Hazard Assessment</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="capacity" id="nav-capacity">
+                    <span class="nav-icon">⚖️</span>
+                    <span class="nav-text">Carrying Capacity</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="evacuation" id="nav-evacuation">
+                    <span class="nav-icon">🚨</span>
+                    <span class="nav-text">Evacuation</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="relocation" id="nav-relocation">
+                    <span class="nav-icon">🔄</span>
+                    <span class="nav-text">Relocation</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="resources" id="nav-resources">
+                    <span class="nav-icon">🏥</span>
+                    <span class="nav-text">Resources</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="historical" id="nav-historical">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Historical Analysis</span>
+                </li>
+                <li class="sidebar-nav-item" data-page="simulation" id="nav-simulation">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">Simulation</span>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="mha-seal-block">
+                    <div class="mha-seal-icon">🛡️</div>
+                    <div class="mha-seal-text">
+                        <strong>NEOC Decision Support</strong><br>
+                        H3 Spatial Resolution: 7/8<br>
+                        Sector: Brahmaputra Alpha
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center GIS Command Theater -->
+        <main class="command-stage">
+
+            <!-- Top KPI Ribbon Bar -->
+            <div class="kpi-ribbon-bar">
+                <div class="kpi-card kpi-card-danger">
+                    <div class="kpi-label">Population at Risk</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-pop-at-risk" class="kpi-number">182,400</span>
+                        <span class="kpi-sub">Citizens</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-card-danger">
+                    <div class="kpi-label">Critical H3 Cells</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-critical-cells" class="kpi-number">7</span>
+                        <span class="kpi-sub">Red Zones</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-card-warning">
+                    <div class="kpi-label">Evacuation Required</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-evac-required" class="kpi-number">98,200</span>
+                        <span class="kpi-sub">Immediate</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-card-warning">
+                    <div class="kpi-label">Relocation Need</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-reloc-requirement" class="kpi-number">142,600</span>
+                        <span class="kpi-sub">Deficit Pax</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-card-safe">
+                    <div class="kpi-label">Safe Shelter Capacity</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-shelter-capacity" class="kpi-number">185,200</span>
+                        <span class="kpi-sub">High Ground</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-card-accent">
+                    <div class="kpi-label">Active Emergency Fleets</div>
+                    <div class="kpi-value-row">
+                        <span id="kpi-active-resources" class="kpi-number">280</span>
+                        <span class="kpi-sub">Boats/Buses</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Emergency Alert Ticker -->
+            <div class="emergency-alert-ticker">
+                <div class="ticker-tag">FLASH ALERT</div>
+                <div class="ticker-text">
+                    ⚠️ CRITICAL RED ZONE BREACH: Brahmaputra water level +3.8m above danger mark. Pandu Ghat, Uzan Bazar, and Deepor Beel H3 cells have exhausted safe carrying capacity. Mandatory relocation dispatched to Khanapara & Dispur safe ridges.
+                </div>
+            </div>
+
+            <!-- Vector GIS Map Viewport -->
+            <div id="main-map-container" class="map-canvas-container">
+                <!-- SVG Vector GIS Map dynamically injected by gis-map.js -->
+            </div>
+
+            <!-- Floating Map Navigation Tools (Top Right) -->
+            <div class="map-floating-hud-tools">
+                <button id="btn-map-zoom-in" class="map-control-btn" title="Zoom In">+</button>
+                <button id="btn-map-zoom-out" class="map-control-btn" title="Zoom Out">−</button>
+                <button id="btn-map-reset" class="map-control-btn" title="Reset View Center">⌂</button>
+            </div>
+
+            <!-- Floating Map Layer Switcher (Bottom Left) -->
+            <div class="map-layer-panel">
+                <div class="panel-heading">
+                    <span>GIS Tactical Layers</span>
+                    <span class="text-xs text-accent">H3 Res 7</span>
+                </div>
+                <div class="layer-list">
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="h3Grid" checked>
+                        <span>Uber H3 Hexagonal Grid</span>
+                    </label>
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="riverInundation" checked>
+                        <span>River & Inundation Surge</span>
+                    </label>
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="roadNetwork" checked>
+                        <span>Road Status & Blockages</span>
+                    </label>
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="evacuationRoutes" checked>
+                        <span>Evacuation Safe Corridors</span>
+                    </label>
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="resources" checked>
+                        <span>Shelters & Hospital Pins</span>
+                    </label>
+                    <label class="layer-toggle-label">
+                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="relocationArcs" checked>
+                        <span>Relocation Flow Vectors</span>
+                    </label>
+                </div>
+                <select id="select-basemap-mode" class="basemap-dropdown">
+                    <option value="tactical">Basemap: Tactical Dark Matter</option>
+                    <option value="satellite">Basemap: Satellite Radar Hybrid</option>
+                    <option value="elevation">Basemap: Topography Elevation</option>
+                </select>
+            </div>
+
+            <!-- Floating Map Legend (Bottom Right) -->
+            <div class="map-floating-legend">
+                <div class="legend-items-row">
+                    <div class="legend-item">
+                        <div class="legend-color-dot dot-safe"></div>
+                        <span>Safe (0–35)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-dot dot-moderate"></div>
+                        <span>Moderate (36–60)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-dot dot-high"></div>
+                        <span>High (61–80)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-dot dot-critical"></div>
+                        <span>Critical Red (81–100)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible H3 Cell Inspector Drawer (Right Slide-Out) -->
+            <div id="cell-inspector-drawer" class="cell-inspector-drawer">
+                <!-- Dynamically populated when user clicks on an H3 Hexagon or row -->
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 2: HAZARD ASSESSMENT VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-hazard" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Hazard Assessment & Multi-Factor Intelligence</h2>
+                        <p class="view-description">
+                            Multi-criteria spatial hazard evaluation powered by Uber H3 hexagonal indexing. Real-time weighting of rainfall intensity, elevation vulnerability, population density, infrastructure fragility, and road network accessibility.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <label class="text-sm font-semibold text-muted">Filter Hazard Type:</label>
+                        <select id="select-hazard-type" class="sim-select">
+                            <option value="Flood">🌊 Inundation Flood (Active Event)</option>
+                            <option value="Landslide">⛰️ Slope Landslide Hazard</option>
+                            <option value="Cyclone">🌀 Cyclone / Storm Surge</option>
+                            <option value="Earthquake">⚡ Seismic Soil Liquefaction</option>
+                            <option value="Wildfire">🔥 Forest / Wildfire Perimeter</option>
+                        </select>
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="hazard-layout-grid">
+                    <div class="hazard-sliders-box">
+                        <h3 class="font-bold text-white mb-2">Multi-Criteria Decision Analysis (MCDA) Sensitivity Calibration</h3>
+                        <p class="text-xs text-muted">
+                            Adjust dynamic factor weights to recalculate risk scores across all 24 H3 cells in real time according to MHA disaster management standard operating procedures.
+                        </p>
+
+                        <div class="slider-group">
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>🌧️ Rainfall Inundation Impact (24h mm)</span>
+                                    <strong id="label-w-rainfall" class="font-mono text-accent">22%</strong>
+                                </div>
+                                <input type="range" id="slider-w-rainfall" class="tactical-range-slider" min="5" max="50" value="22">
+                            </div>
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>⛰️ Elevation Inundation Vulnerability (MSL m)</span>
+                                    <strong id="label-w-elevation" class="font-mono text-accent">18%</strong>
+                                </div>
+                                <input type="range" id="slider-w-elevation" class="tactical-range-slider" min="5" max="50" value="18">
+                            </div>
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>👥 Population Density Hazard Multiplier</span>
+                                    <strong id="label-w-popdensity" class="font-mono text-accent">18%</strong>
+                                </div>
+                                <input type="range" id="slider-w-popdensity" class="tactical-range-slider" min="5" max="50" value="18">
+                            </div>
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>🏗️ Infrastructure & Settlement Fragility</span>
+                                    <strong id="label-w-infra" class="font-mono text-accent">15%</strong>
+                                </div>
+                                <input type="range" id="slider-w-infra" class="tactical-range-slider" min="5" max="50" value="15">
+                            </div>
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>🚑 Distance to Emergency Medical Services</span>
+                                    <strong id="label-w-services" class="font-mono text-accent">12%</strong>
+                                </div>
+                                <input type="range" id="slider-w-services" class="tactical-range-slider" min="5" max="50" value="12">
+                            </div>
+                            <div class="slider-item">
+                                <div class="slider-label-row">
+                                    <span>🛣️ Road Accessibility & Submergence Vulnerability</span>
+                                    <strong id="label-w-roads" class="font-mono text-accent">15%</strong>
+                                </div>
+                                <input type="range" id="slider-w-roads" class="tactical-range-slider" min="5" max="50" value="15">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hazard-sliders-box">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-white">Contributing Factors Radar</h3>
+                            <span id="hazard-selected-cell-name" class="text-xs text-accent font-mono">Pandu Ghat Floodplain</span>
+                        </div>
+                        <p class="text-xs text-muted mb-4">
+                            Radial profile of vulnerability factors for the currently inspected H3 hexagonal cell.
+                        </p>
+                        <div id="hazard-radar-chart-container" style="width: 100%; height: 280px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 3: CARRYING CAPACITY VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-capacity" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Carrying Capacity & Deficit Analysis</h2>
+                        <p class="view-description">
+                            Core engine for SIH26191. Evaluates local safe carrying capacity against total resident population. Cells with negative capacity buffers (Deficit > 0) are identified as Red Zones where immediate relocation is mandatory.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button id="btn-filter-deficit-only" class="btn btn-secondary">
+                            ⚠️ Filter Breached Deficit Cells Only
+                        </button>
+                        <button id="btn-filter-all-capacity" class="btn btn-outline">
+                            Show All 24 H3 Cells
+                        </button>
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <!-- Comparative Bar Chart -->
+                <div class="historical-chart-box mb-4">
+                    <h3 class="font-bold text-white text-sm mb-1">Population at Risk vs Available Safe Capacity (Top Vulnerable Cells)</h3>
+                    <div id="capacity-bar-chart-container" style="width: 100%; height: 260px;"></div>
+                </div>
+
+                <!-- Full Carrying Capacity Table -->
+                <div class="tactical-table-wrapper">
+                    <table class="tactical-table">
+                        <thead>
+                            <tr>
+                                <th>H3 Hexagonal Cell / Sector</th>
+                                <th>Risk Level</th>
+                                <th class="text-right">Resident Pop</th>
+                                <th class="text-right">Safe Event Capacity</th>
+                                <th class="text-right">Capacity Deficit / Surplus</th>
+                                <th>Relocation Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="capacity-table-body">
+                            <!-- Populated dynamically by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 4: EVACUATION VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-evacuation" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Evacuation Planning & Fleet Dispatch Cockpit</h2>
+                        <p class="view-description">
+                            Prioritized evacuation queues categorized by life-threat urgency (Priority 1 vs Priority 2). Real-time road submergence tracking and safe elevated corridor routing around critical Red Zone cells.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn btn-primary" onclick="alert('🚨 PRIORITY-1 EVACUATION ALARM BROADCAST: All sirens activated in Pandu, Uzan Bazar, and Deepor Beel sectors.');">
+                            📢 Broadcast Emergency Sirens
+                        </button>
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="evac-cards-grid" id="evacuation-priority-list">
+                    <!-- Populated dynamically by app.js -->
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 5: RELOCATION VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-relocation" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Intelligent Safe Relocation Recommendation Engine</h2>
+                        <p class="view-description">
+                            Multi-objective matching algorithm pairing critical carrying-capacity deficit cells with optimal Green Zone safe destinations. Considers convoy travel distance, destination shelter capacity surplus, road accessibility, and trauma hospital proximity.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button id="btn-approve-all-relocations" class="btn btn-primary">
+                            ✓ Approve All Relocation Corridors
+                        </button>
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="tactical-table-wrapper">
+                    <table class="tactical-table">
+                        <thead>
+                            <tr>
+                                <th>Critical Source Cell (Deficit)</th>
+                                <th class="text-right">Evacuees Allocated</th>
+                                <th>Safe Destination Cell (Green Zone)</th>
+                                <th class="text-right">Destination Surplus Buffer</th>
+                                <th>Convoy Dist</th>
+                                <th>Est. Time</th>
+                                <th>Access Corridor</th>
+                                <th>Directive Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="relocation-allocations-table">
+                            <!-- Populated dynamically by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 6: RESOURCES VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-resources" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Emergency Resources, Assets & Facilities Inventory</h2>
+                        <p class="view-description">
+                            Real-time geospatial readiness telemetry for designated shelters, Level-1/2 trauma hospitals, NDRF/SDRF amphibious rescue units, and emergency food/water supply depots across the sector.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="resources-grid-columns">
+                    <!-- Column 1: Shelters -->
+                    <div class="resource-column-box">
+                        <div class="res-col-title">
+                            <span>🏠 Designated Shelters</span>
+                            <span class="badge badge-outline">8 Hubs</span>
+                        </div>
+                        <div id="resources-shelters-list"></div>
+                    </div>
+
+                    <!-- Column 2: Hospitals -->
+                    <div class="resource-column-box">
+                        <div class="res-col-title">
+                            <span>🏥 Hospitals & Trauma Units</span>
+                            <span class="badge badge-outline">7 Facilities</span>
+                        </div>
+                        <div id="resources-hospitals-list"></div>
+                    </div>
+
+                    <!-- Column 3: Emergency Response Teams -->
+                    <div class="resource-column-box">
+                        <div class="res-col-title">
+                            <span>🚤 NDRF, Military & Fleet Assets</span>
+                            <span class="badge badge-outline">8 Units</span>
+                        </div>
+                        <div id="resources-teams-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 7: HISTORICAL ANALYSIS VIEW OVERLAY
+                 ========================================================================== -->
+            <div id="view-historical" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Historical Disaster Intelligence & Recurring Red Zones</h2>
+                        <p class="view-description">
+                            Longitudinal spatial disaster analytics (2018–2024). Identifies recurring high-risk H3 cells with structural carrying-capacity vulnerabilities during catastrophic monsoon events.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="historical-grid-layout">
+                    <div class="historical-chart-box">
+                        <h3 class="font-bold text-white text-sm mb-2">Affected Population Trend Across Historical Events (2018–2024)</h3>
+                        <div id="historical-trend-chart-container" style="width: 100%; height: 240px;"></div>
+                    </div>
+
+                    <div class="historical-chart-box">
+                        <h3 class="font-bold text-white text-sm mb-2">Recurring High-Risk H3 Hotspot Analysis</h3>
+                        <p class="text-xs text-muted mb-4">
+                            Cells along the Brahmaputra northern and southern embankment breach lines consistently breach carrying capacity thresholds when 24h rainfall exceeds 220mm.
+                        </p>
+                        <div class="tactical-table-wrapper">
+                            <table class="tactical-table">
+                                <thead>
+                                    <tr>
+                                        <th>H3 Hotspot Cell</th>
+                                        <th>Breach Frequency</th>
+                                        <th>Avg Deficit</th>
+                                        <th>Recommendation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-semibold text-danger">Pandu Ghat Floodplain</td>
+                                        <td class="font-mono">5 / 5 Events (100%)</td>
+                                        <td class="font-mono text-danger">-24,000</td>
+                                        <td>Permanent High-Ground Resettlement</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-danger">Uzan Bazar Riverfront</td>
+                                        <td class="font-mono">5 / 5 Events (100%)</td>
+                                        <td class="font-mono text-danger">-28,000</td>
+                                        <td>Embankment Sluice Elevation</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-danger">Deepor Beel Eco-Catchment</td>
+                                        <td class="font-mono">5 / 5 Events (100%)</td>
+                                        <td class="font-mono text-danger">-14,500</td>
+                                        <td>Wetland Buffer Zone Designation</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-semibold text-warning">Bharalumukh Urban Basin</td>
+                                        <td class="font-mono">4 / 5 Events (80%)</td>
+                                        <td class="font-mono text-danger">-36,000</td>
+                                        <td>Stormwater Pumping Station Capacity 2x</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-white text-sm mb-3">Historical Disaster Incident Logs</h3>
+                <div id="historical-events-list"></div>
+            </div>
+
+            <!-- ==========================================================================
+                 PAGE 8: SIMULATION VIEW OVERLAY ("SIMULATE DISASTER" WORKFLOW)
+                 ========================================================================== -->
+            <div id="view-simulation" class="dashboard-view-page">
+                <div class="view-page-header">
+                    <div>
+                        <h2 class="view-title">Disaster Simulation Studio ("Simulate Disaster" Workflow)</h2>
+                        <p class="view-description">
+                            Simulate catastrophic flood inundation, extreme cloudbursts, and embankment collapse. Watch how the H3 spatial indexing layer dynamically transforms from safe green zones into critical red hazard zones, instantly recalculating population at risk, carrying capacity deficit, and relocation requirements.
+                        </p>
+                    </div>
+                    <div class="view-header-actions">
+                        <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
+                    </div>
+                </div>
+
+                <div class="sim-controls-card">
+                    <div class="sim-params-grid">
+                        <div class="sim-field">
+                            <label class="sim-label">Disaster Hazard Type</label>
+                            <select id="sim-input-type" class="sim-select">
+                                <option>Extreme Inundation & Dam Discharge (Default)</option>
+                                <option>Severe Cloudburst & Urban Deluge</option>
+                                <option>Super Cyclone Storm Surge</option>
+                                <option>Flash Flood & Slope Landslide Surge</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label class="sim-label">Severity Level</label>
+                            <select id="sim-input-severity" class="sim-select">
+                                <option value="2">Level 2: Moderate Flood Advisory</option>
+                                <option value="3">Level 3: Severe Inundation Alert</option>
+                                <option value="4" selected>Level 4: Catastrophic Basin Breach</option>
+                                <option value="5">Level 5: Maximum Probable Catastrophe</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label class="sim-label">Rainfall Intensity (24h)</label>
+                            <input type="number" id="sim-input-rainfall" class="sim-input font-mono" value="340" min="50" max="600">
+                        </div>
+                        <div class="sim-field">
+                            <label class="sim-label">Water Level Rise (Meters)</label>
+                            <input type="number" id="sim-input-water" class="sim-input font-mono" value="3.8" step="0.1" min="0.5" max="8.0">
+                        </div>
+                    </div>
+
+                    <!-- Time Scrubber -->
+                    <div class="sim-scrubber-row">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-muted uppercase">Inundation Timeline Scrubber:</span>
+                            <div class="sim-step-buttons">
+                                <button class="simulation-step-btn" data-hour="0">0h: Baseline Normal</button>
+                                <button class="simulation-step-btn" data-hour="6">6h: Cloudburst Inflow</button>
+                                <button class="simulation-step-btn" data-hour="12">12h: Embankment Overspill</button>
+                                <button class="simulation-step-btn active" data-hour="24">24h: Peak Red Zone Surge</button>
+                            </div>
+                        </div>
+                        <div id="sim-current-hour-display" class="font-mono text-accent font-bold text-sm">
+                            Hour 24 / 24
+                        </div>
+                    </div>
+
+                    <!-- Action Execution Buttons -->
+                    <div class="sim-action-buttons">
+                        <button id="btn-run-simulation" class="btn btn-primary">
+                            ▶ Run Simulation
+                        </button>
+                        <button id="btn-reset-simulation" class="btn btn-secondary">
+                            ↺ Reset to Baseline Safe State
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Simulation Delta Impact Summary Card -->
+                <div class="historical-chart-box">
+                    <h3 class="font-bold text-white text-sm mb-3">Simulation Projected Impact & Capacity Delta</h3>
+                    <div class="tactical-table-wrapper">
+                        <table class="tactical-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric Indicator</th>
+                                    <th>Baseline State (0h)</th>
+                                    <th>Peak Inundation (24h)</th>
+                                    <th>Operational Delta</th>
+                                    <th>Command Directive</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-semibold">Population at Risk</td>
+                                    <td class="font-mono text-muted">14,200</td>
+                                    <td class="font-mono font-bold text-danger">182,400</td>
+                                    <td class="font-mono text-danger">+168,200 Surge</td>
+                                    <td>Issue District Red Alert</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold">Critical Red H3 Cells</td>
+                                    <td class="font-mono text-muted">0 Cells</td>
+                                    <td class="font-mono font-bold text-danger">7 Cells Breached</td>
+                                    <td class="font-mono text-danger">+7 Red Zones</td>
+                                    <td>Enforce Mandatory Evacuation</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold">Carrying Capacity Deficit</td>
+                                    <td class="font-mono text-success">0 (Surplus Safe)</td>
+                                    <td class="font-mono font-bold text-danger">142,600 Pax Deficit</td>
+                                    <td class="font-mono text-danger">Complete Local Breach</td>
+                                    <td>Intelligent Relocation to Khanapara/Dispur</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-semibold">Blocked / Submerged Roads</td>
+                                    <td class="font-mono text-success">0 Roads Open</td>
+                                    <td class="font-mono font-bold text-danger">3 Major Corridors Cut</td>
+                                    <td class="font-mono text-danger">MG Rd & Pandu Spur Lost</td>
+                                    <td>Reroute Fleets to Elevated NH-27 Bypass</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: SITUATION REPORT (SITREP) GENERATOR
+         ========================================================================== -->
+    <div id="sitrep-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-title">Official MHA / NDMA Operational Situation Report</span>
+                <button class="btn-close-inspector" id="btn-close-sitrep-modal">✕</button>
+            </div>
+            <div id="sitrep-modal-content" class="modal-content-body">
+                <!-- Injected dynamically by app.js -->
+            </div>
+            <div class="modal-footer">
+                <button id="btn-print-sitrep" class="btn btn-primary">🖨️ Print / Save PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL: SIH26191 DECISION SUPPORT WORKFLOW ARCHITECTURE
+         ========================================================================== -->
+    <div id="workflow-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <span class="modal-title">SIH26191 Intelligent Decision Pipeline Architecture</span>
+                <button class="btn-close-inspector" id="btn-close-workflow-modal">✕</button>
+            </div>
+            <div class="modal-content-body">
+                <p class="mb-4 text-muted">
+                    This platform implements the complete end-to-end intelligent disaster management workflow mandated by SIH26191 for the Ministry of Home Affairs / National Disaster Management Authority:
+                </p>
+
+                <div class="workflow-pipeline-visual">
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">1</div>
+                        <div>
+                            <div class="step-node-title">Multi-Source Disaster Data Ingestion</div>
+                            <div class="step-node-desc">CWC river gauges, IMD Doppler rainfall telemetry, ISRO Bhuvan DEM elevation, and Census 2021 demographic grids.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">2</div>
+                        <div>
+                            <div class="step-node-title">Uber H3 Hexagonal Spatial Indexing</div>
+                            <div class="step-node-desc">Uniform discrete global grid representation (Res 7/8). Eliminates projection edge distortion and guarantees equidistant 6-neighbor spatial calculations.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">3</div>
+                        <div>
+                            <div class="step-node-title">Hazard & Multi-Factor Risk Assessment</div>
+                            <div class="step-node-desc">Multi-criteria decision analysis (MCDA) combining historical disaster frequency, elevation vulnerability, population density, and infrastructure fragility.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">4</div>
+                        <div>
+                            <div class="step-node-title">Population & Carrying Capacity Assessment</div>
+                            <div class="step-node-desc">Evaluates safe local structural holding capacity during extreme events. Computes carrying capacity deficit: Deficit = PopAtRisk - SafeCapacity.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">5</div>
+                        <div>
+                            <div class="step-node-title">Evacuation Route & Priority Planning</div>
+                            <div class="step-node-desc">Identifies vulnerable demographic pockets (infants, elderly, PwD). Dynamically routes around high-risk H3 cells and submerged road corridors.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">6</div>
+                        <div>
+                            <div class="step-node-title">Intelligent Safe Relocation Matching Engine</div>
+                            <div class="step-node-desc">Multi-objective matching pairing critical Red Zone deficit cells with high-ground Green Zone safe cells based on capacity surplus, travel time, and medical proximity.</div>
+                        </div>
+                    </div>
+                    <div class="pipeline-step-node">
+                        <div class="step-node-num">7</div>
+                        <div>
+                            <div class="step-node-title">National Emergency Operations Command Center Dashboard</div>
+                            <div class="step-node-desc">Real-time situational awareness, fleet dispatch orders, scenario simulation, and official automated SITREP generation for decision-makers.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-dismiss-workflow-modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/h3-engine.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="js/gis-map.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize main application
+            window.APP.init();
+
+            // Setup SIH Workflow Modal triggers
+            const modal = document.getElementById('workflow-modal');
+            const btnOpen = document.getElementById('btn-open-pipeline');
+            const btnClose = document.getElementById('btn-close-workflow-modal');
+            const btnDismiss = document.getElementById('btn-dismiss-workflow-modal');
+
+            if (btnOpen) btnOpen.onclick = () => { modal.style.display = 'flex'; };
+            if (btnClose) btnClose.onclick = () => { modal.style.display = 'none'; };
+            if (btnDismiss) btnDismiss.onclick = () => { modal.style.display = 'none'; };
+
+            // Setup SITREP Header Button Trigger
+            const btnSitrep = document.getElementById('btn-open-sitrep');
+            if (btnSitrep) {
+                btnSitrep.onclick = () => {
+                    const firstCrit = window.DISASTER_DATA.h3Cells.find(c => c.riskLevel === 'critical');
+                    window.APP.openSitRepModal(firstCrit);
+                };
+            }
+        });
+    </script>
+</body>
+</html>
