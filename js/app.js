@@ -85,9 +85,13 @@ window.APP = (function() {
                 const page = item.getAttribute('data-page');
                 if (page) {
                     navigateTo(page);
+                    closeNavDropdowns();
                 }
             });
         });
+
+        // Setup Dropdown Menus for Header & Map Stage
+        setupNavDropdowns();
 
         // Setup Back to Map Buttons
         document.querySelectorAll('.btn-close-view').forEach(btn => {
@@ -97,9 +101,71 @@ window.APP = (function() {
             });
         });
 
-        // Initialize floating, draggable & minimizable navigation controller
-        setupFloatingSidebar();
+        // Initialize floating legend controller
         setupFloatingLegend();
+    }
+
+    /**
+     * Close all active navigation dropdowns
+     */
+    function closeNavDropdowns() {
+        const headerMenu = document.getElementById('header-nav-menu');
+        const headerBtn = document.getElementById('btn-header-nav');
+        const mapMenu = document.getElementById('map-nav-menu');
+        const mapBtn = document.getElementById('btn-map-nav');
+
+        if (headerMenu) headerMenu.style.display = 'none';
+        if (headerBtn) headerBtn.setAttribute('aria-expanded', 'false');
+        if (mapMenu) mapMenu.style.display = 'none';
+        if (mapBtn) mapBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    /**
+     * Initialize Header & Map Navigation Dropdown Triggers
+     */
+    function setupNavDropdowns() {
+        const headerBtn = document.getElementById('btn-header-nav');
+        const headerMenu = document.getElementById('header-nav-menu');
+        const mapBtn = document.getElementById('btn-map-nav');
+        const mapMenu = document.getElementById('map-nav-menu');
+
+        if (headerBtn && headerMenu) {
+            headerBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isCurrentlyOpen = headerMenu.style.display === 'flex' || headerMenu.style.display === 'block';
+                closeNavDropdowns();
+                if (!isCurrentlyOpen) {
+                    headerMenu.style.display = 'flex';
+                    headerBtn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        if (mapBtn && mapMenu) {
+            mapBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isCurrentlyOpen = mapMenu.style.display === 'flex' || mapMenu.style.display === 'block';
+                closeNavDropdowns();
+                if (!isCurrentlyOpen) {
+                    mapMenu.style.display = 'flex';
+                    mapBtn.setAttribute('aria-expanded', 'true');
+                }
+            });
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.header-nav-dropdown-container') && !e.target.closest('.map-nav-dropdown-container')) {
+                closeNavDropdowns();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeNavDropdowns();
+            }
+        });
     }
 
     /**
@@ -402,6 +468,44 @@ window.APP = (function() {
      */
     function navigateTo(pageId) {
         currentActivePage = pageId;
+
+        // Metadata mapping for dropdown labels, icons, and status badges
+        const PAGE_META = {
+            overview: { icon: '📊', label: 'Overview', badge: '7 RED' },
+            hazard: { icon: '⚠️', label: 'Hazard Assessment' },
+            capacity: { icon: '⚖️', label: 'Carrying Capacity' },
+            evacuation: { icon: '🚨', label: 'Evacuation' },
+            relocation: { icon: '🔄', label: 'Relocation' },
+            resources: { icon: '🏥', label: 'Resources' },
+            historical: { icon: '📈', label: 'Historical Analysis' },
+            simulation: { icon: '⚡', label: 'Simulation' }
+        };
+
+        const meta = PAGE_META[pageId] || { icon: '🧭', label: pageId };
+
+        // Update Header Dropdown Trigger
+        const headerIcon = document.getElementById('header-nav-icon');
+        const headerLabel = document.getElementById('header-nav-label');
+        const headerBadge = document.getElementById('header-nav-badge');
+        if (headerIcon) headerIcon.textContent = meta.icon;
+        if (headerLabel) headerLabel.textContent = meta.label;
+        if (headerBadge) {
+            headerBadge.style.display = meta.badge ? 'inline-block' : 'none';
+            if (meta.badge) headerBadge.textContent = meta.badge;
+        }
+
+        // Update Map Stage Dropdown Trigger
+        const mapIcon = document.getElementById('map-nav-icon');
+        const mapLabel = document.getElementById('map-nav-label');
+        const mapBadge = document.getElementById('map-nav-badge');
+        if (mapIcon) mapIcon.textContent = meta.icon;
+        if (mapLabel) mapLabel.textContent = meta.label === 'Overview' ? 'Tactical Nav: Overview' : meta.label;
+        if (mapBadge) {
+            mapBadge.style.display = meta.badge ? 'inline-block' : 'none';
+            if (meta.badge) mapBadge.textContent = meta.badge;
+        }
+
+        closeNavDropdowns();
 
         // Update active nav item
         document.querySelectorAll('.sidebar-nav-item').forEach(item => {

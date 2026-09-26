@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHA-NDMA RESILIENT-HEX | Sikkim Teesta GLOF Carrying Capacity & Relocation Command (SIH26191)</title>
-    <meta name="description" content="Intelligent Identification of Hazard Based Red Zone Carrying Capacity, Assessment and Relocation Needs for Ministry of Home Affairs / Disaster Management using Uber H3 Hexagonal Spatial Indexing over Sikkim Teesta Basin.">
+    <title>PRISM — Predictive Risk Intelligence &amp; Spatial Management (SIH26191)</title>
+    <meta name="description" content="PRISM: Predictive Risk Intelligence &amp; Spatial Management. Red Zone Carrying Capacity, Hazard Assessment and Relocation Command using Uber H3 Hexagonal Spatial Indexing over Sikkim Teesta Basin (SIH26191).">
     <!-- Leaflet Real Satellite Map Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="css/style.css">
@@ -16,13 +16,56 @@
          ========================================================================== -->
     <header class="command-header">
         <div class="header-left-brand">
-            <div class="national-emblem" title="Government of India">🏛️</div>
-            <div class="brand-text-col">
-                <span class="gov-sub-title">Ministry of Home Affairs • National Disaster Management Authority</span>
-                <h1 class="main-system-title">
-                    RESILIENT-HEX COMMAND
-                    <span class="sih-code-tag">SIH26191</span>
-                </h1>
+            <h1 class="main-system-title">
+                <span class="brand-prism-badge">PRISM</span>
+                <span class="brand-prism-divider">—</span>
+                <span class="brand-prism-tagline">Predictive Risk Intelligence &amp; Spatial Management</span>
+                <span class="sih-code-tag">SIH26191</span>
+            </h1>
+        </div>
+
+        <!-- Tactical Navigation Dropdown (Header Bar) -->
+        <div class="header-nav-dropdown-container">
+            <button id="btn-header-nav" class="nav-dropdown-trigger header-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Switch Tactical View">
+                <span class="nav-dropdown-icon" id="header-nav-icon">📊</span>
+                <span class="nav-dropdown-label" id="header-nav-label">Overview</span>
+                <span class="nav-badge-pill" id="header-nav-badge">7 RED</span>
+                <span class="nav-dropdown-arrow">▼</span>
+            </button>
+            <div id="header-nav-menu" class="nav-dropdown-menu header-dropdown-menu" style="display: none;">
+                <div class="sidebar-nav-item active" data-page="overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Overview</span>
+                    <span class="nav-badge-pill">7 RED</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="hazard">
+                    <span class="nav-icon">⚠️</span>
+                    <span class="nav-text">Hazard Assessment</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="capacity">
+                    <span class="nav-icon">⚖️</span>
+                    <span class="nav-text">Carrying Capacity</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="evacuation">
+                    <span class="nav-icon">🚨</span>
+                    <span class="nav-text">Evacuation</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="relocation">
+                    <span class="nav-icon">🔄</span>
+                    <span class="nav-text">Relocation</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="resources">
+                    <span class="nav-icon">🏥</span>
+                    <span class="nav-text">Resources</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="historical">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Historical Analysis</span>
+                </div>
+                <div class="sidebar-nav-item" data-page="simulation">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">Simulation</span>
+                </div>
             </div>
         </div>
 
@@ -50,16 +93,18 @@
          ========================================================================== -->
     <div class="command-viewport">
 
-        <!-- Left Tactical Sidebar (Compact Floating Draggable Panel) -->
-        <aside class="command-sidebar" id="command-sidebar">
-            <div class="sidebar-drag-header" id="sidebar-drag-header" title="Drag to move navigation anywhere on map">
-                <div class="drag-header-left">
-                    <span class="drag-grip">⠿</span>
-                    <span class="sidebar-drag-title">TACTICAL NAV</span>
+        <!-- Floating Tactical Navigation Dropdown (Top-Left of Map Stage) -->
+        <div class="map-nav-dropdown-container" id="map-nav-dropdown-container">
+            <button id="btn-map-nav" class="nav-dropdown-trigger map-nav-trigger" aria-haspopup="true" aria-expanded="false" title="Click to Switch Tactical View">
+                <span class="nav-dropdown-icon" id="map-nav-icon">📊</span>
+                <span class="nav-dropdown-label" id="map-nav-label">Tactical Nav: Overview</span>
+                <span class="nav-badge-pill" id="map-nav-badge">7 RED</span>
+                <span class="nav-dropdown-arrow">▼</span>
+            </button>
+            <div id="map-nav-menu" class="nav-dropdown-menu map-dropdown-menu" style="display: none;">
+                <div class="nav-dropdown-header">
+                    <span>🧭 TACTICAL NAVIGATION</span>
                 </div>
-                <button class="btn-sidebar-minimize" id="btn-sidebar-minimize" title="Minimize to Floating Icon">−</button>
-            </div>
-            <ul class="sidebar-nav-list">
                 <li class="sidebar-nav-item active" data-page="overview" id="nav-overview">
                     <span class="nav-icon">📊</span>
                     <span class="nav-text">Overview</span>
@@ -93,25 +138,7 @@
                     <span class="nav-icon">⚡</span>
                     <span class="nav-text">Simulation</span>
                 </li>
-            </ul>
-
-            <div class="sidebar-footer">
-                <div class="mha-seal-block">
-                    <div class="mha-seal-icon">🛡️</div>
-                    <div class="mha-seal-text">
-                        <strong>NEOC Decision Support</strong><br>
-                        H3 Spatial Res: 7/8 | Sikkim
-                    </div>
-                </div>
             </div>
-        </aside>
-
-        <!-- Floating Minimized Draggable Icon (Visible when minimized, draggable anywhere) -->
-        <div class="floating-nav-pill" id="floating-nav-pill" style="display: none;" title="Drag anywhere or click to expand Navigation">
-            <span class="floating-pill-grip">⠿</span>
-            <span class="floating-pill-icon">🧭</span>
-            <span class="floating-pill-label">NAV MENU</span>
-            <span class="floating-pill-badge" id="floating-pill-badge">7 RED</span>
         </div>
 
         <!-- Center GIS Command Theater -->
@@ -169,7 +196,7 @@
                 <div class="emergency-alert-ticker">
                     <div class="ticker-tag">FLASH ALERT</div>
                     <div class="ticker-text">
-                        ⚠️ SIKKIM TEESTA GLOF ALERT: Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. Mandatory relocation dispatched to Gangtok &amp; Pakyong safe high-ground ridges.
+                        <strong style="color: #FDE047;">⚠️ SIKKIM TEESTA GLOF ALERT:</strong> Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. <span style="color: #FCA5A5; font-weight: 700;">Mandatory relocation dispatched to Gangtok &amp; Pakyong safe high-ground ridges.</span>
                     </div>
                 </div>
             </div>

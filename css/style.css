@@ -47,6 +47,7 @@
 html, body {
     width: 100%;
     height: 100%;
+    height: 100dvh;
     overflow: hidden;
     background-color: var(--bg-base);
     color: var(--color-text-main);
@@ -86,52 +87,63 @@ html, body {
     backdrop-filter: blur(10px);
     z-index: 100;
     position: relative;
+    gap: 16px;
 }
 
 .header-left-brand {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
-.national-emblem {
-    font-size: 26px;
-    line-height: 1;
-    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+.brand-prism-badge {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.45));
+    display: inline-block;
 }
 
-.brand-text-col {
-    display: flex;
-    flex-direction: column;
+.brand-prism-divider {
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 300;
+    margin: 0 4px;
 }
 
-.gov-sub-title {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    color: #94A3B8;
-    text-transform: uppercase;
+.brand-prism-tagline {
+    font-size: 12.5px;
     font-weight: 600;
+    color: #E2E8F0;
+    letter-spacing: 0.4px;
 }
 
 .main-system-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: #FFFFFF;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    white-space: nowrap;
 }
 
 .sih-code-tag {
     font-size: 10px;
     background: rgba(56, 189, 248, 0.18);
     color: var(--accent-cyan);
-    border: 1px solid rgba(56, 189, 248, 0.4);
+    border: 1px solid rgba(56, 189, 248, 0.45);
     padding: 2px 7px;
     border-radius: 4px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    margin-left: 6px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .header-center-status {
@@ -261,93 +273,111 @@ html, body {
 /* Master Command Layout: Full-Screen Viewport */
 .command-viewport {
     height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
     width: 100%;
     position: relative;
     overflow: hidden;
 }
 
-/* Left Tactical Sidebar (Compact Floating Draggable Panel) */
-.command-sidebar {
+/* ==========================================================================
+   Tactical Navigation Dropdown Menus (Header & Map Stage)
+   ========================================================================== */
+.header-nav-dropdown-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 6px;
+    z-index: 105;
+}
+
+.map-nav-dropdown-container {
     position: absolute;
     top: 12px;
     left: 16px;
-    width: 205px;
-    max-height: calc(100vh - var(--header-height) - 30px);
-    background: rgba(10, 16, 30, 0.95);
-    backdrop-filter: blur(18px);
-    border: 1px solid rgba(56, 189, 248, 0.35);
-    border-radius: 10px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 16px rgba(56, 189, 248, 0.15);
     z-index: 45;
+}
+
+.nav-dropdown-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 36px;
+    color: #F1F5F9;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 10px rgba(56, 189, 248, 0.15);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown-trigger[aria-expanded="true"] {
+    background: rgba(30, 41, 59, 0.98);
+    border-color: var(--accent-cyan);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75), 0 0 16px rgba(56, 189, 248, 0.35);
+    transform: translateY(-1px);
+}
+
+.nav-dropdown-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.nav-dropdown-label {
+    letter-spacing: 0.3px;
+}
+
+.nav-dropdown-arrow {
+    font-size: 10px;
+    color: var(--accent-cyan);
+    transition: transform 0.2s ease;
+    margin-left: 2px;
+}
+
+.nav-dropdown-trigger[aria-expanded="true"] .nav-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menu Popup Panel */
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 220px;
+    background: rgba(10, 16, 30, 0.97);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), 0 0 20px rgba(56, 189, 248, 0.2);
+    padding: 6px;
+    z-index: 200;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    user-select: none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    gap: 3px;
+    animation: dropdownSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.command-sidebar.minimized {
-    display: none !important;
+@keyframes dropdownSlideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* Drag Header on the Sidebar */
-.sidebar-drag-header {
-    background: rgba(15, 23, 42, 0.9);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 7px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: grab;
-    user-select: none;
-}
-
-.sidebar-drag-header:active {
-    cursor: grabbing;
-}
-
-.drag-header-left {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.drag-grip {
-    color: var(--accent-cyan);
-    font-size: 13px;
-    cursor: grab;
-    line-height: 1;
-}
-
-.sidebar-drag-title {
-    font-size: 10px;
+.nav-dropdown-header {
+    padding: 6px 8px 4px 8px;
+    font-size: 9.5px;
     font-weight: 700;
-    letter-spacing: 0.8px;
-    color: #94A3B8;
+    letter-spacing: 1px;
+    color: #64748B;
     text-transform: uppercase;
-}
-
-.btn-sidebar-minimize {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #CBD5E1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    transition: all 0.15s ease;
-}
-
-.btn-sidebar-minimize:hover {
-    background: rgba(239, 68, 68, 0.25);
-    border-color: #EF4444;
-    color: #FFFFFF;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 2px;
 }
 
 /* Compact Nav Items */
@@ -527,7 +557,7 @@ html, body {
 .top-dashboard-cluster {
     position: absolute;
     top: 12px;
-    left: 235px;
+    left: 210px;
     right: 280px;
     display: flex;
     flex-direction: column;
@@ -547,7 +577,7 @@ html, body {
 
 .kpi-card {
     pointer-events: auto;
-    background: rgba(14, 21, 37, 0.88);
+    background: rgba(14, 21, 37, 0.92);
     backdrop-filter: blur(12px);
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
@@ -597,35 +627,46 @@ html, body {
 .emergency-alert-ticker {
     width: 100%;
     pointer-events: auto;
-    background: rgba(239, 68, 68, 0.18);
-    border: 1px solid rgba(239, 68, 68, 0.4);
+    background: rgba(15, 23, 42, 0.98);
+    border: 1.5px solid #EF4444;
     border-radius: 6px;
-    padding: 6px 14px;
+    padding: 7px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.85), 0 0 14px rgba(239, 68, 68, 0.4);
 }
 
 .ticker-tag {
-    background: var(--risk-critical);
+    background: #DC2626;
     color: #FFFFFF;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 8px;
     border-radius: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     flex-shrink: 0;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.7);
+    animation: flashAlertPulse 2s infinite ease-in-out;
+}
+
+@keyframes flashAlertPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(220, 38, 38, 0.7); }
+    50% { transform: scale(1.03); box-shadow: 0 0 18px rgba(239, 68, 68, 1); }
 }
 
 .ticker-text {
-    font-size: 11.5px;
-    color: #FECACA;
+    font-size: 12px;
+    font-weight: 600;
+    color: #FFFFFF !important;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+    letter-spacing: 0.25px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    line-height: 1.4;
 }
 
 /* ==========================================================================
@@ -862,59 +903,61 @@ html, body {
 /* Map Floating HUD Tools (Bottom-Right) */
 .map-floating-hud-tools {
     position: absolute;
-    bottom: 24px;
-    right: 20px;
+    bottom: max(14px, calc(10px + env(safe-area-inset-bottom, 0px)));
+    right: max(14px, calc(10px + env(safe-area-inset-right, 0px)));
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    z-index: 30;
+    gap: 6px;
+    z-index: 35;
 }
 
 .map-control-btn {
     width: 36px;
     height: 36px;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.94);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     color: #CBD5E1;
-    font-size: 16px;
+    font-size: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .map-control-btn:hover {
-    background: rgba(30, 41, 59, 0.95);
+    background: rgba(30, 41, 59, 0.98);
     color: var(--accent-cyan);
     border-color: var(--accent-cyan);
     transform: scale(1.05);
 }
 
-/* Floating Layer Switcher Panel (Bottom-Left) */
+/* Floating Layer Switcher Panel (Bottom-Left: Tactical Basemap) */
 .map-layer-panel {
     position: absolute;
-    bottom: 24px;
-    left: 20px;
-    background: rgba(14, 21, 37, 0.92);
-    backdrop-filter: blur(12px);
+    bottom: max(14px, calc(10px + env(safe-area-inset-bottom, 0px)));
+    left: max(14px, calc(10px + env(safe-area-inset-left, 0px)));
+    background: rgba(14, 21, 37, 0.95);
+    backdrop-filter: blur(14px);
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    padding: 10px 14px;
-    z-index: 30;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    min-width: 240px;
+    padding: 8px 12px;
+    z-index: 35;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+    min-width: 210px;
+    max-width: calc(100vw - 120px);
 }
 
 .panel-heading {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
     color: #94A3B8;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -922,12 +965,12 @@ html, body {
 
 .basemap-dropdown {
     width: 100%;
-    margin-top: 4px;
-    background: rgba(2, 6, 23, 0.8);
+    margin-top: 2px;
+    background: rgba(2, 6, 23, 0.9);
     border: 1px solid var(--border-subtle);
     color: #E2E8F0;
     font-size: 11px;
-    padding: 6px 8px;
+    padding: 5px 8px;
     border-radius: 4px;
     outline: none;
     cursor: pointer;
@@ -2141,6 +2184,129 @@ html, body {
 .step-node-desc {
     font-size: 11.5px;
     color: #94A3B8;
+}
+
+/* ==========================================================================
+   Responsive Adaptation for Phone Desktop Mode, Tablets & Narrow Viewports
+   ========================================================================== */
+@media (max-height: 720px), (max-width: 960px) {
+    /* Compress HUD tools into 2 columns so Zoom Out & all buttons never go out of bounds */
+    .map-floating-hud-tools {
+        bottom: max(10px, env(safe-area-inset-bottom, 8px));
+        right: max(10px, env(safe-area-inset-right, 8px));
+        display: grid;
+        grid-template-columns: repeat(2, 32px);
+        gap: 4px;
+        z-index: 40;
+    }
+
+    .map-control-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+    }
+
+    /* Keep tactical basemap switcher safely inside viewport */
+    .map-layer-panel {
+        bottom: max(10px, env(safe-area-inset-bottom, 8px));
+        left: max(10px, env(safe-area-inset-left, 8px));
+        padding: 6px 10px;
+        min-width: 170px;
+        max-width: calc(100vw - 90px);
+        z-index: 40;
+    }
+
+    .panel-heading {
+        font-size: 9.5px;
+        margin-bottom: 2px;
+    }
+
+    .basemap-dropdown {
+        font-size: 10px;
+        padding: 4px 6px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .top-dashboard-cluster {
+        left: 16px;
+        right: 16px;
+        top: 56px;
+    }
+
+    .kpi-ribbon-bar {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .kpi-card {
+        padding: 6px 10px;
+    }
+
+    .kpi-number {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .command-header {
+        padding: 0 10px;
+        height: 56px;
+    }
+
+    .brand-prism-tagline,
+    .brand-prism-divider {
+        display: none;
+    }
+
+    .brand-prism-badge {
+        font-size: 17px;
+    }
+
+    .header-center-status {
+        display: none;
+    }
+
+    .top-dashboard-cluster {
+        left: 8px;
+        right: 8px;
+        top: 50px;
+    }
+
+    .kpi-ribbon-bar {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+    }
+
+    .kpi-card {
+        padding: 4px 6px;
+    }
+
+    .kpi-label {
+        font-size: 8.5px;
+    }
+
+    .kpi-number {
+        font-size: 14px;
+    }
+
+    .kpi-sub {
+        display: none;
+    }
+
+    .emergency-alert-ticker {
+        padding: 5px 8px;
+        gap: 8px;
+    }
+
+    .ticker-tag {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+
+    .ticker-text {
+        font-size: 10.5px;
+    }
 }
 
 /* Print Optimization for SITREP */
