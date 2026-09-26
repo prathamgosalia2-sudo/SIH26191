@@ -236,10 +236,11 @@ window.H3_ENGINE = (function() {
         const DELTA_LNG = Math.sqrt(3) * R_LNG; // Horizontal step between columns = 0.04193
         const ODD_ROW_OFFSET = 0.5 * DELTA_LNG; // 0.02096
 
-        const START_LAT = 27.56;
-        const START_LNG = 88.38;
-        const ROWS = 12;
-        const COLS = 10;
+        // Expanded by 2 outer concentric layers in all directions (+2 North, +2 South, +2 West, +2 East)
+        const START_LAT = +(27.56 + 2 * DELTA_LAT).toFixed(5);
+        const START_LNG = +(88.38 - 2 * DELTA_LNG).toFixed(5);
+        const ROWS = 16; // 12 + 4
+        const COLS = 14; // 10 + 4
 
         // Teesta River flood surge spine coordinates
         const teestaSpine = [

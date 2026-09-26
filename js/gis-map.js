@@ -10,9 +10,9 @@ window.GIS_MAP = (function() {
     let selectedCellId = null;
     let activePage = 'overview';
 
-    // Sikkim Teesta Valley center and default zoom
-    const SIKKIM_CENTER = [27.38, 88.58];
-    const DEFAULT_ZOOM = 11;
+    // Sikkim Teesta Valley center and default zoom (calibrated for 16x14 expanded hexagonal mesh)
+    const SIKKIM_CENTER = [27.38, 88.56];
+    const DEFAULT_ZOOM = 10.5;
 
     // Tile Layers
     let tileLayers = {};
@@ -69,6 +69,8 @@ window.GIS_MAP = (function() {
             zoom: DEFAULT_ZOOM,
             minZoom: 8,
             maxZoom: 18,
+            zoomSnap: 0.5,
+            zoomDelta: 0.5,
             zoomControl: false, // We use custom command-center HUD zoom controls
             attributionControl: true
         });
