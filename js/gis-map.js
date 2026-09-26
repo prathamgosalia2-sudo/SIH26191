@@ -100,19 +100,20 @@ window.GIS_MAP = (function() {
         // Add default basemap
         tileLayers[currentBasemap].addTo(map);
 
-        // Add subtle road labels overlay on satellite
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            opacity: 0.15,
-            zIndex: 2
-        }).addTo(map);
-
-        // Initialize Layer Groups
+        // Initialize Layer Groups (Only Hexagon Layer is active)
         riverSurgeGroup = L.layerGroup().addTo(map);
         roadLayerGroup = L.layerGroup().addTo(map);
         hexLayerGroup = L.layerGroup().addTo(map);
         evacLayerGroup = L.layerGroup().addTo(map);
         relocLayerGroup = L.layerGroup().addTo(map);
         resourceLayerGroup = L.layerGroup().addTo(map);
+
+        // Map click handler: Clicking outside any hexagon automatically closes the inspector box
+        map.on('click', () => {
+            if (window.APP && typeof window.APP.closeCellInspector === 'function') {
+                window.APP.closeCellInspector();
+            }
+        });
 
         // Render GIS layers
         render();
@@ -211,28 +212,28 @@ window.GIS_MAP = (function() {
     }
 
     /**
-     * Main Render Function: Clears and redraws all feature layers on Leaflet
+     * Clear cell selection
+     */
+    function clearSelection() {
+        selectedCellId = null;
+        render();
+    }
+
+    /**
+     * Main Render Function: Clears all clutter and renders ONLY Uber H3 Hexagons
      */
     function render() {
         if (!map) return;
 
-        // 1. Render Teesta River Path & Surge Inundation
-        renderRiverSurge();
+        // Clear any auxiliary layers so only hexagons are visible
+        if (riverSurgeGroup) riverSurgeGroup.clearLayers();
+        if (roadLayerGroup) roadLayerGroup.clearLayers();
+        if (evacLayerGroup) evacLayerGroup.clearLayers();
+        if (relocLayerGroup) relocLayerGroup.clearLayers();
+        if (resourceLayerGroup) resourceLayerGroup.clearLayers();
 
-        // 2. Render Road Network
-        renderRoads();
-
-        // 3. Render Uber H3 Hexagonal Grid
+        // Render ONLY Uber H3 Hexagonal Grid as requested
         renderH3Hexagons();
-
-        // 4. Render Evacuation Routes
-        renderEvacuationRoutes();
-
-        // 5. Render Relocation Flow Vectors
-        renderRelocationFlow();
-
-        // 6. Render Shelters and Hospitals
-        renderResources();
     }
 
     /**
@@ -390,10 +391,12 @@ window.GIS_MAP = (function() {
                 className: `h3-hex-${classification.level}`
             }).addTo(hexLayerGroup);
 
-            // Click listener
-            poly.on('click', () => {
+            // Click listener: stops propagation so clicking a hexagon does not trigger map outside-click
+            poly.on('click', (e) => {
+                if (e) {
+                    L.DomEvent.stop(e);
+                }
                 selectCell(cell.id);
-                if (window.APP_SOUNDS) window.APP_SOUNDS.playBeep();
             });
 
             // Hover effects
@@ -452,17 +455,6 @@ window.GIS_MAP = (function() {
                 sticky: true,
                 className: 'tactical-map-tooltip'
             });
-
-            // Pulsing circle for Critical Red Cells
-            if (classification.level === 'critical') {
-                const pulsingIcon = L.divIcon({
-                    className: 'pulsing-leaflet-ring',
-                    html: `<div style="width:50px; height:50px; border-radius:50%; border:2px solid #EF4444; animation:ringPulse 2s infinite ease-out;"></div>`,
-                    iconSize: [50, 50],
-                    iconAnchor: [25, 25]
-                });
-                L.marker([cell.lat, cell.lng], { icon: pulsingIcon, interactive: false }).addTo(hexLayerGroup);
-            }
         });
     }
 
@@ -622,6 +614,7 @@ window.GIS_MAP = (function() {
         toggleLayer,
         setBasemap,
         setActivePage,
-        selectCell
+        selectCell,
+        clearSelection
     };
 })();

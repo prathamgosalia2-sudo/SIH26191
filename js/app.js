@@ -43,10 +43,7 @@ window.APP = (function() {
         // 5. Setup Live Military Clock
         startLiveClock();
 
-        // 6. Setup Audio Toggle
-        setupAudioToggle();
-
-        // 7. Render initial KPI cards & Active Page
+        // 6. Render initial KPI cards & Active Page
         updateKPICards();
         navigateTo('overview');
 
@@ -69,20 +66,6 @@ window.APP = (function() {
         }
         tick();
         setInterval(tick, 1000);
-    }
-
-    /**
-     * Audio toggle handler
-     */
-    function setupAudioToggle() {
-        const btn = document.getElementById('btn-audio-toggle');
-        if (!btn) return;
-        btn.addEventListener('click', () => {
-            const enabled = window.APP_SOUNDS.toggleAudio();
-            btn.innerHTML = enabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
-            btn.classList.toggle('btn-muted', !enabled);
-            if (enabled) window.APP_SOUNDS.playBeep();
-        });
     }
 
     /**
@@ -219,15 +202,32 @@ window.APP = (function() {
             });
         }
 
-        // Layer checkboxes
-        const layerCheckboxes = document.querySelectorAll('.map-layer-toggle-cb');
-        layerCheckboxes.forEach(cb => {
-            cb.addEventListener('change', (e) => {
-                const layerKey = e.target.getAttribute('data-layer');
-                if (layerKey && window.GIS_MAP) {
-                    window.GIS_MAP.toggleLayer(layerKey, e.target.checked);
-                }
-            });
+        // Global listener: Automatically close the square dossier box when clicking outside of it
+        document.addEventListener('click', (e) => {
+            const drawer = document.getElementById('cell-inspector-drawer');
+            if (!drawer || !drawer.classList.contains('open')) return;
+
+            // If clicked inside the dossier box, ignore
+            if (drawer.contains(e.target)) return;
+
+            // If clicked on an interactive leaflet hexagon polygon or badge or table row, ignore
+            if (e.target.closest && (
+                e.target.closest('.leaflet-interactive') ||
+                e.target.closest('.h3-hex-row') ||
+                e.target.closest('.h3-leaflet-badge')
+            )) {
+                return;
+            }
+
+            // Clicked outside: close box automatically
+            closeCellInspector();
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeCellInspector();
+            }
         });
     }
 
@@ -398,10 +398,19 @@ window.APP = (function() {
 
         drawer.classList.add('open');
 
+        // Prevent clicks inside the dossier box from closing it
+        drawer.onclick = (e) => {
+            e.stopPropagation();
+        };
+
         // Setup Close Button
-        document.getElementById('btn-close-cell-inspector').addEventListener('click', () => {
-            drawer.classList.remove('open');
-        });
+        const btnClose = document.getElementById('btn-close-cell-inspector');
+        if (btnClose) {
+            btnClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeCellInspector();
+            });
+        }
 
         // Setup Dispatch Order Action
         document.getElementById('btn-dispatch-evac-order').addEventListener('click', () => {
@@ -413,6 +422,20 @@ window.APP = (function() {
         document.getElementById('btn-generate-cell-sitrep').addEventListener('click', () => {
             openSitRepModal(cell);
         });
+    }
+
+    /**
+     * Close Detailed H3 Cell Inspector Dossier Box
+     */
+    function closeCellInspector() {
+        const drawer = document.getElementById('cell-inspector-drawer');
+        if (drawer && drawer.classList.contains('open')) {
+            drawer.classList.remove('open');
+            selectedCell = null;
+            if (window.GIS_MAP && typeof window.GIS_MAP.clearSelection === 'function') {
+                window.GIS_MAP.clearSelection();
+            }
+        }
     }
 
     /**
@@ -933,6 +956,7 @@ window.APP = (function() {
         init,
         navigateTo,
         openCellInspector,
+        closeCellInspector,
         updateKPICards,
         onSimulationUpdated,
         openSitRepModal

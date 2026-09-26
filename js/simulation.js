@@ -149,8 +149,6 @@ window.DISASTER_SIMULATION = (function() {
         let currentStepIndex = 0;
         const steps = [0, 6, 12, 24];
 
-        if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-
         if (timerInterval) clearInterval(timerInterval);
 
         // Advance steps sequentially
@@ -169,7 +167,6 @@ window.DISASTER_SIMULATION = (function() {
             if (currentStepIndex >= steps.length) {
                 clearInterval(timerInterval);
                 isRunning = false;
-                if (window.APP_SOUNDS) window.APP_SOUNDS.playAlarm();
                 if (onComplete) onComplete();
             }
         }, 1400); // 1.4 seconds per step

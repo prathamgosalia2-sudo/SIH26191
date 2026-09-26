@@ -42,9 +42,6 @@
             <button id="btn-open-sitrep" class="btn btn-primary" title="Export Operational Situation Report">
                 <span>📄</span> Export SITREP
             </button>
-            <button id="btn-audio-toggle" class="btn btn-audio" title="Toggle Sound Feedback">
-                🔊 Sound: ON
-            </button>
         </div>
     </header>
 
@@ -165,44 +162,18 @@
                 <!-- SVG Vector GIS Map dynamically injected by gis-map.js -->
             </div>
 
-            <!-- Floating Map Navigation Tools (Top Right) -->
+            <!-- Floating Map Navigation Tools (Bottom Right) -->
             <div class="map-floating-hud-tools">
                 <button id="btn-map-zoom-in" class="map-control-btn" title="Zoom In">+</button>
                 <button id="btn-map-zoom-out" class="map-control-btn" title="Zoom Out">−</button>
                 <button id="btn-map-reset" class="map-control-btn" title="Reset View Center">⌂</button>
             </div>
 
-            <!-- Floating Map Layer Switcher (Bottom Left) -->
+            <!-- Floating Map Basemap Switcher (Bottom Left) -->
             <div class="map-layer-panel">
                 <div class="panel-heading">
-                    <span>GIS Tactical Layers</span>
-                    <span class="text-xs text-accent">H3 Res 7</span>
-                </div>
-                <div class="layer-list">
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="h3Grid" checked>
-                        <span>Uber H3 Hexagonal Grid</span>
-                    </label>
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="riverInundation" checked>
-                        <span>River & Inundation Surge</span>
-                    </label>
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="roadNetwork" checked>
-                        <span>Road Status & Blockages</span>
-                    </label>
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="evacuationRoutes" checked>
-                        <span>Evacuation Safe Corridors</span>
-                    </label>
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="resources" checked>
-                        <span>Shelters & Hospital Pins</span>
-                    </label>
-                    <label class="layer-toggle-label">
-                        <input type="checkbox" class="map-layer-toggle-cb" data-layer="relocationArcs" checked>
-                        <span>Relocation Flow Vectors</span>
-                    </label>
+                    <span>SATELLITE GIS BASEMAP</span>
+                    <span class="text-xs text-accent">H3 Hex Res 7</span>
                 </div>
                 <select id="select-basemap-mode" class="basemap-dropdown">
                     <option value="satellite" selected>Basemap: ESRI Real Satellite (Sikkim Terrain)</option>
@@ -211,29 +182,57 @@
                 </select>
             </div>
 
-            <!-- Floating Map Legend (Bottom Right) -->
-            <div class="map-floating-legend">
-                <div class="legend-items-row">
-                    <div class="legend-item">
-                        <div class="legend-color-dot dot-safe"></div>
-                        <span>Safe (0–35)</span>
+            <!-- Floating Map Legend: Color Meanings (Right Upper Corner) -->
+            <div class="map-floating-legend-topright" id="map-color-legend">
+                <div class="legend-header">
+                    <span class="legend-badge">CLASSIFICATION</span>
+                    <span class="legend-title">H3 COLOR MEANINGS</span>
+                </div>
+                <div class="legend-list">
+                    <div class="legend-row">
+                        <div class="legend-indicator dot-critical"></div>
+                        <div class="legend-content">
+                            <div class="legend-label-row">
+                                <span class="legend-label-name">Critical Red Zone</span>
+                                <span class="legend-range-pill pill-critical">81 – 100</span>
+                            </div>
+                            <div class="legend-desc">Carrying capacity breached; mandatory immediate evacuation</div>
+                        </div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color-dot dot-moderate"></div>
-                        <span>Moderate (36–60)</span>
+                    <div class="legend-row">
+                        <div class="legend-indicator dot-high"></div>
+                        <div class="legend-content">
+                            <div class="legend-label-row">
+                                <span class="legend-label-name">High Risk Alert</span>
+                                <span class="legend-range-pill pill-high">61 – 80</span>
+                            </div>
+                            <div class="legend-desc">Severe hazard impact; buffer overloaded; staged evacuation</div>
+                        </div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color-dot dot-high"></div>
-                        <span>High (61–80)</span>
+                    <div class="legend-row">
+                        <div class="legend-indicator dot-moderate"></div>
+                        <div class="legend-content">
+                            <div class="legend-label-row">
+                                <span class="legend-label-name">Moderate Watch</span>
+                                <span class="legend-range-pill pill-moderate">36 – 60</span>
+                            </div>
+                            <div class="legend-desc">Elevated risk; active hydrological monitoring; buffer saturated</div>
+                        </div>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color-dot dot-critical"></div>
-                        <span>Critical Red (81–100)</span>
+                    <div class="legend-row">
+                        <div class="legend-indicator dot-safe"></div>
+                        <div class="legend-content">
+                            <div class="legend-label-row">
+                                <span class="legend-label-name">Safe Refuge Zone</span>
+                                <span class="legend-range-pill pill-safe">0 – 35</span>
+                            </div>
+                            <div class="legend-desc">High absorption capacity; designated safe relocation destination</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Collapsible H3 Cell Inspector Drawer (Right Slide-Out) -->
+            <!-- Square Dossier Box (Opens on Hexagon Click, Closes on Outside Click) -->
             <div id="cell-inspector-drawer" class="cell-inspector-drawer">
                 <!-- Dynamically populated when user clicks on an H3 Hexagon or row -->
             </div>
