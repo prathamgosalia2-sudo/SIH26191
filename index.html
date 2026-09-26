@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHA-NDMA RESILIENT-HEX | Disaster Carrying Capacity & Relocation Command (SIH26191)</title>
-    <meta name="description" content="Intelligent Identification of Hazard Based Red Zone Carrying Capacity, Assessment and Relocation Needs for Ministry of Home Affairs / Disaster Management using Uber H3 Hexagonal Spatial Indexing.">
+    <title>MHA-NDMA RESILIENT-HEX | Sikkim Teesta GLOF Carrying Capacity & Relocation Command (SIH26191)</title>
+    <meta name="description" content="Intelligent Identification of Hazard Based Red Zone Carrying Capacity, Assessment and Relocation Needs for Ministry of Home Affairs / Disaster Management using Uber H3 Hexagonal Spatial Indexing over Sikkim Teesta Basin.">
+    <!-- Leaflet Real Satellite Map Engine -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -95,7 +97,7 @@
                     <div class="mha-seal-text">
                         <strong>NEOC Decision Support</strong><br>
                         H3 Spatial Resolution: 7/8<br>
-                        Sector: Brahmaputra Alpha
+                        Sector: Sikkim Teesta Basin (GLOF)
                     </div>
                 </div>
             </div>
@@ -154,7 +156,7 @@
             <div class="emergency-alert-ticker">
                 <div class="ticker-tag">FLASH ALERT</div>
                 <div class="ticker-text">
-                    ⚠️ CRITICAL RED ZONE BREACH: Brahmaputra water level +3.8m above danger mark. Pandu Ghat, Uzan Bazar, and Deepor Beel H3 cells have exhausted safe carrying capacity. Mandatory relocation dispatched to Khanapara & Dispur safe ridges.
+                    ⚠️ SIKKIM TEESTA GLOF ALERT: Extreme glacial lake breach at South Lhonak. Chungthang dam breached (+5.2m surge). Singtam, Dikchu, and Rangpo carrying capacities exhausted. Mandatory relocation dispatched to Gangtok & Pakyong safe high-ground ridges.
                 </div>
             </div>
 
@@ -203,8 +205,8 @@
                     </label>
                 </div>
                 <select id="select-basemap-mode" class="basemap-dropdown">
+                    <option value="satellite" selected>Basemap: ESRI Real Satellite (Sikkim Terrain)</option>
                     <option value="tactical">Basemap: Tactical Dark Matter</option>
-                    <option value="satellite">Basemap: Satellite Radar Hybrid</option>
                     <option value="elevation">Basemap: Topography Elevation</option>
                 </select>
             </div>
@@ -771,6 +773,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Leaflet Real Satellite GIS & Uber H3 Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/h3-js@4.1.0/dist/h3-js.umd.js"></script>
 
     <!-- Application Scripts -->
     <script src="js/data.js"></script>

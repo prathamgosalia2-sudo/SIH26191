@@ -406,7 +406,7 @@ window.APP = (function() {
         // Setup Dispatch Order Action
         document.getElementById('btn-dispatch-evac-order').addEventListener('click', () => {
             if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-            alert(`✅ EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'Khanapara Safe Ridge'}\nFleet Dispatched: ASTC Evacuation Buses + NDRF Boat Platoons.`);
+            alert(`✅ EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'Gangtok Capital Safe Ridge'}\nFleet Dispatched: SNT Evacuation Buses + NDRF Boat Platoons + IAF Helicopters.`);
         });
 
         // Setup SitRep Export
@@ -881,8 +881,8 @@ window.APP = (function() {
                 <div class="sitrep-section">
                     <h3 class="sitrep-sec-title">1. INCIDENT OVERVIEW & H3 SPATIAL INDEXING</h3>
                     <p>
-                        A catastrophic hydrometeorological event is currently impacting <strong>Brahmaputra River Basin Sector Alpha</strong>.
-                        Using Uber H3 Resolution 7 hexagonal indexing, spatial multi-criteria analysis confirms severe embankment erosion and river overflow.
+                        A catastrophic Glacial Lake Outburst Flood (GLOF) and cloudburst event is currently impacting <strong>Sikkim Teesta River Basin (South Lhonak to Rangpo Reach)</strong>.
+                        Using Uber H3 Resolution 7 hexagonal spatial indexing, spatial multi-criteria analysis confirms severe dam overtopping at Chungthang and extensive flash inundation across Singtam and Rangpo.
                     </p>
                     <table class="sitrep-table">
                         <tr><td><strong>Total Population at Risk:</strong></td><td class="font-mono">${metrics.totalPopAtRisk.toLocaleString()}</td></tr>
@@ -901,7 +901,7 @@ window.APP = (function() {
                             <tr><td><strong>Current Risk Score:</strong></td><td>${cell.currentRisk} / 100 (${cell.riskLevel.toUpperCase()})</td></tr>
                             <tr><td><strong>Population at Risk:</strong></td><td>${cell.population.toLocaleString()} (Vulnerable: ${cell.vulnerablePopulation.total.toLocaleString()})</td></tr>
                             <tr><td><strong>Carrying Capacity Deficit:</strong></td><td>${cell.capacityDeficit ? cell.capacityDeficit.toLocaleString() : 'N/A'}</td></tr>
-                            <tr><td><strong>Designated Safe Destination:</strong></td><td>${cell.targetRelocationCell ? 'Khanapara Safe Ridge / AIIMS High Ground' : 'Safe High Ground Ridge'}</td></tr>
+                            <tr><td><strong>Designated Safe Destination:</strong></td><td>${cell.targetRelocationCell ? 'Gangtok Capital Safe Ridge / Pakyong Plateau' : 'High-Ground Safe Mountain Ridge'}</td></tr>
                             <tr><td><strong>Access Corridor Status:</strong></td><td>${cell.primaryRoad} - ${cell.roadStatus}</td></tr>
                         </table>
                     </div>
@@ -910,9 +910,9 @@ window.APP = (function() {
                 <div class="sitrep-section">
                     <h3 class="sitrep-sec-title">3. DIRECTIVES & COMMAND INSTRUCTIONS</h3>
                     <ol>
-                        <li>All field commanders shall enforce mandatory evacuation in designated Red Zone cells.</li>
-                        <li>Civil authorities must direct all outbound traffic via elevated bypasses avoiding submerged corridors.</li>
-                        <li>Safe green destination reception centers at Khanapara and Dispur have activated food, water, and medical triage.</li>
+                        <li>All field commanders shall enforce mandatory evacuation in designated Red Zone cells along the Teesta riverbed.</li>
+                        <li>Civil authorities must direct all outbound traffic via elevated mountain passes avoiding submerged sections of NH-10.</li>
+                        <li>Safe green destination reception centers at Paljor Stadium (Gangtok) and Pakyong have activated trauma care, emergency food, and winter shelter reserves.</li>
                     </ol>
                 </div>
             </div>

@@ -6,12 +6,12 @@
 window.DISASTER_SIMULATION = (function() {
     // Current simulation parameters
     let config = {
-        disasterType: 'Extreme Inundation & Dam Discharge',
+        disasterType: 'Glacial Lake Outburst Flood (GLOF) & Dam Breach',
         severityLevel: 4, // 1 to 5
-        rainfallMm: 340,
-        waterLevelRiseM: 3.8,
+        rainfallMm: 380,
+        waterLevelRiseM: 4.8,
         durationHours: 24,
-        affectedSector: 'Sector Alpha - Brahmaputra Central Reach',
+        affectedSector: 'Sikkim Teesta River Basin (Chungthang - Singtam - Rangpo Reach)',
         currentHourStep: 24 // 0, 6, 12, 24
     };
 
@@ -44,9 +44,9 @@ window.DISASTER_SIMULATION = (function() {
 
             if (hourStep === 0) {
                 // Hour 0: Baseline - Mostly Safe Green / Yellow
-                if (base.elevation < 50) {
+                if (base.baselineRisk >= 70) {
                     cell.currentRisk = Math.min(48, Math.round(base.baselineRisk * 0.45));
-                } else if (base.elevation < 70) {
+                } else if (base.baselineRisk >= 40) {
                     cell.currentRisk = Math.min(32, Math.round(base.baselineRisk * 0.40));
                 } else {
                     cell.currentRisk = Math.max(10, Math.round(base.baselineRisk * 0.50));
@@ -55,38 +55,38 @@ window.DISASTER_SIMULATION = (function() {
                 cell.rainfallMm = 45;
             } else if (hourStep === 6) {
                 // Hour 6: Heavy Rain & Inundation Warning
-                if (base.elevation < 50) {
+                if (base.baselineRisk >= 70) {
                     cell.currentRisk = Math.min(74, Math.round(base.baselineRisk * 0.85));
-                    cell.waterLevelM = 1.4;
-                } else if (base.elevation < 70) {
+                    cell.waterLevelM = 1.6;
+                } else if (base.baselineRisk >= 40) {
                     cell.currentRisk = Math.min(52, Math.round(base.baselineRisk * 0.70));
-                    cell.waterLevelM = 0.5;
+                    cell.waterLevelM = 0.6;
                 } else {
                     cell.currentRisk = Math.min(22, base.baselineRisk);
                     cell.waterLevelM = 0.0;
                 }
-                cell.rainfallMm = 160;
+                cell.rainfallMm = 180;
             } else if (hourStep === 12) {
-                // Hour 12: Embankment Overtopping & Breach
-                if (base.elevation < 50) {
+                // Hour 12: Chungthang Dam Overspill & River Breach
+                if (base.baselineRisk >= 70) {
                     cell.currentRisk = Math.min(88, Math.round(base.baselineRisk * 1.15));
-                    cell.waterLevelM = 2.6;
-                } else if (base.elevation < 70) {
+                    cell.waterLevelM = 3.2;
+                } else if (base.baselineRisk >= 40) {
                     cell.currentRisk = Math.min(72, Math.round(base.baselineRisk * 1.05));
-                    cell.waterLevelM = 1.2;
+                    cell.waterLevelM = 1.4;
                 } else {
                     cell.currentRisk = Math.min(26, base.baselineRisk);
                     cell.waterLevelM = 0.0;
                 }
-                cell.rainfallMm = 260;
+                cell.rainfallMm = 280;
             } else {
-                // Hour 24: Peak Red Zone Catastrophe
-                if (base.elevation < 52) {
+                // Hour 24: Peak Red Zone Catastrophe (GLOF Flood Peak)
+                if (base.baselineRisk >= 70) {
                     cell.currentRisk = Math.min(96, Math.round(base.baselineRisk * 1.30));
-                    cell.waterLevelM = 4.2;
-                } else if (base.elevation < 72) {
+                    cell.waterLevelM = 5.2;
+                } else if (base.baselineRisk >= 40) {
                     cell.currentRisk = Math.min(78, Math.round(base.baselineRisk * 1.20));
-                    cell.waterLevelM = 1.8;
+                    cell.waterLevelM = 2.1;
                 } else {
                     cell.currentRisk = Math.min(30, base.baselineRisk);
                     cell.waterLevelM = 0.0;
