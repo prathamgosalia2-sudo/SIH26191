@@ -159,13 +159,29 @@ window.H3_ENGINE = (function() {
         const effectiveSafeCapacity = Math.round(baselineSafe * degradationRatio);
         const deficit = pop - effectiveSafeCapacity;
 
+        // Problem Statement Tiered Prioritization (Immediate, Short-Term, Medium-Term)
+        let relocationHorizon = 'Safe / Resilient Buffer';
+        let relocationPriorityTier = 'Safe';
+        if (deficit > 0 && risk >= 75) {
+            relocationHorizon = 'Immediate (<24h)';
+            relocationPriorityTier = 'Immediate';
+        } else if ((deficit > 0 && risk >= 50) || risk >= 60) {
+            relocationHorizon = 'Short-Term (1-4w)';
+            relocationPriorityTier = 'Short-Term';
+        } else if (risk >= 35 || (cell.factors && cell.factors.historicalDisasters >= 6)) {
+            relocationHorizon = 'Medium-Term (3-12m)';
+            relocationPriorityTier = 'Medium-Term';
+        }
+
         return {
             effectiveSafeCapacity,
             deficit: deficit,
             isDeficit: deficit > 0,
             relocationRequired: deficit > 0 ? deficit : 0,
             surplusCapacity: deficit < 0 ? Math.abs(deficit) : 0,
-            statusLabel: deficit > 0 ? 'CRITICAL DEFICIT (Relocation Needed)' : 'SAFE SURPLUS BUFFER'
+            statusLabel: deficit > 0 ? 'CRITICAL DEFICIT (Relocation Needed)' : 'SAFE SURPLUS BUFFER',
+            relocationHorizon,
+            relocationPriorityTier
         };
     }
 

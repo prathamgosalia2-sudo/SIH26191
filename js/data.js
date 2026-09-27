@@ -851,7 +851,9 @@ window.DISASTER_DATA = (function() {
     ];
 
     // Relocation Matching Allocations for Sikkim (Deficit Cells -> Safe High Ridges)
+    // Categorized across the 3 SIH26191 Planning Horizons: Immediate (<24h), Short-Term (1-4w), and Medium-Term (3-12m)
     const relocationAllocations = [
+        // 🔴 TIER 1: IMMEDIATE RELOCATION (<24h / Active Life-Threat Breach)
         {
             sourceCellId: '8861892541fffff', // Singtam (Critical, Deficit: 24,400)
             targetCellId: '8861892503fffff', // Pakyong Airport Plateau (Surplus: 53,500)
@@ -861,6 +863,8 @@ window.DISASTER_DATA = (function() {
             corridorStatus: 'Pakyong Green Elevated Highway (Open)',
             medicalSupport: 'Pakyong District Hospital & Aviation Field Infirmary',
             priority: 'P1 - Immediate',
+            relocationHorizon: 'Immediate',
+            horizonBadge: 'Immediate (<24h)',
             transitMode: 'SNT Heavy Bus Fleet & 4x4 Mountain Transport'
         },
         {
@@ -872,6 +876,8 @@ window.DISASTER_DATA = (function() {
             corridorStatus: 'North Sikkim Highway Ridge Link + Airbridge',
             medicalSupport: 'STNM Multispecialty Hospital Gangtok',
             priority: 'P1 - Life Threat',
+            relocationHorizon: 'Immediate',
+            horizonBadge: 'Immediate (<24h)',
             transitMode: 'IAF Helo Airbridge + High-Ground Military Convoys'
         },
         {
@@ -883,8 +889,12 @@ window.DISASTER_DATA = (function() {
             corridorStatus: 'Rorathang-Rhenock High Ridge Highway',
             medicalSupport: 'Rhenock PHC & Field Relief Station',
             priority: 'P1 - Immediate',
+            relocationHorizon: 'Immediate',
+            horizonBadge: 'Immediate (<24h)',
             transitMode: 'SNT Buses & Civil Defence Fleets'
         },
+
+        // 🟠 TIER 2: SHORT-TERM RELOCATION (1–4 Weeks / Pre-Monsoon Staging & Damaged Access)
         {
             sourceCellId: '8861892547fffff', // Dikchu (Critical, Deficit: 12,400)
             targetCellId: '8861892501fffff', // Gangtok Capital Safe Ridge
@@ -893,7 +903,9 @@ window.DISASTER_DATA = (function() {
             travelTimeMinutes: 45,
             corridorStatus: 'Dikchu-Burtuk Ridge Spine (Open)',
             medicalSupport: 'STNM Hospital Gangtok',
-            priority: 'P1 - Immediate',
+            priority: 'P2 - Staged',
+            relocationHorizon: 'Short-Term',
+            horizonBadge: 'Short-Term (1-4w)',
             transitMode: 'SDRF Mountain All-Terrain Vehicles & Shuttles'
         },
         {
@@ -904,19 +916,51 @@ window.DISASTER_DATA = (function() {
             travelTimeMinutes: 68,
             corridorStatus: 'Ravangla-Legship High Alpine Bypass',
             medicalSupport: 'Ravangla Primary Health Centre & Camp',
-            priority: 'P1 - Life Threat',
+            priority: 'P2 - Staged',
+            relocationHorizon: 'Short-Term',
+            horizonBadge: 'Short-Term (1-4w)',
             transitMode: 'Army 4x4 Troop Carriers & Ropeway Shuttles'
         },
+
+        // 🟡 TIER 3: MEDIUM-TERM RELOCATION (3–12 Months / Permanent Planned Resettlement)
         {
-            sourceCellId: '8861892551fffff', // Dzongu (Critical, Deficit: 7,500)
+            sourceCellId: '8861892551fffff', // Dzongu (Deficit: 7,500)
             targetCellId: '8861892505fffff', // Namchi Safe Ridge (Surplus: 37,000)
             allocatedPopulation: 7500,
             distanceKm: 38.0,
             travelTimeMinutes: 70,
             corridorStatus: 'Namchi-Temi Mountain Expressway',
             medicalSupport: 'Namchi District Hospital Trauma Centre',
-            priority: 'P1 - Immediate',
-            transitMode: 'Mountain Search & Rescue Transport Squad'
+            priority: 'P3 - Planned',
+            relocationHorizon: 'Medium-Term',
+            horizonBadge: 'Medium-Term (3-12m)',
+            transitMode: 'Civil Administration Planned Resettlement Convoy'
+        },
+        {
+            sourceCellId: '8861892553fffff', // Phodong Meander Reach
+            targetCellId: '8861892501fffff', // Gangtok Capital Safe Ridge
+            allocatedPopulation: 6400,
+            distanceKm: 28.5,
+            travelTimeMinutes: 52,
+            corridorStatus: 'North Sikkim High Bypass',
+            medicalSupport: 'STNM Multispecialty Hospital Gangtok',
+            priority: 'P3 - Planned',
+            relocationHorizon: 'Medium-Term',
+            horizonBadge: 'Medium-Term (3-12m)',
+            transitMode: 'State Housing Rehabilitation Program'
+        },
+        {
+            sourceCellId: '8861892557fffff', // Rangrang Toe-Cut Slope
+            targetCellId: '8861892509fffff', // Ravangla High Ground
+            allocatedPopulation: 5200,
+            distanceKm: 31.0,
+            travelTimeMinutes: 58,
+            corridorStatus: 'Ravangla Ridge Connector',
+            medicalSupport: 'Ravangla PHC Relief Complex',
+            priority: 'P3 - Planned',
+            relocationHorizon: 'Medium-Term',
+            horizonBadge: 'Medium-Term (3-12m)',
+            transitMode: 'SDMA Permanent Relocation Transit'
         }
     ];
 

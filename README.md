@@ -6,11 +6,25 @@
 
 ---
 
-## 📌 1. Project Overview & Problem Statement
+## 📌 1. Project Overview & Problem Statement Compliance Matrix
 
-During catastrophic hydrometeorological events—such as the South Lhonak Glacial Lake Outburst Flood (GLOF) and Teesta river flash floods—administrative boundary divisions fail to reflect natural physical floodplains. River valleys rapidly breach their **safe localized carrying capacities**, submerging evacuation corridors and stranding vulnerable communities.
+### 🎯 Official SIH Problem Statement (Detailed):
+> **Background:** India’s disaster-prone regions face recurring hazards such as landslides, floods, coastal erosion, and cloudbursts. Vulnerable habitations often remain in unsafe zones, leading to repeated loss of lives and property. Current relocation efforts are largely reactive, initiated after disasters strike, rather than proactively planned.  
+> **Description:** The initiative seeks to develop an intelligent, GIS-enabled decision support platform. This platform will dynamically identify and update multi-hazard Red Zones (areas unsuitable for permanent habitation), assess the carrying capacity of safer alternative sites, and prioritize vulnerable habitations for relocation. The system will integrate hazard intensity, population vulnerability, and disaster history to guide evidence-based decisions.  
+> **Expected Solution:** A robust, AI-driven GIS platform that maps and updates hazard-based Red Zones in real time, assesses suitability and carrying capacity of safer relocation sites, prioritizes vulnerable habitations for **immediate, short-term, and medium-term relocation**, and provides actionable insights to State Disaster Management Authorities for proactive planning.
 
-**PRISM** (Predictive Risk Intelligence & Spatial Management) is an enterprise-grade tactical GIS command center built to solve this challenge. Utilizing **Uber H3 discrete hexagonal spatial indexing (Resolution 7 / 8)**, PRISM continuously evaluates terrain elevation, rainfall accumulation, infrastructure vulnerability, and population density across the Sikkim Teesta basin. The platform automatically identifies critical red zones, computes carrying capacity deficits, plans priority evacuations, and optimizes relocation to safe high-ground ridges.
+### 🛡️ How PRISM Meets Every Requirement of the Problem Statement:
+
+| PS Core Requirement | PRISM Implementation in Codebase | Technical Verification |
+| :--- | :--- | :--- |
+| **1. Dynamic Multi-Hazard Red Zone Mapping** | Maps GLOFs, flash floods, and slope hazards across an Uber H3 hexagonal grid (Resolution 7). When river surge (+5.2m) or extreme rain occurs, cells dynamically cross thresholds into **Critical Red Zones (81–100)** where habitability is unviable. | `js/h3-engine.js` (`calculateMCDARiskScore`) & `js/simulation.js` (`applyTimeStep`) |
+| **2. Hazard Intensity Integration** | Evaluates real-time telemetry: rainfall (mm), inundation depth (m), slope steepness, elevation MSL, and road accessibility. | `js/simulation.js` & `js/data.js` (`factors`) |
+| **3. Population Vulnerability Micro-Data** | Tracks demographic micro-data per H3 cell: Total population, infants (0–5y), elderly (65+y), persons with disabilities (PwD), and pregnant women. | `js/data.js` (`vulnerablePopulation`) & Cell Inspector Drawer |
+| **4. Disaster History Integration** | Incorporates historical catastrophic events (2023 South Lhonak GLOF, 2021 Teesta flash floods, 2018 cloudbursts, 2011 earthquake) into spatial vulnerability weighting. | `js/data.js` (`historicalDisasters`) & Module 7 (`#view-historical`) |
+| **5. Carrying Capacity & Deficit Analysis** | Mathematical model calculating habitability collapse under crisis vs safe capacity threshold. Computes exact **Pax Deficits** and **Safe Surplus Buffers** to prevent over-allocation. | `js/h3-engine.js` (`evaluateCarryingCapacity`) & Module 3 (`#view-capacity`) |
+| **6. Suitability of Safer Relocation Sites** | Evaluates candidate high-ground ridges (Gangtok, Pakyong, Namchi, Ravangla) by surplus capacity, Level-1/2 trauma hospitals, ICU beds, shelter food/water days, and power resilience. | `js/data.js` (`shelters`, `hospitals`) & Module 6 (`#view-resources`) |
+| **7. 3-Tier Relocation Prioritization** | Classifies habitations into: <br>• **🔴 Immediate (<24h):** Active Red Zone life threat & collapsed capacity.<br>• **🟠 Short-Term (1–4 Weeks):** High-risk Orange zones & pre-monsoon staging.<br>• **🟡 Medium-Term (3–12 Months):** Permanent planned resettlement from chronic floodplains. | `js/h3-engine.js`, `js/app.js` (`refreshEvacuationView`, `refreshRelocationView`) |
+| **8. Actionable Insights for SDMA / NDMA** | Generates formal MHA / NDMA Operational Situation Reports (SitReps), incident action plans, and fleet dispatch directives for SNT buses, NDRF, and Army airbridges. | `js/app.js` (`openSitRepModal`, `btn-approve-all-relocations`) |
 
 ---
 

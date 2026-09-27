@@ -442,15 +442,23 @@
                     <div>
                         <h2 class="view-title">Evacuation Planning & Fleet Dispatch Cockpit</h2>
                         <p class="view-description">
-                            Prioritized evacuation queues categorized by life-threat urgency (Priority 1 vs Priority 2). Real-time road submergence tracking and safe elevated corridor routing around critical Red Zone cells.
+                            Prioritized habitations categorized by SIH26191 operational horizons: <strong>Immediate (&lt;24h)</strong>, <strong>Short-Term (1–4 Weeks)</strong>, and <strong>Medium-Term (3–12 Months)</strong>. Real-time road submergence tracking and safe elevated corridor routing around critical Red Zone cells.
                         </p>
                     </div>
                     <div class="view-header-actions">
-                        <button class="btn btn-primary" onclick="alert('🚨 PRIORITY-1 EVACUATION ALARM BROADCAST: All sirens activated in Pandu, Uzan Bazar, and Deepor Beel sectors.');">
+                        <button class="btn btn-primary" onclick="alert('🚨 PRIORITY-1 EVACUATION ALARM BROADCAST: All sirens activated in Chungthang, Singtam, and Rangpo reaches.');">
                             📢 Broadcast Emergency Sirens
                         </button>
                         <button class="btn btn-outline btn-close-view" title="Return to GIS Map">✕ Back to Map</button>
                     </div>
+                </div>
+
+                <!-- 3-Tier Horizon Filter Tabs -->
+                <div class="flex gap-2 mb-3" id="evac-horizon-filter-bar">
+                    <button class="btn btn-sm btn-outline btn-filter-evac active" data-horizon="all">All Prioritization Tiers</button>
+                    <button class="btn btn-sm btn-outline btn-filter-evac" data-horizon="Immediate" style="color: #EF4444; border-color: #EF4444;">🔴 Immediate (&lt;24h)</button>
+                    <button class="btn btn-sm btn-outline btn-filter-evac" data-horizon="Short-Term" style="color: #F97316; border-color: #F97316;">🟠 Short-Term (1-4w)</button>
+                    <button class="btn btn-sm btn-outline btn-filter-evac" data-horizon="Medium-Term" style="color: #FBBF24; border-color: #FBBF24;">🟡 Medium-Term (3-12m)</button>
                 </div>
 
                 <div class="evac-cards-grid" id="evacuation-priority-list">
@@ -466,7 +474,7 @@
                     <div>
                         <h2 class="view-title">Intelligent Safe Relocation Recommendation Engine</h2>
                         <p class="view-description">
-                            Multi-objective matching algorithm pairing critical carrying-capacity deficit cells with optimal Green Zone safe destinations. Considers convoy travel distance, destination shelter capacity surplus, road accessibility, and trauma hospital proximity.
+                            Multi-objective matching algorithm pairing carrying-capacity deficit cells with optimal Green Zone safe destinations across three planning horizons: <strong>Immediate</strong>, <strong>Short-Term</strong>, and <strong>Medium-Term</strong>. Evaluates convoy transit distance, shelter capacity surplus, road accessibility, and trauma hospital proximity.
                         </p>
                     </div>
                     <div class="view-header-actions">
@@ -477,11 +485,20 @@
                     </div>
                 </div>
 
+                <!-- Horizon Filters -->
+                <div class="flex gap-2 mb-3" id="reloc-horizon-filter-bar">
+                    <button class="btn btn-sm btn-outline btn-filter-reloc active" data-horizon="all">All Horizons</button>
+                    <button class="btn btn-sm btn-outline btn-filter-reloc" data-horizon="Immediate" style="color: #EF4444; border-color: #EF4444;">🔴 Immediate (&lt;24h)</button>
+                    <button class="btn btn-sm btn-outline btn-filter-reloc" data-horizon="Short-Term" style="color: #F97316; border-color: #F97316;">🟠 Short-Term (1-4w)</button>
+                    <button class="btn btn-sm btn-outline btn-filter-reloc" data-horizon="Medium-Term" style="color: #FBBF24; border-color: #FBBF24;">🟡 Medium-Term (3-12m)</button>
+                </div>
+
                 <div class="tactical-table-wrapper">
                     <table class="tactical-table">
                         <thead>
                             <tr>
-                                <th>Critical Source Cell (Deficit)</th>
+                                <th>Source Habitation (Deficit)</th>
+                                <th>Planning Horizon</th>
                                 <th class="text-right">Evacuees Allocated</th>
                                 <th>Safe Destination Cell (Green Zone)</th>
                                 <th class="text-right">Destination Surplus Buffer</th>

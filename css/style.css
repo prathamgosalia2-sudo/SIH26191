@@ -1848,7 +1848,27 @@ html, body {
     border-radius: 4px;
 }
 .badge-p1 { background: rgba(239, 68, 68, 0.25); color: #F87171; border: 1px solid var(--risk-critical); }
-.badge-p2 { background: rgba(249, 115, 22, 0.25); color: #FB923C; }
+.badge-p2 { background: rgba(249, 115, 22, 0.25); color: #FB923C; border: 1px solid var(--risk-high); }
+.badge-p3 { background: rgba(251, 191, 36, 0.25); color: #FCD34D; border: 1px solid var(--risk-moderate); }
+
+.evac-priority-card.priority-immediate {
+    border-left-color: var(--risk-critical);
+    background: rgba(239, 68, 68, 0.04);
+}
+.evac-priority-card.priority-short-term {
+    border-left-color: var(--risk-high);
+}
+.evac-priority-card.priority-medium-term {
+    border-left-color: var(--risk-moderate);
+}
+
+.btn-filter-evac.active, .btn-filter-reloc.active {
+    background: rgba(56, 189, 248, 0.2) !important;
+    border-color: #38BDF8 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
 
 .evac-card-title {
     font-size: 15px;

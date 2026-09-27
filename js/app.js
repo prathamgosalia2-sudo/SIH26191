@@ -976,26 +976,45 @@ window.APP = (function() {
     }
 
     /**
-     * Refresh Evacuation View
+     * Refresh Evacuation View (Categorized into Immediate, Short-Term, and Medium-Term)
      */
     function refreshEvacuationView() {
         const listContainer = document.getElementById('evacuation-priority-list');
         if (!listContainer) return;
 
         listContainer.innerHTML = '';
-        const criticalCells = window.DISASTER_DATA.h3Cells.filter(c => (c.currentRisk || c.baselineRisk) >= 61);
+        // Include critical and vulnerable cells across all 3 tiers
+        const cells = window.DISASTER_DATA.h3Cells.filter(c => (c.currentRisk || c.baselineRisk) >= 36);
 
-        criticalCells.forEach((c, idx) => {
-            const classification = window.H3_ENGINE.getRiskClassification(c.currentRisk || c.baselineRisk);
-            const isP1 = (c.currentRisk || c.baselineRisk) >= 81;
+        cells.forEach((c) => {
+            const risk = c.currentRisk || c.baselineRisk;
+            const capEval = window.H3_ENGINE.evaluateCarryingCapacity(c);
+            let horizon = 'Immediate';
+            let badgeClass = 'badge-p1';
+            let badgeText = 'PRIORITY 1: IMMEDIATE (<24H)';
+
+            if (risk >= 81 || capEval.deficit > 8000) {
+                horizon = 'Immediate';
+                badgeClass = 'badge-p1';
+                badgeText = 'PRIORITY 1: IMMEDIATE (<24H)';
+            } else if (risk >= 61 || capEval.deficit > 0) {
+                horizon = 'Short-Term';
+                badgeClass = 'badge-p2';
+                badgeText = 'PRIORITY 2: SHORT-TERM (1-4W)';
+            } else {
+                horizon = 'Medium-Term';
+                badgeClass = 'badge-p3';
+                badgeText = 'PRIORITY 3: MEDIUM-TERM (3-12M)';
+            }
 
             const card = document.createElement('div');
-            card.className = `evac-priority-card ${isP1 ? 'priority-p1' : 'priority-p2'}`;
+            card.className = `evac-priority-card priority-${horizon.toLowerCase()}`;
+            card.setAttribute('data-horizon', horizon);
 
             card.innerHTML = `
                 <div class="evac-card-header">
-                    <span class="priority-badge ${isP1 ? 'badge-p1' : 'badge-p2'}">
-                        ${isP1 ? 'PRIORITY 1: IMMEDIATE (<2H)' : 'PRIORITY 2: STAGED (<6H)'}
+                    <span class="priority-badge ${badgeClass}">
+                        ${badgeText}
                     </span>
                     <span class="evac-time font-mono">Est. Time: ${c.evacuationTimeHours}h</span>
                 </div>
@@ -1012,7 +1031,7 @@ window.APP = (function() {
                 </div>
                 <div class="evac-actions">
                     <button class="btn btn-sm btn-primary btn-dispatch-cell-evac" data-id="${c.id}">
-                        Dispatch Evacuation Fleet
+                        Dispatch Evacuation Fleet (${horizon})
                     </button>
                 </div>
             `;
@@ -1020,15 +1039,32 @@ window.APP = (function() {
             card.querySelector('.btn-dispatch-cell-evac').addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-                alert(`🚨 FLEET DISPATCHED to ${c.name}:\n\n- 12x Inflatable Powerboats (NDRF)\n- 18x State Transport Evacuation Buses\n- 6x ALS Mobile Ambulances\n\nRouting via Safe Elevated Bypass to designated high ground shelter.`);
+                alert(`🚨 FLEET DISPATCHED (${horizon.toUpperCase()} DIRECTIVE) to ${c.name}:\n\n- 12x Inflatable Powerboats (NDRF)\n- 18x State Transport Evacuation Buses\n- 6x ALS Mobile Ambulances\n\nRouting via Safe Elevated Bypass to designated high ground shelter.`);
             });
 
             listContainer.appendChild(card);
         });
+
+        // Setup Evac Horizon Filter Buttons
+        document.querySelectorAll('.btn-filter-evac').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.btn-filter-evac').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const targetHorizon = btn.getAttribute('data-horizon');
+
+                document.querySelectorAll('.evac-priority-card').forEach(card => {
+                    if (targetHorizon === 'all' || card.getAttribute('data-horizon') === targetHorizon) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+        });
     }
 
     /**
-     * Refresh Relocation View
+     * Refresh Relocation View (Tiered by Immediate, Short-Term, and Medium-Term)
      */
     function refreshRelocationView() {
         const tableBody = document.getElementById('relocation-allocations-table');
@@ -1046,11 +1082,22 @@ window.APP = (function() {
             const dest = cellMap[alloc.targetCellId];
             if (!src || !dest) return;
 
+            const horizon = alloc.relocationHorizon || 'Immediate';
+            let badgeStyle = 'background: #EF4444; color: #fff;';
+            if (horizon === 'Short-Term') badgeStyle = 'background: #F97316; color: #fff;';
+            if (horizon === 'Medium-Term') badgeStyle = 'background: #FBBF24; color: #1e293b;';
+
             const tr = document.createElement('tr');
+            tr.setAttribute('data-horizon', horizon);
             tr.innerHTML = `
                 <td>
                     <div class="font-semibold text-danger">${src.name}</div>
                     <div class="font-mono text-muted text-xs">${src.id.substring(0, 11)}...</div>
+                </td>
+                <td>
+                    <span class="badge" style="${badgeStyle} font-size: 10px; font-weight: bold; padding: 2px 7px;">
+                        ${alloc.horizonBadge || horizon}
+                    </span>
                 </td>
                 <td class="font-mono text-right font-bold text-danger">${alloc.allocatedPopulation.toLocaleString()}</td>
                 <td>
@@ -1068,10 +1115,27 @@ window.APP = (function() {
 
             tr.querySelector('.btn-approve-relocation').addEventListener('click', () => {
                 if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-                alert(`✅ RELOCATION DIRECTIVE EXECUTED:\n\nFrom: ${src.name} (Critical Red Zone)\nTo: ${dest.name} (High Ground Green Zone)\nPax Scheduled: ${alloc.allocatedPopulation.toLocaleString()}\nTransit Fleet: ${alloc.transitMode}\nMedical Triage: ${alloc.medicalSupport}`);
+                alert(`✅ RELOCATION DIRECTIVE EXECUTED (${horizon.toUpperCase()} HORIZON):\n\nFrom: ${src.name} (Source Deficit)\nTo: ${dest.name} (Safe High Ground Ridge)\nPax Scheduled: ${alloc.allocatedPopulation.toLocaleString()}\nTransit Fleet: ${alloc.transitMode}\nMedical Triage: ${alloc.medicalSupport}`);
             });
 
             tableBody.appendChild(tr);
+        });
+
+        // Setup Relocation Horizon Filter Buttons
+        document.querySelectorAll('.btn-filter-reloc').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.btn-filter-reloc').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const targetHorizon = btn.getAttribute('data-horizon');
+
+                document.querySelectorAll('#relocation-allocations-table tr').forEach(row => {
+                    if (targetHorizon === 'all' || row.getAttribute('data-horizon') === targetHorizon) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            };
         });
 
         // Approve All Relocation Plans Button
@@ -1079,7 +1143,7 @@ window.APP = (function() {
         if (btnApproveAll) {
             btnApproveAll.onclick = () => {
                 if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-                alert('🚨 MHA / NDMA MASTER RELOCATION DIRECTIVE ISSUED:\n\nAll 7 critical carrying-capacity deficit corridors approved. Emergency transport fleets and high-ground shelters placed on active intake status.');
+                alert('🚨 MHA / NDMA MASTER RELOCATION DIRECTIVE ISSUED:\n\nAll critical carrying-capacity deficit corridors across Immediate, Short-Term, and Medium-Term horizons approved. Emergency transport fleets and high-ground shelters placed on active intake status.');
             };
         }
     }
