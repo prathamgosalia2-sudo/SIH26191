@@ -10,13 +10,14 @@ window.GIS_MAP = (function() {
     let selectedCellId = null;
     let activePage = 'overview';
 
-    // Sikkim Teesta Valley center and default zoom (calibrated for 16x14 expanded hexagonal mesh)
-    const SIKKIM_CENTER = [27.38, 88.56];
-    const DEFAULT_ZOOM = 10.5;
+    // Manali · Rohtang Corridor (Beas River Basin, Himachal Pradesh) Center & Zoom
+    const MANALI_CENTER = [32.2396, 77.1887];
+    const SIKKIM_CENTER = MANALI_CENTER; // Backward compatibility alias
+    const DEFAULT_ZOOM = 14;
 
     // Tile Layers
     let tileLayers = {};
-    let currentBasemap = 'osm';
+    let currentBasemap = 'satellite'; // High-res satellite basemap matching user geofence system
 
     // Feature Layer Groups
     let hexLayerGroup = null;
@@ -27,9 +28,9 @@ window.GIS_MAP = (function() {
     let resourceLayerGroup = null;
     let riverSurgeGroup = null;
 
-    // User Pinpoint Location (Google Maps Red Drop Pin)
+    // User Pinpoint Location (Matching tourist starting location [32.2415, 77.1910] near Solang/Old Manali)
     let userMarker = null;
-    let userCoords = [27.2380, 88.5020]; // Default in Singtam Hazard Zone
+    let userCoords = [32.2415, 77.1910];
 
     // Layer visibility state
     const layerVisibility = {
@@ -98,7 +99,7 @@ window.GIS_MAP = (function() {
         tileLayers.satellite = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             {
-                attribution: '&copy; <a href="https://www.esri.com/">ESRI World Imagery</a> | Sikkim GLOF GIS',
+                attribution: '&copy; <a href="https://www.esri.com/">ESRI World Imagery</a> | Manali Beas H3 Geofence GIS',
                 maxZoom: 19,
                 subdomains: ['server', 'services']
             }
@@ -513,11 +514,8 @@ window.GIS_MAP = (function() {
                     <circle cx="19" cy="16" r="3.2" fill="#D32F2F" />
                     <path d="M13 24.5 C13 21 16 20.5 19 20.5 C22 20.5 25 21 25 24.5 Z" fill="#D32F2F" />
                 </svg>
-                <!-- Callout Badges exactly as in user reference picture -->
+                <!-- Callout Badge -->
                 <div class="gmap-pin-callout">
-                    <div class="gmap-pill-position">
-                        <span class="gmap-dot-icon">📍</span> CURRENT POSITION
-                    </div>
                     <div class="gmap-pill-status ${isHazard ? 'status-hazard' : 'status-safe'}">
                         ${isHazard ? '⚠️ HAZARD' : '✓ SAFE'}
                     </div>

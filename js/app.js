@@ -581,6 +581,17 @@ window.APP = (function() {
             });
         }
 
+        // Setup H3 Hexagons Overlay On/Off Toggle (Aside Workflow Pipeline)
+        const toggleH3 = document.getElementById('toggle-h3-hexagons');
+        if (toggleH3) {
+            toggleH3.addEventListener('change', (e) => {
+                const isVisible = e.target.checked;
+                if (window.GIS_MAP && typeof window.GIS_MAP.toggleLayer === 'function') {
+                    window.GIS_MAP.toggleLayer('h3Grid', isVisible);
+                }
+            });
+        }
+
         // Global listener: Automatically close the square dossier box when clicking outside of it
         document.addEventListener('click', (e) => {
             const drawer = document.getElementById('cell-inspector-drawer');
@@ -794,7 +805,7 @@ window.APP = (function() {
         // Setup Dispatch Order Action
         document.getElementById('btn-dispatch-evac-order').addEventListener('click', () => {
             if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-            alert(`✅ EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'Gangtok Capital Safe Ridge'}\nFleet Dispatched: SNT Evacuation Buses + NDRF Boat Platoons + IAF Helicopters.`);
+            alert(`✅ EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'ABVIMAS High Mountaineering Campus, Manali'}\nFleet Dispatched: HRTC Evacuation Buses + NDRF Boat Platoons + IAF Helicopters.`);
         });
 
         // Setup SitRep Export

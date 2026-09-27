@@ -35,6 +35,18 @@
         </div>
 
         <div class="header-right-actions">
+            <!-- H3 Hexagon Grid Slider Toggle Switch (Left-Right Animated Circle) -->
+            <div class="h3-slider-toggle-wrap" title="Toggle H3 Hexagons Layer Visibility">
+                <span class="h3-toggle-label">
+                    <span class="h3-toggle-icon">⬡</span>
+                    <span class="h3-toggle-text">H3 Hexagons</span>
+                </span>
+                <label class="switch-toggle-pill" aria-label="Toggle H3 Hexagons">
+                    <input type="checkbox" id="toggle-h3-hexagons" checked>
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+
             <button id="btn-open-pipeline" class="btn btn-secondary" title="View Decision Pipeline Architecture">
                 <span>⚡</span> SIH Workflow Pipeline
             </button>
@@ -150,7 +162,7 @@
                 <div class="emergency-alert-ticker">
                     <div class="ticker-tag">FLASH ALERT</div>
                     <div class="ticker-text">
-                        <strong style="color: #FDE047;">⚠️ SOUTH LHONAK GLOF:</strong> Dam breach (+5.2m surge). Mandatory evacuation active for Singtam &amp; Rangpo.
+                        <strong style="color: #FDE047;">⚠️ BEAS FLASH DELUGE:</strong> Cloudburst surge (+4.6m). Mandatory evacuation active for Old Manali &amp; Bahang.
                     </div>
                 </div>
             </div>
@@ -172,12 +184,12 @@
             <div class="map-layer-panel">
                 <div class="panel-heading">
                     <span>GIS BASEMAP SELECTION</span>
-                    <span class="text-xs text-accent">H3 Hex Res 7</span>
+                    <span class="text-xs text-accent">Manali H3 Res 9</span>
                 </div>
                 <select id="select-basemap-mode" class="basemap-dropdown">
-                    <option value="osm" selected>Basemap: OpenStreetMap (Standard)</option>
+                    <option value="satellite" selected>Basemap: ESRI Real Satellite (Manali)</option>
+                    <option value="osm">Basemap: OpenStreetMap (Standard)</option>
                     <option value="hot">Basemap: OpenStreetMap Humanitarian (Disaster)</option>
-                    <option value="satellite">Basemap: ESRI Real Satellite (Sikkim Terrain)</option>
                 </select>
             </div>
 

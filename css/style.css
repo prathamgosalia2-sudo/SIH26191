@@ -205,6 +205,116 @@ html, body {
     gap: 10px;
 }
 
+/* ==========================================================================
+   H3 Hexagons iOS-Style Slider Toggle in Header (Circle slides Left / Right)
+   ========================================================================== */
+.h3-slider-toggle-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 4px 10px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.h3-slider-toggle-wrap:hover {
+    border-color: rgba(56, 189, 248, 0.7);
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.h3-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #E2E8F0;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+}
+
+.h3-toggle-icon {
+    font-size: 13px;
+    color: #38BDF8;
+    line-height: 1;
+}
+
+.h3-toggle-text {
+    white-space: nowrap;
+}
+
+/* The switch container - NOT a checkbox tick, but a smooth sliding toggle matching user spec */
+.switch-toggle-pill {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+/* Hide default HTML checkbox completely */
+.switch-toggle-pill input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+/* The slider pill track */
+.switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #252E3E;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 9999px;
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The sliding circle knob (moves smoothly left and right, matching user screenshot) */
+.switch-slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    top: 2px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28), 0 2px 4px rgba(0, 0, 0, 0.18);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Active / Checked State: Mint-Green to Azure-Blue Gradient track from screenshot */
+.switch-toggle-pill input:checked + .switch-slider {
+    background: linear-gradient(90deg, #4ADE80 0%, #2DD4BF 35%, #38BDF8 70%, #3B82F6 100%);
+    border-color: rgba(56, 189, 248, 0.5);
+    box-shadow: 0 2px 12px rgba(56, 189, 248, 0.35);
+}
+
+/* Circle slides smoothly to the right */
+.switch-toggle-pill input:checked + .switch-slider::before {
+    transform: translateX(26px);
+}
+
+.switch-toggle-pill:hover .switch-slider {
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
 /* Common Buttons */
 .btn {
     display: inline-flex;

@@ -2,7 +2,7 @@
 ### Smart India Hackathon (SIH26191) Prototype
 **“Intelligent Identification of Hazard-Based Red Zone Carrying Capacity, Assessment, and Relocation Needs”**  
 *Target Authority: Ministry of Home Affairs (MHA) / National Disaster Management Authority (NDMA)*  
-*Disaster Scenario: Sikkim Teesta River Basin Glacial Lake Outburst Flood (GLOF) & Flash Inundation*
+*Disaster Scenario: Manali · Rohtang Corridor (Beas River Basin, Himachal Pradesh) Cloudburst & Flash Deluge*
 
 ---
 
@@ -17,14 +17,14 @@
 
 | PS Core Requirement | PRISM Implementation in Codebase | Technical Verification |
 | :--- | :--- | :--- |
-| **1. Dynamic Multi-Hazard Red Zone Mapping** | Maps GLOFs, flash floods, and slope hazards across an Uber H3 hexagonal grid (Resolution 7). When river surge (+5.2m) or extreme rain occurs, cells dynamically cross thresholds into **Critical Red Zones (81–100)** where habitability is unviable. | `js/h3-engine.js` (`calculateMCDARiskScore`) & `js/simulation.js` (`applyTimeStep`) |
-| **2. Hazard Intensity Integration** | Evaluates real-time telemetry: rainfall (mm), inundation depth (m), slope steepness, elevation MSL, and road accessibility. | `js/simulation.js` & `js/data.js` (`factors`) |
+| **1. Dynamic Multi-Hazard Red Zone Mapping** | Maps cloudbursts, flash floods, and debris flow across an expanded Uber H3 hexagonal grid (Resolution 9, 12-block radius, ~469 cells). When river surge (+4.6m) or extreme rain occurs, cells dynamically cross thresholds into **Critical Red Zones (81–100)** (e.g., Old Manali Bridge, Beas Riverbed, Bahang). | `js/h3-engine.js` (`generateManaliHexGrid`, `calculateMCDARiskScore`) & `js/simulation.js` |
+| **2. Hazard Intensity Integration** | Evaluates real-time telemetry: rainfall (mm), inundation depth (m), slope steepness, elevation MSL, and highway NH-3 accessibility. | `js/simulation.js` & `js/data.js` (`factors`) |
 | **3. Population Vulnerability Micro-Data** | Tracks demographic micro-data per H3 cell: Total population, infants (0–5y), elderly (65+y), persons with disabilities (PwD), and pregnant women. | `js/data.js` (`vulnerablePopulation`) & Cell Inspector Drawer |
-| **4. Disaster History Integration** | Incorporates historical catastrophic events (2023 South Lhonak GLOF, 2021 Teesta flash floods, 2018 cloudbursts, 2011 earthquake) into spatial vulnerability weighting. | `js/data.js` (`historicalDisasters`) & Module 7 (`#view-historical`) |
+| **4. Disaster History Integration** | Incorporates historical catastrophic events (July 2023 Beas Deluge, 2022 Cloudbursts, 2018 Manali Inundations, 1995 Flash Floods) into spatial vulnerability weighting. | `js/data.js` (`historicalDisasters`) & Module 7 (`#view-historical`) |
 | **5. Carrying Capacity & Deficit Analysis** | Mathematical model calculating habitability collapse under crisis vs safe capacity threshold. Computes exact **Pax Deficits** and **Safe Surplus Buffers** to prevent over-allocation. | `js/h3-engine.js` (`evaluateCarryingCapacity`) & Module 3 (`#view-capacity`) |
-| **6. Suitability of Safer Relocation Sites** | Evaluates candidate high-ground ridges (Gangtok, Pakyong, Namchi, Ravangla) by surplus capacity, Level-1/2 trauma hospitals, ICU beds, shelter food/water days, and power resilience. | `js/data.js` (`shelters`, `hospitals`) & Module 6 (`#view-resources`) |
+| **6. Suitability of Safer Relocation Sites** | Evaluates candidate high-ground sanctuaries (ABVIMAS High Ridge, Atal Tunnel South Portal, Solang High Plateau, Naggar Castle Ridge) by surplus capacity, hospitals, ICU beds, shelter food/water days, and power resilience. | `js/data.js` (`shelters`, `hospitals`) & Module 6 (`#view-resources`) |
 | **7. 3-Tier Relocation Prioritization** | Classifies habitations into: <br>• **🔴 Immediate (<24h):** Active Red Zone life threat & collapsed capacity.<br>• **🟠 Short-Term (1–4 Weeks):** High-risk Orange zones & pre-monsoon staging.<br>• **🟡 Medium-Term (3–12 Months):** Permanent planned resettlement from chronic floodplains. | `js/h3-engine.js`, `js/app.js` (`refreshEvacuationView`, `refreshRelocationView`) |
-| **8. Actionable Insights for SDMA / NDMA** | Generates formal MHA / NDMA Operational Situation Reports (SitReps), incident action plans, and fleet dispatch directives for SNT buses, NDRF, and Army airbridges. | `js/app.js` (`openSitRepModal`, `btn-approve-all-relocations`) |
+| **8. Actionable Insights for SDMA / NDMA** | Generates formal MHA / NDMA Operational Situation Reports (SitReps), incident action plans, and fleet dispatch directives for HRTC buses, NDRF 14th Bn, and SDRF HP. | `js/app.js` (`openSitRepModal`, `btn-approve-all-relocations`) |
 
 ---
 
@@ -36,38 +36,36 @@ The system features and operational capabilities are mapped below in numbered po
 - **Unified Branding**: Clear high-tech PRISM identification displaying system name, descriptive tagline, and official hackathon identifier (`SIH26191`).
 - **DEFCON Live Alert Status**: Prominent visual indicator (`ALERT LEVEL 4: CRITICAL BASIN BREACH`) with animated warning pulse reflecting real-time threat severity.
 - **Dual Military Time Synchronizer**: Live clock displaying synchronized Indian Standard Time (IST) and Coordinated Universal Time (UTC) for inter-agency coordination.
+- **Interactive iOS-Style H3 Hexagons Slider Toggle**: Positioned directly aside the *⚡ SIH Workflow Pipeline* button in the header. Features a smooth, left-to-right sliding white circular knob with a vibrant mint-green to azure-blue gradient track, allowing instant one-click toggling of the H3 hexagon overlay to inspect the underlying high-resolution ESRI satellite imagery clearly.
 - **Quick Action Triggers**: Instant-access buttons for viewing the decision workflow pipeline modal and exporting formal situation reports.
 
 ### Point 2: Dual-Trigger Compact Dropdown Navigation Menu (`Menu ▼`)
-- **Space-Efficient Menu Trigger**: Minimalist `Menu ▼` button (76px width) replacing bulky sidebar panels to maximize visible map real estate.
+- **Space-Efficient Menu Trigger**: Minimalist `Menu ▼` button replacing bulky sidebar panels to maximize visible map real estate.
 - **Dual Accessibility**: Accessible both from the fixed top command header and as a floating button in the upper-left of the GIS map stage.
 - **8 Modular Views**: Direct one-click switching between Overview, Hazard Assessment, Carrying Capacity, Evacuation, Relocation, Resources, Historical Analysis, and Simulation.
 - **Frictionless UX**: Automatic dropdown dismissal upon option selection, outside click detection, or pressing the `Escape` key.
 
-### Point 3: Expanded 224-Cell Uber H3 Hexagonal Spatial Indexing Grid
-- **Wide Spatial Coverage**: 16 rows × 14 columns of discrete H3 hexagonal cells spanning the entire Sikkim Teesta basin from North Sikkim glaciers down to the plains.
-- **Concentric Two-Layer Outward Expansion**: Outer ring layers prevent viewport boundary clipping and encompass receiving high-ground ridges.
+### Point 3: Expanded Uber H3 Hexagonal Spatial Indexing Grid (Resolution 9, +5 Block Radius Expansion)
+- **High-Resolution Micro-Zoning**: Res 9 (~174m edge length) spatial indexing matching the precise mountain topography, river curves, and road corridors.
+- **Extended Spatial Coverage**: Grid radius expanded by 5 additional concentric rings/blocks (12-ring radius, ~469 hexagons) spanning from Kothi Gorge and Solang Plateau in the north to Klash and 15-Mile in the south.
 - **Equidistant Non-Overlapping Topology**: Equal-area hexagonal cells ensure uniform multi-criteria spatial scoring and neighbor relationship consistency.
 
 ### Point 4: Multi-Tier Color-Coded Hazard Risk Level Classification
-- **🔴 Critical Red Zone (Risk Score: 81–100)**: Catastrophic inundation, local carrying capacity collapsed, mandatory immediate evacuation active.
-- **🟠 High Risk Zone (Risk Score: 61–80)**: Severe surge advisory, road transit restrictions, staged mobilization.
+- **🔴 Critical Red Zone (Risk Score: 81–100)**: Active riverbed breach (e.g. Old Manali Curve, Beas Riverbed, Bahang), local carrying capacity collapsed, mandatory immediate evacuation active.
+- **🟠 High Risk Zone (Risk Score: 61–80)**: Severe surge advisory, river terrace surcharge, staged mobilization.
 - **🟡 Moderate Risk Zone (Risk Score: 36–60)**: Active surveillance zone, logistical and supply standby.
-- **🟢 Safe / Low Hazard Zone (Risk Score: 0–35)**: Stable high-ground receiving ridges (e.g., Gangtok, Pakyong, Rhenock) designated for relocation.
+- **🟢 Safe / Low Hazard Zone (Risk Score: 0–35)**: Stable high-ground receiving sanctuaries (ABVIMAS Campus, Vashisht Ridge, Solang High Plateau, Naggar) designated for relocation.
 
 ### Point 5: Real-Time User Pinpoint Geolocation & Proximity Detection
-- **Live User Location Pin**: Integrates browser GPS Geolocation to render the exact position of field responders or citizens using a red drop-pin marker.
-- **Concentric Ping Wave Animation**: Live pulsing radar wave indicating proximity to breached river channels and active red zones.
+- **Live User Location Pin**: Integrates browser GPS Geolocation to render the exact position of field responders or citizens using a Google Maps-style red drop-pin marker.
+- **Streamlined Status Badge**: Displays a clean, high-visibility `⚠️ HAZARD` or `✓ SAFE` status pill directly above the red marker, highlighting instantaneous zone safety without visual clutter.
+- **Concentric Radar Wave Animation**: Live pulsing wave indicating proximity to breached river channels and active red zones.
 - **One-Click Re-Center Button**: Dedicated HUD locate button (`📍`) instantly centers and zooms the map onto the user's live coordinates.
 
 ### Point 6: Multi-Provider Real GIS Leaflet Basemap Engine
 - **Hardware-Accelerated Vector Engine**: Powered by Leaflet.js rendering smooth SVG vectors and interactive polygons directly over geographic tiles.
-- **Tactical Basemap Switcher**: On-the-fly selection between multiple map tile providers:
-  - *OpenStreetMap (Real Terrestrial)* — Default high-contrast physical map.
-  - *USGS Satellite Imagery* — High-resolution orbital terrain photos.
-  - *Carto Voyager* — Clean operational navigational cartography.
-  - *OpenTopoMap* — Detailed topographical elevation contours and relief.
-  - *ESRI Physical Terrain* — Shaded relief showcasing mountain valleys and ridges.
+- **Default High-Resolution ESRI Satellite Imagery**: Provides crystal-clear aerial views of the Manali terrain, river valley, forested ridges, and highway corridors.
+- **Tactical Basemap Switcher**: On-the-fly selection between ESRI Satellite, OpenStreetMap Standard, and Humanitarian OSM.
 
 ### Point 7: Floating Minimizable H3 Color Meanings Legend
 - **Upper-Right Floating Legend Card**: Draggable glassmorphic widget explaining risk score ranges, hazard severity, and operational protocols.
@@ -77,7 +75,7 @@ The system features and operational capabilities are mapped below in numbered po
 - **Prominent Tactical Alert Bar**: Deep slate navy background (`rgba(15, 23, 42, 0.98)`) with glowing crimson borders (`#EF4444`) anchored below the KPI ribbon.
 - **Pulsing Emergency Badge**: Vivid red `FLASH ALERT` badge with infinite alert pulse.
 - **Single-Line Concise Advisory**: Formatted without wordy sentences or ellipsis (`...`) truncation:
-  `⚠️ SOUTH LHONAK GLOF: Dam breach (+5.2m surge). Mandatory evacuation active for Singtam & Rangpo.`
+  `⚠️ BEAS FLASH DELUGE: Cloudburst surge (+4.6m). Mandatory evacuation active for Old Manali & Bahang.`
 - **Ultra-High Contrast**: Bright white text with neon yellow (`#FDE047`) alerts legible against any map background.
 
 ### Point 9: Executive Tactical KPI Ribbon Dashboard
@@ -85,8 +83,8 @@ The system features and operational capabilities are mapped below in numbered po
 - **Critical H3 Cells**: Live tally of breached red zones requiring emergency dispatch.
 - **Evacuation Capacity Deficit**: Quantifies net overflow population exceeding local safe sheltering capacity.
 - **Safe High-Ground H3 Cells**: Number of identified receiving cells with surplus shelter buffers.
-- **Active Relocation Corridors**: Number of open, unbreached transit corridors (e.g., National Highway 10).
-- **Teesta Peak Discharge Telemetry**: Real-time river sensor discharge rate (e.g., 4,280 m³/s).
+- **Active Relocation Corridors**: Number of open, unbreached transit corridors (e.g., NH-3 High Bypass).
+- **Beas River Surge Discharge Telemetry**: Real-time river sensor discharge rate (e.g., 3,850 m³/s).
 
 ### Point 10: Interactive H3 Hexagon Cell Inspector Dossier Drawer
 - **Deep-Dive Hexagon Analytics**: Clicking any H3 hexagon or table record slides open an inspection drawer detailing cell parameters:

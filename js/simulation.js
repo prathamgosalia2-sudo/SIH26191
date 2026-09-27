@@ -4,14 +4,14 @@
  */
 
 window.DISASTER_SIMULATION = (function() {
-    // Current simulation parameters
+    // Current simulation parameters for Manali Rohtang Corridor
     let config = {
-        disasterType: 'Glacial Lake Outburst Flood (GLOF) & Dam Breach',
+        disasterType: 'Beas River Cloudburst Surge & Flash Inundation',
         severityLevel: 4, // 1 to 5
-        rainfallMm: 380,
-        waterLevelRiseM: 4.8,
+        rainfallMm: 360,
+        waterLevelRiseM: 4.6,
         durationHours: 24,
-        affectedSector: 'Sikkim Teesta River Basin (Chungthang - Singtam - Rangpo Reach)',
+        affectedSector: 'Manali · Rohtang Corridor (Palchan - Bahang - Manali - Aleo Reach)',
         currentHourStep: 24 // 0, 6, 12, 24
     };
 
