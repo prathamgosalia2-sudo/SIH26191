@@ -55,6 +55,54 @@ window.APP = (function() {
 
         // Setup Simulation event listeners
         setupSimulationView();
+
+        // 7. Wire header buttons: Export Report & View Workflow
+        const btnSitrep = document.getElementById('btn-open-sitrep');
+        if (btnSitrep) {
+            btnSitrep.addEventListener('click', () => {
+                openSitRepModal(selectedCell);
+            });
+        }
+
+        const btnPipeline = document.getElementById('btn-open-pipeline');
+        if (btnPipeline) {
+            btnPipeline.addEventListener('click', () => {
+                const modal = document.getElementById('workflow-modal');
+                if (modal) modal.style.display = 'flex';
+            });
+        }
+
+        // 8. Wire modal close buttons
+        const btnCloseSitrep = document.getElementById('btn-close-sitrep-modal');
+        if (btnCloseSitrep) {
+            btnCloseSitrep.addEventListener('click', () => {
+                const modal = document.getElementById('sitrep-modal');
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        const btnCloseWorkflow = document.getElementById('btn-close-workflow-modal');
+        if (btnCloseWorkflow) {
+            btnCloseWorkflow.addEventListener('click', () => {
+                const modal = document.getElementById('workflow-modal');
+                if (modal) modal.style.display = 'none';
+            });
+        }
+
+        const btnPrintSitrep = document.getElementById('btn-print-sitrep');
+        if (btnPrintSitrep) {
+            btnPrintSitrep.addEventListener('click', () => window.print());
+        }
+
+        // Close modals on backdrop click
+        ['sitrep-modal', 'workflow-modal'].forEach(id => {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.style.display = 'none';
+                });
+            }
+        });
     }
 
     /**

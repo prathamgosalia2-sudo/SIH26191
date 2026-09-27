@@ -177,95 +177,98 @@
                 </ul>
             </nav>
 
-            <!-- Floating Map Legend Panel (Top-Right, matching mockup - Minimizable) -->
-            <div class="map-floating-legend-panel" id="map-color-legend">
-                <div class="legend-panel-header" id="legend-drag-header" title="Drag to reposition or click minus to minimize">
-                    <span class="legend-panel-title">Hazard Risk Level (H3 Cells)</span>
-                    <button class="btn-legend-minimize" id="btn-legend-minimize" title="Minimize Color Theme Legend">−</button>
-                </div>
-                <div class="legend-panel-list">
-                    <div class="legend-panel-item">
-                        <span class="legend-hex-icon hex-critical"></span>
-                        <span class="legend-item-text">Critical Red Zone (81 – 100)</span>
+            <!-- Map Theater: wraps map + all floating overlays so position:absolute children layer over the map -->
+            <div class="map-theater" id="map-theater">
+
+                <!-- Floating Map Legend Panel (Top-Right, matching mockup - Minimizable) -->
+                <div class="map-floating-legend-panel" id="map-color-legend">
+                    <div class="legend-panel-header" id="legend-drag-header" title="Drag to reposition or click minus to minimize">
+                        <span class="legend-panel-title">Hazard Risk Level (H3 Cells)</span>
+                        <button class="btn-legend-minimize" id="btn-legend-minimize" title="Minimize Color Theme Legend">−</button>
                     </div>
-                    <div class="legend-panel-item">
-                        <span class="legend-hex-icon hex-orange"></span>
-                        <span class="legend-item-text">High Risk Zone (61 – 80)</span>
-                    </div>
-                    <div class="legend-panel-item">
-                        <span class="legend-hex-icon hex-yellow"></span>
-                        <span class="legend-item-text">Moderate Risk Zone (36 – 60)</span>
-                    </div>
-                    <div class="legend-panel-item">
-                        <span class="legend-hex-icon hex-green"></span>
-                        <span class="legend-item-text">Safe / Low Hazard Zone (0 – 35)</span>
-                    </div>
-                    <div class="legend-panel-item">
-                        <span class="legend-dot-icon dot-town"></span>
-                        <span class="legend-item-text">Major Town / Settlement</span>
-                    </div>
-                    <div class="legend-panel-item">
-                        <span class="legend-dot-icon dot-user-loc"></span>
-                        <span class="legend-item-text">State Command Headquarters</span>
-                    </div>
-                </div>
-                <!-- North Arrow and Scale Bar -->
-                <div class="map-scale-compass-box">
-                    <div class="compass-north">
-                        <span class="north-arrow">▲</span>
-                        <span class="north-label">N</span>
-                    </div>
-                    <div class="scale-bar-wrap">
-                        <div class="scale-ticks">
-                            <span>0</span>
-                            <span>5</span>
-                            <span>10</span>
-                            <span>20 km</span>
+                    <div class="legend-panel-list">
+                        <div class="legend-panel-item">
+                            <span class="legend-hex-icon hex-critical"></span>
+                            <span class="legend-item-text">Critical Red Zone (81 – 100)</span>
                         </div>
-                        <div class="scale-ruler"></div>
+                        <div class="legend-panel-item">
+                            <span class="legend-hex-icon hex-orange"></span>
+                            <span class="legend-item-text">High Risk Zone (61 – 80)</span>
+                        </div>
+                        <div class="legend-panel-item">
+                            <span class="legend-hex-icon hex-yellow"></span>
+                            <span class="legend-item-text">Moderate Risk Zone (36 – 60)</span>
+                        </div>
+                        <div class="legend-panel-item">
+                            <span class="legend-hex-icon hex-green"></span>
+                            <span class="legend-item-text">Safe / Low Hazard Zone (0 – 35)</span>
+                        </div>
+                        <div class="legend-panel-item">
+                            <span class="legend-dot-icon dot-town"></span>
+                            <span class="legend-item-text">Major Town / Settlement</span>
+                        </div>
+                        <div class="legend-panel-item">
+                            <span class="legend-dot-icon dot-user-loc"></span>
+                            <span class="legend-item-text">State Command Headquarters</span>
+                        </div>
+                    </div>
+                    <!-- North Arrow and Scale Bar -->
+                    <div class="map-scale-compass-box">
+                        <div class="compass-north">
+                            <span class="north-arrow">▲</span>
+                            <span class="north-label">N</span>
+                        </div>
+                        <div class="scale-bar-wrap">
+                            <div class="scale-ticks">
+                                <span>0</span>
+                                <span>5</span>
+                                <span>10</span>
+                                <span>20 km</span>
+                            </div>
+                            <div class="scale-ruler"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Floating Minimized Legend Pill (Visible when minimized) -->
-            <div class="floating-legend-pill" id="floating-legend-pill" style="display: none;" title="Click to expand Color Theme Legend">
-                <span class="floating-pill-icon">🎨</span>
-                <span class="floating-pill-label">COLOR LEGEND</span>
-                <div class="legend-mini-dots">
-                    <span class="mini-dot dot-critical-mini"></span>
-                    <span class="mini-dot dot-high-mini"></span>
-                    <span class="mini-dot dot-moderate-mini"></span>
-                    <span class="mini-dot dot-safe-mini"></span>
-                </div>
-            </div>
-
-            <!-- Inset Mini-Map: Sikkim State Overview -->
-            <div class="map-inset-minimap" id="map-inset-minimap">
-                <div class="minimap-header">Sikkim State Reference</div>
-                <div class="minimap-container">
-                    <div class="minimap-region-grid">
-                        <div class="minimap-chip chip-north">MANGAN (North)</div>
-                        <div class="minimap-chip chip-west">GYALSHING (West)</div>
-                        <div class="minimap-chip chip-east">GANGTOK (East)</div>
-                        <div class="minimap-chip chip-south">NAMCHI (South)</div>
+                <!-- Floating Minimized Legend Pill (Visible when minimized) -->
+                <div class="floating-legend-pill" id="floating-legend-pill" style="display: none;" title="Click to expand Color Theme Legend">
+                    <span class="floating-pill-icon">🎨</span>
+                    <span class="floating-pill-label">COLOR LEGEND</span>
+                    <div class="legend-mini-dots">
+                        <span class="mini-dot dot-critical-mini"></span>
+                        <span class="mini-dot dot-high-mini"></span>
+                        <span class="mini-dot dot-moderate-mini"></span>
+                        <span class="mini-dot dot-safe-mini"></span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Vector GIS Map Viewport -->
-            <div id="main-map-container" class="map-canvas-container"></div>
+                <!-- Inset Mini-Map: Sikkim State Overview -->
+                <div class="map-inset-minimap" id="map-inset-minimap">
+                    <div class="minimap-header">Sikkim State Reference</div>
+                    <div class="minimap-container">
+                        <div class="minimap-region-grid">
+                            <div class="minimap-chip chip-north">MANGAN (North)</div>
+                            <div class="minimap-chip chip-west">GYALSHING (West)</div>
+                            <div class="minimap-chip chip-east">GANGTOK (East)</div>
+                            <div class="minimap-chip chip-south">NAMCHI (South)</div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Floating Map Zoom Controls (Bottom Right) -->
-            <div class="map-floating-hud-tools">
-                <button id="btn-map-zoom-in" class="map-control-btn" title="Zoom In">+</button>
-                <button id="btn-map-zoom-out" class="map-control-btn" title="Zoom Out">−</button>
-                <button id="btn-map-reset" class="map-control-btn" title="Reset View Center">⌂</button>
-            </div>
+                <!-- Vector GIS Map Viewport -->
+                <div id="main-map-container" class="map-canvas-container"></div>
 
-            <!-- Square Dossier Drawer (Opens on Hexagon Click) -->
-            <div id="cell-inspector-drawer" class="cell-inspector-drawer"></div>
+                <!-- Floating Map Zoom Controls (Bottom Right) -->
+                <div class="map-floating-hud-tools">
+                    <button id="btn-map-zoom-in" class="map-control-btn" title="Zoom In">+</button>
+                    <button id="btn-map-zoom-out" class="map-control-btn" title="Zoom Out">−</button>
+                    <button id="btn-map-reset" class="map-control-btn" title="Reset View Center">⌂</button>
+                </div>
 
-            <!-- ==========================================================================
+                <!-- Square Dossier Drawer (Opens on Hexagon Click) -->
+                <div id="cell-inspector-drawer" class="cell-inspector-drawer"></div>
+
+
                  DASHBOARD VIEW PAGES (Hazard, Capacity, Evacuation, etc.)
                  ========================================================================== -->
             <div id="view-hazard" class="dashboard-view-page">
@@ -488,6 +491,10 @@
                     </div>
                 </div>
             </div>
+
+            </div><!-- end dashboard view pages -->
+
+            </div><!-- end map-theater -->
 
         </main>
 
