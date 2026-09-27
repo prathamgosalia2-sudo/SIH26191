@@ -1498,13 +1498,13 @@ html, body {
 .dashboard-view-page {
     position: fixed;
     top: var(--header-height);
-    left: 0;
+    left: var(--sidebar-width);
     right: 0;
     bottom: var(--bottom-strip-height);
     background: #F8FAFC;
     z-index: 9990;
     overflow-y: auto;
-    padding: 24px 28px 24px calc(var(--sidebar-width) + 28px);
+    padding: 24px 28px;
     display: none;
     color: var(--color-text-main);
 }
