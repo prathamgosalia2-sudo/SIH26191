@@ -1,11 +1,25 @@
 /**
  * SIH26191 - MHA/NDMA Disaster Command System
  * Uber H3 Hexagonal Spatial Indexing & Mathematical Risk Engine
+ * WHOLE-STATE SIKKIM H3 TESSALATED HONEYCOMB GRID
+ * Seamless coverage across North, West, East, and South Sikkim
  */
 
 window.H3_ENGINE = (function() {
-    // Earth radius in km
     const EARTH_RADIUS_KM = 6371;
+
+    // Mathematical Trajectories of Major River Valleys (Used solely for Risk Modeling, NOT drawn on map)
+    const TEESTA_VALLEY = [
+        [28.05, 88.52], [27.88, 88.54], [27.72, 88.56],
+        [27.65, 88.61], [27.6039, 88.6467], [27.53, 88.52],
+        [27.5038, 88.5284], [27.42, 88.53], [27.32, 88.51],
+        [27.23, 88.50], [27.14, 88.51], [27.06, 88.46]
+    ];
+
+    const RANGEET_VALLEY = [
+        [27.45, 88.18], [27.37, 88.22], [27.35, 88.28],
+        [27.2833, 88.2833], [27.20, 88.29], [27.12, 88.31], [27.06, 88.46]
+    ];
 
     /**
      * Compute Haversine distance between two coordinates in kilometers
@@ -21,17 +35,54 @@ window.H3_ENGINE = (function() {
     }
 
     /**
-     * Generate 6 vertices for an H3 hexagon polygon given center lat, lng and resolution radius
-     * Orientation: Flat-topped or pointy-topped hexagon. Uber H3 standard orientation has 30-degree rotation.
+     * Minimum distance from a coordinate to a river path in km
      */
-    function getHexagonBoundary(centerLat, centerLng, radiusDeg = 0.016) {
+    function distanceToRiverKm(lat, lng) {
+        let minDist = 9999;
+        for (let i = 0; i < TEESTA_VALLEY.length; i++) {
+            const d = calculateDistanceKm(lat, lng, TEESTA_VALLEY[i][0], TEESTA_VALLEY[i][1]);
+            if (d < minDist) minDist = d;
+        }
+        for (let i = 0; i < RANGEET_VALLEY.length; i++) {
+            const d = calculateDistanceKm(lat, lng, RANGEET_VALLEY[i][0], RANGEET_VALLEY[i][1]);
+            if (d < minDist) minDist = d;
+        }
+        return minDist;
+    }
+
+    /**
+     * Geographic boundary predicate for the entire State of Sikkim
+     */
+    function isInsideSikkim(lat, lng) {
+        if (lat < 27.06 || lat > 28.12 || lng < 88.02 || lng > 88.94) return false;
+
+        // North Sikkim northern glaciated wedge (lat > 27.75)
+        if (lat > 27.75) {
+            const minLng = 88.16 + (lat - 27.75) * 0.32;
+            const maxLng = 88.88 - (lat - 27.75) * 0.22;
+            return lng >= minLng && lng <= maxLng;
+        }
+
+        // South Sikkim southern taper (lat < 27.20)
+        if (lat < 27.20) {
+            const minLng = 88.10 - (lat - 27.20) * 0.18;
+            const maxLng = 88.68 + (lat - 27.20) * 0.35;
+            return lng >= minLng && lng <= maxLng;
+        }
+
+        // Central Sikkim (27.20 to 27.75)
+        return lng >= 88.04 && lng <= 88.92;
+    }
+
+    /**
+     * Generate 6 vertices for an H3 hexagon polygon given center lat, lng and resolution radius
+     */
+    function getHexagonBoundary(centerLat, centerLng, radiusDeg = 0.024) {
         const vertices = [];
-        // Longitudinal scaling to compensate for spherical latitude distortion
         const cosLat = Math.cos(centerLat * Math.PI / 180);
         const lngRadius = radiusDeg / (cosLat > 0.01 ? cosLat : 1.0);
 
         for (let i = 0; i < 6; i++) {
-            // 30 degree offset for standard H3 orientation
             const angleRad = (60 * i + 30) * Math.PI / 180;
             const lat = centerLat + radiusDeg * Math.sin(angleRad);
             const lng = centerLng + lngRadius * Math.cos(angleRad);
@@ -47,45 +98,45 @@ window.H3_ENGINE = (function() {
         if (score >= 81) {
             return {
                 level: 'critical',
-                label: 'Critical Hazard Zone (Red Zone)',
+                label: 'Critical Red Zone (81 - 100)',
                 badge: 'CRITICAL RED ZONE',
-                color: '#EF4444',
-                glowColor: 'rgba(239, 68, 68, 0.45)',
+                color: '#DC2626',
+                glowColor: 'rgba(220, 38, 38, 0.35)',
                 strokeColor: '#B91C1C',
-                textColor: '#FCA5A5',
+                textColor: '#DC2626',
                 action: 'Immediate Mandatory Evacuation & Carrying Capacity Breach'
             };
         } else if (score >= 61) {
             return {
                 level: 'orange',
-                label: 'High Risk Alert (Orange Zone)',
+                label: 'High Risk Zone (61 - 80)',
                 badge: 'HIGH RISK ALERT',
-                color: '#F97316',
-                glowColor: 'rgba(249, 115, 22, 0.35)',
+                color: '#EA580C',
+                glowColor: 'rgba(234, 88, 12, 0.30)',
                 strokeColor: '#C2410C',
-                textColor: '#FDBA74',
+                textColor: '#EA580C',
                 action: 'Stage-2 Evacuation Advisory & Route Pre-emption'
             };
         } else if (score >= 36) {
             return {
                 level: 'moderate',
-                label: 'Moderate Hazard Watch (Yellow Zone)',
+                label: 'Moderate Risk Zone (36 - 60)',
                 badge: 'MODERATE WATCH',
-                color: '#FBBF24',
-                glowColor: 'rgba(251, 191, 36, 0.3)',
-                strokeColor: '#D97706',
-                textColor: '#FDE68A',
+                color: '#D97706',
+                glowColor: 'rgba(217, 119, 6, 0.25)',
+                strokeColor: '#B45309',
+                textColor: '#D97706',
                 action: 'Active Hydrological Monitoring & Transport Alerts'
             };
         } else {
             return {
                 level: 'safe',
-                label: 'Safe Reception Zone (Green Zone)',
+                label: 'Safe / Low Hazard Zone (0 - 35)',
                 badge: 'SAFE REFUGE ZONE',
-                color: '#10B981',
-                glowColor: 'rgba(16, 185, 129, 0.3)',
-                strokeColor: '#047857',
-                textColor: '#6EE7B7',
+                color: '#16A34A',
+                glowColor: 'rgba(22, 163, 74, 0.25)',
+                strokeColor: '#15803D',
+                textColor: '#16A34A',
                 action: 'Designated Safe Relocation Destination & Staging Base'
             };
         }
@@ -93,7 +144,6 @@ window.H3_ENGINE = (function() {
 
     /**
      * Multi-Criteria Evaluation (MCDA) Risk Score Calculator
-     * Computes dynamically from cell contributing factors & user-adjusted weights
      */
     function calculateMCDARiskScore(factors, customWeights) {
         const weights = customWeights || {
@@ -105,378 +155,289 @@ window.H3_ENGINE = (function() {
             roadAccess: 0.15
         };
 
-        // Normalize weights
-        const sumW = weights.rainfall + weights.elevation + weights.popDensity +
-                     weights.infraVuln + weights.distServices + weights.roadAccess;
-        const norm = sumW > 0 ? sumW : 1.0;
+        const score = (
+            (factors.rainfallImpact || 50) * weights.rainfall +
+            (factors.elevationVulnerability || 50) * weights.elevation +
+            (factors.populationDensity || 50) * weights.popDensity +
+            (factors.infrastructureVulnerability || 50) * weights.infraVuln +
+            (factors.distanceToEmergencyServices || 50) * weights.distServices +
+            (100 - (factors.roadAccessibility || 50)) * weights.roadAccess
+        );
 
-        const rainfallScore = factors.rainfallImpact || 50;
-        const elevScore = factors.elevationVulnerability || 50;
-        const popScore = factors.populationDensity || 50;
-        const infraScore = factors.infrastructureVulnerability || 50;
-        const distScore = factors.distanceToEmergencyServices || 50;
-        // Low road accessibility increases risk, so invert
-        const roadInvertedScore = 100 - (factors.roadAccessibility || 50);
-
-        const weightedTotal = (
-            rainfallScore * weights.rainfall +
-            elevScore * weights.elevation +
-            popScore * weights.popDensity +
-            infraScore * weights.infraVuln +
-            distScore * weights.distServices +
-            roadInvertedScore * weights.roadAccess
-        ) / norm;
-
-        return Math.min(100, Math.max(5, Math.round(weightedTotal)));
+        return Math.min(100, Math.max(0, Math.round(score)));
     }
 
     /**
-     * Carrying Capacity & Deficit Formula:
-     * Evaluates local safe carrying capacity under current environmental risk
+     * Carrying Capacity Assessment
      */
-    function evaluateCarryingCapacity(cell, simulationMultiplier = 1.0) {
-        const pop = cell.population;
-        const baselineSafe = cell.safeCapacityThreshold;
-        const risk = cell.currentRisk || cell.baselineRisk;
-        const waterM = (cell.waterLevelM || 0) * simulationMultiplier;
+    function evaluateCarryingCapacity(currentPopulation, safeThreshold) {
+        const deficit = currentPopulation > safeThreshold ? currentPopulation - safeThreshold : 0;
+        const surplus = safeThreshold > currentPopulation ? safeThreshold - currentPopulation : 0;
+        const ratio = currentPopulation / (safeThreshold || 1);
 
-        // Inundation factor severely dampens habitable structures
-        let degradationRatio = 1.0;
-        if (risk >= 80) {
-            // Red Zone: Habitability collapsed to 5-15% of normal
-            degradationRatio = Math.max(0.06, 0.20 - (waterM * 0.04));
-        } else if (risk >= 60) {
-            // Orange Zone: Habitability reduced to 30-50%
-            degradationRatio = Math.max(0.25, 0.55 - (waterM * 0.05));
-        } else if (risk >= 35) {
-            // Yellow Zone: Habitability reduced to 60-75%
-            degradationRatio = 0.72;
-        } else {
-            // Green Zone: High ground, full capacity maintained
-            degradationRatio = 1.0;
-        }
-
-        const effectiveSafeCapacity = Math.round(baselineSafe * degradationRatio);
-        const deficit = pop - effectiveSafeCapacity;
-
-        // Problem Statement Tiered Prioritization (Immediate, Short-Term, Medium-Term)
-        let relocationHorizon = 'Safe / Resilient Buffer';
-        let relocationPriorityTier = 'Safe';
-        if (deficit > 0 && risk >= 75) {
-            relocationHorizon = 'Immediate (<24h)';
-            relocationPriorityTier = 'Immediate';
-        } else if ((deficit > 0 && risk >= 50) || risk >= 60) {
-            relocationHorizon = 'Short-Term (1-4w)';
-            relocationPriorityTier = 'Short-Term';
-        } else if (risk >= 35 || (cell.factors && cell.factors.historicalDisasters >= 6)) {
-            relocationHorizon = 'Medium-Term (3-12m)';
-            relocationPriorityTier = 'Medium-Term';
-        }
+        let status = 'normal';
+        if (ratio > 1.25) status = 'critical_deficit';
+        else if (ratio > 1.0) status = 'deficit';
+        else if (ratio < 0.6) status = 'surplus';
 
         return {
-            effectiveSafeCapacity,
-            deficit: deficit,
-            isDeficit: deficit > 0,
-            relocationRequired: deficit > 0 ? deficit : 0,
-            surplusCapacity: deficit < 0 ? Math.abs(deficit) : 0,
-            statusLabel: deficit > 0 ? 'CRITICAL DEFICIT (Relocation Needed)' : 'SAFE SURPLUS BUFFER',
-            relocationHorizon,
-            relocationPriorityTier
+            status,
+            deficit,
+            surplus,
+            ratio: +(ratio.toFixed(2)),
+            recommendedEvacuees: deficit > 0 ? Math.round(deficit * 1.15) : 0
         };
     }
 
     /**
-     * Intelligent Relocation Recommendation Engine:
-     * Matches deficit H3 cells to candidate safe Green cells
+     * Find Optimal Safe Relocation Destinations
      */
-    function findOptimalRelocationDestinations(sourceCell, allCells) {
-        const capacityAnalysis = evaluateCarryingCapacity(sourceCell);
-        const peopleToMove = capacityAnalysis.relocationRequired;
+    function findOptimalRelocationDestinations(sourceCell, allCells, count = 3) {
+        const safeCandidates = allCells.filter(c => c.riskLevel === 'safe' && c.id !== sourceCell.id);
 
-        if (peopleToMove <= 0) {
+        const scoredCandidates = safeCandidates.map(candidate => {
+            const distance = calculateDistanceKm(sourceCell.lat, sourceCell.lng, candidate.lat, candidate.lng);
+            const surplus = candidate.surplusCapacity || Math.max(0, (candidate.carryingCapacity || 0) - (candidate.population || 0));
+
+            const distScore = Math.max(0, 100 - distance * 2.5);
+            const capScore = Math.min(100, (surplus / 5000) * 100);
+            const riskSafetyScore = Math.max(0, 100 - (candidate.currentRisk || 15) * 2);
+
+            const suitabilityScore = Math.round(distScore * 0.40 + capScore * 0.35 + riskSafetyScore * 0.25);
+
             return {
-                needed: false,
-                reason: 'Current H3 Cell has sufficient safe carrying capacity.',
-                destinations: []
+                cell: candidate,
+                distanceKm: +(distance.toFixed(1)),
+                surplusCapacity: surplus,
+                suitabilityScore,
+                recommendedRoute: `${sourceCell.primaryRoad || 'Valley Corridor'} → ${candidate.primaryRoad || 'High Ridge Bypass'}`
             };
-        }
-
-        // Filter potential safe destinations (Risk <= 35)
-        const candidates = allCells
-            .filter(c => c.id !== sourceCell.id && (c.currentRisk || c.baselineRisk) <= 35)
-            .map(dest => {
-                const destCap = evaluateCarryingCapacity(dest);
-                const distKm = calculateDistanceKm(sourceCell.lat, sourceCell.lng, dest.lat, dest.lng);
-                const estMinutes = Math.round((distKm / 35) * 60) + 10; // 35 km/h emergency convoy speed + 10 min staging
-
-                // Optimization Score: Higher is better
-                // Prefers higher surplus capacity, closer distance, higher elevation, open road
-                const distanceScore = Math.max(0, 100 - (distKm * 5));
-                const capacityScore = Math.min(100, (destCap.surplusCapacity / 1000) * 2);
-                const roadScore = dest.factors ? dest.factors.roadAccessibility : 80;
-                const compositeScore = Math.round(distanceScore * 0.40 + capacityScore * 0.35 + roadScore * 0.25);
-
-                return {
-                    destinationCell: dest,
-                    distanceKm: Math.round(distKm * 10) / 10,
-                    travelTimeMinutes: estMinutes,
-                    availableSurplus: destCap.surplusCapacity,
-                    destinationShelter: dest.nearestShelter,
-                    shelterCapacity: dest.shelterCapacity,
-                    medicalSupport: dest.nearbyHospitals[0] || 'Designated Field Unit',
-                    score: compositeScore
-                };
-            })
-            .sort((a, b) => b.score - a.score);
-
-        return {
-            needed: true,
-            peopleToMove,
-            primaryRecommendation: candidates[0] || null,
-            allCandidates: candidates
-        };
-    }
-
-    /**
-     * Generate H3 Hexagonal Grid over Manali · Rohtang Corridor (Beas River Basin, Himachal Pradesh)
-     * Matches the exact Manali H3 Geofence coordinates [32.2396, 77.1887] and H3 Res 9 cells
-     */
-    function generateManaliHexGrid() {
-        const MANALI_CENTER_LAT = 32.2396;
-        const MANALI_CENTER_LNG = 77.1887;
-        const H3_RES = 9; // ~174m resolution
-
-        // The 3 primary hazard cells from the Manali H3 geofence snippet
-        const explicitHazardCells = [
-            '892834d2d2bffff', // Old Manali Road Curve
-            '892834d2d37ffff', // Beas Riverbed Lowland
-            '892834d2d3fffff'  // Bahang Embankment Breach
-        ];
-
-        // Beas River flood surge spine coordinates through Manali Valley (extended along valley floor)
-        const beasSpine = [
-            { lat: 32.3200, lng: 77.1650, name: 'Kothi Gorge Upper' },
-            { lat: 32.3000, lng: 77.1700, name: 'Palchan Upper Reach' },
-            { lat: 32.2850, lng: 77.1720, name: 'Palchan Reach' },
-            { lat: 32.2600, lng: 77.1840, name: 'Bahang Reach' },
-            { lat: 32.2450, lng: 77.1930, name: 'Old Manali Curve' },
-            { lat: 32.2396, lng: 77.1887, name: 'Manali Mall Core' },
-            { lat: 32.2300, lng: 77.1950, name: 'Aleo Riverside' },
-            { lat: 32.2150, lng: 77.1980, name: 'Klash 15-Mile' },
-            { lat: 32.1800, lng: 77.1900, name: 'Haripur Lower Basin' }
-        ];
-
-        const cells = [];
-        let hexList = [];
-
-        // Check if Uber h3-js library is available in window
-        if (typeof window.h3 !== 'undefined' && typeof window.h3.latLngToCell === 'function') {
-            try {
-                const baseCell = window.h3.latLngToCell(32.2432, 77.1935, H3_RES) || '892834d2d2bffff';
-                // Radius increased by 5 more blocks/rings (from 7 rings to 12 rings = ~469 cells)
-                const disk = window.h3.gridDisk(baseCell, 12);
-                // Ensure all explicit hazard cells are present
-                explicitHazardCells.forEach(hc => {
-                    if (!disk.includes(hc)) disk.push(hc);
-                });
-                hexList = disk.map(cellId => {
-                    const coords = window.h3.cellToLatLng(cellId);
-                    const boundary = window.h3.cellToBoundary(cellId).map(p => [p[0], p[1]]);
-                    return {
-                        id: cellId,
-                        lat: coords[0],
-                        lng: coords[1],
-                        boundary: boundary
-                    };
-                });
-            } catch (e) {
-                console.warn('h3-js gridDisk error, using geometric fallback:', e);
-            }
-        }
-
-        // Geometric fallback if h3-js is not available or returned too few cells (expanded by 5 blocks)
-        if (!hexList || hexList.length < 50) {
-            const cosLat = Math.cos(MANALI_CENTER_LAT * Math.PI / 180);
-            const R_LAT = 0.0022; // ~240m radius
-            const R_LNG = R_LAT / cosLat;
-            const DELTA_LAT = 1.5 * R_LAT;
-            const DELTA_LNG = Math.sqrt(3) * R_LNG;
-            const ODD_ROW_OFFSET = 0.5 * DELTA_LNG;
-
-            const ROWS = 25; // Expanded by 5 blocks in each direction
-            const COLS = 23; // Expanded by 5 blocks in each direction
-            const START_LAT = MANALI_CENTER_LAT + 12 * DELTA_LAT;
-            const START_LNG = MANALI_CENTER_LNG - 11 * DELTA_LNG;
-
-            hexList = [];
-            let fallbackCounter = 0;
-
-            for (let r = 0; r < ROWS; r++) {
-                const centerLat = START_LAT - r * DELTA_LAT;
-                const rowOffset = (r % 2 === 1) ? ODD_ROW_OFFSET : 0;
-
-                for (let c = 0; c < COLS; c++) {
-                    const centerLng = START_LNG + c * DELTA_LNG + rowOffset;
-                    const boundary = [];
-                    for (let i = 0; i < 6; i++) {
-                        const angleRad = (60 * i + 30) * Math.PI / 180;
-                        const vLat = centerLat + R_LAT * Math.sin(angleRad);
-                        const vLng = centerLng + R_LNG * Math.cos(angleRad);
-                        boundary.push([vLat, vLng]);
-                    }
-
-                    let cellId = (fallbackCounter < explicitHazardCells.length)
-                        ? explicitHazardCells[fallbackCounter]
-                        : '892834' + (fallbackCounter.toString(16).padStart(4, '0')) + 'fffff';
-                    fallbackCounter++;
-
-                    hexList.push({
-                        id: cellId,
-                        lat: centerLat,
-                        lng: centerLng,
-                        boundary: boundary
-                    });
-                }
-            }
-        }
-
-        // Process and categorize every H3 cell
-        hexList.forEach((hex, idx) => {
-            const centerLat = hex.lat;
-            const centerLng = hex.lng;
-            const cellId = hex.id;
-
-            // Distance to Beas river spine in km
-            let minDistKm = 999;
-            for (const pt of beasSpine) {
-                const d = calculateDistanceKm(centerLat, centerLng, pt.lat, pt.lng);
-                if (d < minDistKm) minDistKm = d;
-            }
-
-            const isExplicitHazard = explicitHazardCells.includes(cellId);
-
-            let riskScore, riskLevel, hazardType, roadStatus, capacityDeficit, waterLevelM;
-            let elevation, pop, safeCap, currentCap;
-
-            if (isExplicitHazard || minDistKm <= 0.35) {
-                // Critical Hazard Zone (Active Beas River Inundation & Sharp Road Curve)
-                riskScore = isExplicitHazard ? 96 : Math.min(98, Math.round(95 - (minDistKm * 15)));
-                riskLevel = 'critical';
-                hazardType = 'Beas River Flash Inundation';
-                elevation = Math.round(2040 + (minDistKm * 40));
-                pop = Math.round(1800 + (idx * 230) % 2400);
-                safeCap = Math.round(pop * 0.95);
-                currentCap = Math.round(pop * 0.10); // Collapsed carrying capacity
-                capacityDeficit = pop - currentCap;
-                waterLevelM = +(3.8 + (Math.sin(idx) + 1) * 0.6).toFixed(1);
-                roadStatus = 'Submerged';
-            } else if (minDistKm <= 0.85) {
-                // High Risk Alert Zone (River Terrace & Lowland Buffer)
-                riskScore = Math.min(80, Math.max(62, Math.round(78 - (minDistKm - 0.35) * 28)));
-                riskLevel = 'orange';
-                hazardType = 'Slope Surcharge / Buffer';
-                elevation = Math.round(2080 + (minDistKm * 80));
-                pop = Math.round(2200 + (idx * 180) % 1800);
-                safeCap = Math.round(pop * 1.05);
-                currentCap = Math.round(pop * 0.45);
-                capacityDeficit = Math.max(0, pop - currentCap);
-                waterLevelM = +(0.8 + (Math.cos(idx) + 1) * 0.4).toFixed(1);
-                roadStatus = 'Congested';
-            } else if (minDistKm <= 1.6) {
-                // Moderate Watch Slope Zone
-                riskScore = Math.min(58, Math.max(38, Math.round(56 - (minDistKm - 0.85) * 18)));
-                riskLevel = 'moderate';
-                hazardType = 'Hydrological Watch';
-                elevation = Math.round(2140 + (minDistKm * 90));
-                pop = Math.round(2800 + (idx * 310) % 2100);
-                safeCap = Math.round(pop * 1.2);
-                currentCap = safeCap;
-                capacityDeficit = 0;
-                waterLevelM = 0;
-                roadStatus = 'Open';
-            } else {
-                // Safe High-Ground Sanctuary (ABVIMAS Ridge, Vashisht Crest, Solang Safe Plateau)
-                riskScore = Math.min(32, Math.max(12, Math.round(28 - (minDistKm - 1.6) * 6)));
-                riskLevel = 'safe';
-                hazardType = 'Safe Refuge Center';
-                elevation = Math.round(2250 + (minDistKm * 110));
-                pop = Math.round(3500 + (idx * 420) % 3000);
-                safeCap = Math.round(pop * 2.8); // Large safe reserve
-                currentCap = safeCap;
-                capacityDeficit = 0;
-                waterLevelM = 0;
-                roadStatus = 'Open';
-            }
-
-            // Descriptive landmark name based on Manali topography
-            let cellName = '';
-            if (cellId === '892834d2d2bffff') {
-                cellName = 'Old Manali Bridge & Curve Sector';
-            } else if (cellId === '892834d2d37ffff') {
-                cellName = 'Beas Riverbed Lowland Core';
-            } else if (cellId === '892834d2d3fffff') {
-                cellName = 'Bahang Inundation Embankment';
-            } else if (centerLat > 32.250 && centerLng < 77.185) {
-                cellName = (riskLevel === 'safe' ? 'Solang High Alpine Plateau' : 'Palchan River Confluence');
-            } else if (centerLat > 32.245 && centerLng > 77.195) {
-                cellName = (riskLevel === 'safe' ? 'Vashisht Thermal High Ridge' : 'Vashisht Lower Bridge Flank');
-            } else if (centerLat < 32.235 && centerLng < 77.185) {
-                cellName = (riskLevel === 'safe' ? 'ABVIMAS High Mountaineering Campus' : 'Log Huts Hillside Watch');
-            } else if (centerLat < 32.235 && centerLng >= 77.185) {
-                cellName = (riskLevel === 'critical' ? 'Aleo - Manali Highway Riverside' : 'Prini Left Bank Terrace');
-            } else if (centerLat >= 32.238 && centerLat <= 32.245 && centerLng <= 77.192) {
-                cellName = (riskLevel === 'safe' ? 'Old Manali Pine Ridge Safe Zone' : 'Club House - Beas Inundation');
-            } else {
-                const sectorDir = centerLng > 77.1887 ? 'East' : 'West';
-                const sectorLat = centerLat > 32.2396 ? 'North' : 'South';
-                cellName = `Manali ${sectorLat}-${sectorDir} Sector ${idx + 1}`;
-            }
-
-            cells.push({
-                id: cellId,
-                name: cellName,
-                sector: 'Manali · Rohtang Corridor (Beas River Basin)',
-                lat: centerLat,
-                lng: centerLng,
-                boundary: hex.boundary,
-                elevation: elevation,
-                baselineRisk: riskScore,
-                currentRisk: riskScore,
-                riskLevel: riskLevel,
-                hazardType: hazardType,
-                population: pop,
-                vulnerablePopulation: {
-                    total: Math.round(pop * 0.28),
-                    infants: Math.round(pop * 0.07),
-                    elderly: Math.round(pop * 0.11),
-                    disabled: Math.round(pop * 0.04),
-                    pregnant: Math.round(pop * 0.06)
-                },
-                carryingCapacity: currentCap,
-                safeCapacityThreshold: safeCap,
-                capacityDeficit: capacityDeficit,
-                surplusCapacity: Math.max(0, currentCap - pop),
-                nearestShelter: riskLevel === 'safe' ? `${cellName} Relief Center` : 'ABVIMAS Mountaineering Complex, Manali',
-                shelterCapacity: riskLevel === 'safe' ? 30000 : 4000,
-                shelterDistanceKm: Math.round((minDistKm + 0.8) * 10) / 10,
-                evacuationTimeHours: +(0.8 + minDistKm * 0.5).toFixed(1),
-                nearbyHospitals: ['Civil Hospital Manali (Left Bank)', 'Mission Hospital Manali'],
-                roadStatus: roadStatus,
-                primaryRoad: roadStatus === 'Submerged' ? 'NH-3 Beas Corridor (Submerged at Mile 14 Curve)' : 'Atal Tunnel High Highway Bypass',
-                waterLevelM: waterLevelM,
-                rainfallMm: Math.round(280 + (idx * 12) % 100),
-                factors: {
-                    historicalDisasters: Math.round(riskScore / 12),
-                    rainfallImpact: Math.min(100, riskScore + 4),
-                    elevationVulnerability: Math.max(10, 100 - Math.round(elevation / 25)),
-                    populationDensity: Math.round((pop / 5000) * 100),
-                    infrastructureVulnerability: riskScore,
-                    distanceToEmergencyServices: Math.round(minDistKm * 10),
-                    roadAccessibility: roadStatus === 'Submerged' ? 12 : 88
-                }
-            });
         });
 
+        scoredCandidates.sort((a, b) => b.suitabilityScore - a.suitabilityScore);
+        return scoredCandidates.slice(0, count);
+    }
+
+    /**
+     * Generate Comprehensive H3 Hexagonal Honeycomb Grid for the Whole State of Sikkim
+     */
+    let cachedGrid = null;
+
+    function generateSikkimHexGrid() {
+        if (cachedGrid && cachedGrid.length > 100) {
+            return cachedGrid;
+        }
+
+        const cells = [];
+        const R_LAT = 0.024; // ~2.6 km radius, perfect visual scale
+        const stepLat = 1.5 * R_LAT; // ~0.036 deg
+
+        const minLat = 27.08;
+        const maxLat = 28.10;
+
+        let rowIdx = 0;
+        let cellCounter = 100;
+
+        for (let lat = minLat; lat <= maxLat; lat += stepLat) {
+            const cosLat = Math.cos(lat * Math.PI / 180);
+            const stepLng = (Math.sqrt(3) * R_LAT) / (cosLat > 0.01 ? cosLat : 1.0);
+            const rowOffset = (rowIdx % 2 === 1) ? stepLng * 0.5 : 0;
+
+            for (let lng = 88.04 + rowOffset; lng <= 88.94; lng += stepLng) {
+                if (!isInsideSikkim(lat, lng)) {
+                    continue;
+                }
+
+                cellCounter++;
+
+                const distRiver = distanceToRiverKm(lat, lng);
+
+                // District attribution
+                let district = 'Mangan (North Sikkim)';
+                if (lat < 27.42 && lng < 88.35) {
+                    district = 'Gyalshing (West Sikkim)';
+                } else if (lat < 27.35 && lng >= 88.35 && lng < 88.60) {
+                    district = 'Namchi (South Sikkim)';
+                } else if (lat < 27.45 && lng >= 88.52) {
+                    district = 'Gangtok (East Sikkim)';
+                }
+
+                // Topographical elevation
+                let elevation = 1600;
+                if (lat > 27.75) {
+                    elevation = Math.round(3200 + (lat - 27.75) * 4500);
+                } else if (lat > 27.50) {
+                    elevation = Math.round(1400 + distRiver * 150);
+                } else if (distRiver < 2.5) {
+                    elevation = Math.round(420 + distRiver * 110);
+                } else {
+                    elevation = Math.round(1350 + distRiver * 140);
+                }
+
+                // Risk categorization based on terrain & river proximity
+                let riskScore = 20;
+                let riskLevel = 'safe';
+                let hazardType = 'Safe High-Ground Sanctuary';
+                let roadStatus = 'Open';
+                let waterLevelM = 0;
+                let pop = Math.round(1400 + ((lat * 1000 + lng * 1000) % 1800));
+
+                if (distRiver <= 2.2 && lat <= 27.75 && lat >= 27.15) {
+                    if (distRiver <= 1.0) {
+                        riskScore = Math.min(98, Math.max(82, Math.round(96 - distRiver * 12)));
+                        riskLevel = 'critical';
+                        hazardType = 'Fluvial Inundation Surge Corridor';
+                        roadStatus = 'Submerged';
+                        waterLevelM = +(4.2 + ((cellCounter % 15) / 10)).toFixed(1);
+                        pop = Math.round(2800 + ((cellCounter * 137) % 2100));
+                    } else {
+                        riskScore = Math.min(80, Math.max(62, Math.round(78 - (distRiver - 1.0) * 12)));
+                        riskLevel = 'orange';
+                        hazardType = 'Alluvial Terrace Backwater Buffer';
+                        roadStatus = 'Congested';
+                        waterLevelM = +(1.2 + ((cellCounter % 10) / 10)).toFixed(1);
+                        pop = Math.round(2200 + ((cellCounter * 113) % 1800));
+                    }
+                } else if (distRiver <= 5.0) {
+                    riskScore = Math.min(58, Math.max(38, Math.round(56 - (distRiver - 2.2) * 6)));
+                    riskLevel = 'moderate';
+                    hazardType = 'Slope Runoff & Rill Erosion';
+                    roadStatus = 'Open';
+                    waterLevelM = 0;
+                    pop = Math.round(1800 + ((cellCounter * 97) % 1600));
+                } else {
+                    riskScore = Math.min(32, Math.max(10, Math.round(26 - Math.min(15, (distRiver - 5.0) * 2))));
+                    riskLevel = 'safe';
+                    hazardType = 'Safe Refuge Sanctuary';
+                    roadStatus = 'Open';
+                    waterLevelM = 0;
+                    pop = Math.round(1600 + ((cellCounter * 83) % 2200));
+                }
+
+                // Carrying Capacity
+                let currentCap = Math.round(pop * 1.5);
+                let safeCap = Math.round(pop * 2.0);
+                let capacityDeficit = 0;
+                if (riskLevel === 'critical') {
+                    currentCap = Math.round(pop * 0.15);
+                    safeCap = Math.round(pop * 0.90);
+                    capacityDeficit = Math.max(1100, pop - currentCap);
+                } else if (riskLevel === 'orange') {
+                    currentCap = Math.round(pop * 0.45);
+                    safeCap = Math.round(pop * 1.05);
+                    capacityDeficit = Math.max(0, pop - currentCap);
+                } else if (riskLevel === 'safe') {
+                    currentCap = Math.round(pop * 4.5);
+                    safeCap = Math.round(pop * 5.0);
+                }
+
+                const boundary = getHexagonBoundary(lat, lng, R_LAT);
+                const cellId = `892834d${lat.toFixed(2).replace('.', '')}${lng.toFixed(2).replace('.', '')}fff`;
+
+                cells.push({
+                    id: cellId,
+                    name: `${district.split(' ')[0]} H3 Sector ${cellCounter}`,
+                    sector: district,
+                    district: district,
+                    lat: +(lat.toFixed(4)),
+                    lng: +(lng.toFixed(4)),
+                    boundary: boundary,
+                    elevation: elevation,
+                    baselineRisk: riskScore,
+                    currentRisk: riskScore,
+                    riskLevel: riskLevel,
+                    hazardType: hazardType,
+                    population: pop,
+                    vulnerablePopulation: {
+                        total: Math.round(pop * 0.28),
+                        infants: Math.round(pop * 0.07),
+                        elderly: Math.round(pop * 0.11),
+                        disabled: Math.round(pop * 0.04),
+                        pregnant: Math.round(pop * 0.06)
+                    },
+                    carryingCapacity: currentCap,
+                    safeCapacityThreshold: safeCap,
+                    capacityDeficit: capacityDeficit,
+                    surplusCapacity: Math.max(0, currentCap - pop),
+                    nearestShelter: riskLevel === 'safe' ? 'Elevated Ridge Sanctuary Hub' : 'Pelling High Ridge Mega Sanctuary',
+                    shelterCapacity: riskLevel === 'safe' ? 32000 : 8000,
+                    shelterDistanceKm: +(1.5 + distRiver * 0.7).toFixed(1),
+                    evacuationTimeHours: +(0.8 + distRiver * 0.2).toFixed(1),
+                    nearbyHospitals: ['District Hospital Mangan', 'District Hospital Gyalshing', 'STNM Hospital Gangtok'],
+                    roadStatus: roadStatus,
+                    primaryRoad: roadStatus === 'Submerged' ? 'Valley Highway (Submerged)' : 'Mountain Ridge Bypass Road',
+                    waterLevelM: waterLevelM,
+                    rainfallMm: Math.round(220 + (cellCounter % 90)),
+                    factors: {
+                        historicalDisasters: Math.round(riskScore / 10),
+                        rainfallImpact: Math.min(100, riskScore + 4),
+                        elevationVulnerability: Math.max(10, 100 - Math.round(elevation / 45)),
+                        populationDensity: Math.round((pop / 4000) * 100),
+                        infrastructureVulnerability: riskScore,
+                        distanceToEmergencyServices: Math.round(distRiver * 8),
+                        roadAccessibility: roadStatus === 'Submerged' ? 12 : 90
+                    }
+                });
+            }
+            rowIdx++;
+        }
+
+        // Pin the primary hazard cell: Chungthang Dam & Teesta Fluvial Basin
+        const primaryIdx = cells.findIndex(c => calculateDistanceKm(c.lat, c.lng, 27.6039, 88.6467) < 3.8);
+        if (primaryIdx !== -1) {
+            cells[primaryIdx].id = '892834d2d2bffff';
+            cells[primaryIdx].name = 'Chungthang Dam & Teesta Fluvial Basin';
+            cells[primaryIdx].district = 'Mangan (North Sikkim)';
+            cells[primaryIdx].sector = 'Mangan District · Upper Teesta Gorge Reach';
+            cells[primaryIdx].currentRisk = 97;
+            cells[primaryIdx].baselineRisk = 89;
+            cells[primaryIdx].riskLevel = 'critical';
+            cells[primaryIdx].hazardType = 'GLOF & Flash Flood Surge';
+            cells[primaryIdx].elevation = 1790;
+            cells[primaryIdx].population = 3640;
+            cells[primaryIdx].capacityDeficit = 1850;
+            cells[primaryIdx].carryingCapacity = 850;
+            cells[primaryIdx].safeCapacityThreshold = 8500;
+            cells[primaryIdx].nearestShelter = 'Kabi Lungchok High Ridge Sanctuary';
+            cells[primaryIdx].waterLevelM = 6.2;
+            cells[primaryIdx].rainfallMm = 385;
+            cells[primaryIdx].roadStatus = 'Submerged';
+        }
+
+        // Pin Legship hazard cell
+        const legshipIdx = cells.findIndex(c => calculateDistanceKm(c.lat, c.lng, 27.2833, 88.2833) < 3.8);
+        if (legshipIdx !== -1) {
+            cells[legshipIdx].id = '892834d2d1bffff';
+            cells[legshipIdx].name = 'Legship Rangeet River Lowland Floor';
+            cells[legshipIdx].district = 'Gyalshing (West Sikkim)';
+            cells[legshipIdx].currentRisk = 96;
+            cells[legshipIdx].riskLevel = 'critical';
+            cells[legshipIdx].hazardType = 'Fluvial Inundation & Dam Breach';
+            cells[legshipIdx].elevation = 520;
+            cells[legshipIdx].population = 4850;
+            cells[legshipIdx].capacityDeficit = 3750;
+            cells[legshipIdx].nearestShelter = 'Gyalshing District HQ High Ridge';
+            cells[legshipIdx].roadStatus = 'Submerged';
+        }
+
+        // Pin Pelling Safe Sanctuary
+        const pellingIdx = cells.findIndex(c => calculateDistanceKm(c.lat, c.lng, 27.3167, 88.2333) < 3.8);
+        if (pellingIdx !== -1) {
+            cells[pellingIdx].id = '892834d2d09ffff';
+            cells[pellingIdx].name = 'Pelling High Ridge Mega Sanctuary';
+            cells[pellingIdx].district = 'Gyalshing (West Sikkim)';
+            cells[pellingIdx].currentRisk = 12;
+            cells[pellingIdx].riskLevel = 'safe';
+            cells[pellingIdx].hazardType = 'Safe Refuge Sanctuary';
+            cells[pellingIdx].elevation = 2150;
+            cells[pellingIdx].population = 4200;
+            cells[pellingIdx].carryingCapacity = 35000;
+            cells[pellingIdx].surplusCapacity = 30800;
+            cells[pellingIdx].capacityDeficit = 0;
+            cells[pellingIdx].roadStatus = 'Open';
+        }
+
+        cachedGrid = cells;
         return cells;
     }
 
@@ -487,7 +448,9 @@ window.H3_ENGINE = (function() {
         calculateMCDARiskScore,
         evaluateCarryingCapacity,
         findOptimalRelocationDestinations,
-        generateManaliHexGrid,
-        generateSikkimHexGrid: generateManaliHexGrid // Backward-compatibility alias
+        generateSikkimHexGrid,
+        generateManaliHexGrid: generateSikkimHexGrid,
+        generateKoshiHexGrid: generateSikkimHexGrid,
+        generateHexGrid: generateSikkimHexGrid
     };
 })();

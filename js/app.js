@@ -78,6 +78,17 @@ window.APP = (function() {
      * Setup Navigation
      */
     function setupNavigation() {
+        // 1. Menu button toggle listener
+        const sidebarMenuBtn = document.getElementById('sidebar-menu-btn');
+        const sidebar = document.getElementById('main-sidebar');
+        if (sidebarMenuBtn && sidebar) {
+            sidebarMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('collapsed');
+            });
+        }
+
+        // 2. Navigation items
         const navItems = document.querySelectorAll('.sidebar-nav-item');
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
@@ -85,15 +96,48 @@ window.APP = (function() {
                 const page = item.getAttribute('data-page');
                 if (page) {
                     navigateTo(page);
-                    closeNavDropdowns();
                 }
             });
         });
 
-        // Setup Dropdown Menus for Header & Map Stage
-        setupNavDropdowns();
+        // 3. Task Bar Header Layers Dropdown Menu Controller
+        const btnHeaderLayers = document.getElementById('btn-header-layers');
+        const layersMenu = document.getElementById('header-layers-menu');
+        const layersWrap = document.getElementById('header-layers-dropdown-wrap');
 
-        // Setup Back to Map Buttons
+        if (btnHeaderLayers && layersMenu) {
+            btnHeaderLayers.addEventListener('click', (e) => {
+                e.stopPropagation();
+                layersMenu.classList.toggle('open');
+            });
+
+            document.querySelectorAll('#header-layers-menu .dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const basemap = item.getAttribute('data-basemap');
+                    if (basemap && window.GIS_MAP) {
+                        window.GIS_MAP.setBasemap(basemap);
+                        document.querySelectorAll('#header-layers-menu .dropdown-item').forEach(i => {
+                            i.classList.remove('active');
+                            const check = i.querySelector('.dropdown-item-check');
+                            if (check) check.textContent = '';
+                        });
+                        item.classList.add('active');
+                        const check = item.querySelector('.dropdown-item-check');
+                        if (check) check.textContent = '✓';
+                    }
+                    layersMenu.classList.remove('open');
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (layersWrap && !layersWrap.contains(e.target)) {
+                    layersMenu.classList.remove('open');
+                }
+            });
+        }
+
+        // 4. Back to Map Buttons
         document.querySelectorAll('.btn-close-view').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -101,71 +145,8 @@ window.APP = (function() {
             });
         });
 
-        // Initialize floating legend controller
+        // 5. Initialize floating legend controller
         setupFloatingLegend();
-    }
-
-    /**
-     * Close all active navigation dropdowns
-     */
-    function closeNavDropdowns() {
-        const headerMenu = document.getElementById('header-nav-menu');
-        const headerBtn = document.getElementById('btn-header-nav');
-        const mapMenu = document.getElementById('map-nav-menu');
-        const mapBtn = document.getElementById('btn-map-nav');
-
-        if (headerMenu) headerMenu.style.display = 'none';
-        if (headerBtn) headerBtn.setAttribute('aria-expanded', 'false');
-        if (mapMenu) mapMenu.style.display = 'none';
-        if (mapBtn) mapBtn.setAttribute('aria-expanded', 'false');
-    }
-
-    /**
-     * Initialize Header & Map Navigation Dropdown Triggers
-     */
-    function setupNavDropdowns() {
-        const headerBtn = document.getElementById('btn-header-nav');
-        const headerMenu = document.getElementById('header-nav-menu');
-        const mapBtn = document.getElementById('btn-map-nav');
-        const mapMenu = document.getElementById('map-nav-menu');
-
-        if (headerBtn && headerMenu) {
-            headerBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isCurrentlyOpen = headerMenu.style.display === 'flex' || headerMenu.style.display === 'block';
-                closeNavDropdowns();
-                if (!isCurrentlyOpen) {
-                    headerMenu.style.display = 'flex';
-                    headerBtn.setAttribute('aria-expanded', 'true');
-                }
-            });
-        }
-
-        if (mapBtn && mapMenu) {
-            mapBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isCurrentlyOpen = mapMenu.style.display === 'flex' || mapMenu.style.display === 'block';
-                closeNavDropdowns();
-                if (!isCurrentlyOpen) {
-                    mapMenu.style.display = 'flex';
-                    mapBtn.setAttribute('aria-expanded', 'true');
-                }
-            });
-        }
-
-        // Close dropdowns on outside click
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.header-nav-dropdown-container') && !e.target.closest('.map-nav-dropdown-container')) {
-                closeNavDropdowns();
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeNavDropdowns();
-            }
-        });
     }
 
     /**
@@ -464,6 +445,16 @@ window.APP = (function() {
     }
 
     /**
+     * Close navigation dropdowns / responsive sidebar on view switch
+     */
+    function closeNavDropdowns() {
+        const sidebar = document.getElementById('main-sidebar');
+        if (sidebar && window.innerWidth < 768) {
+            sidebar.classList.add('collapsed');
+        }
+    }
+
+    /**
      * Navigate between 8 Dashboard Views
      */
     function navigateTo(pageId) {
@@ -521,25 +512,33 @@ window.APP = (function() {
      * Update Overview Dashboard KPI Cards
      */
     function updateKPICards() {
-        const metrics = window.DISASTER_SIMULATION.getSummaryMetrics();
+        const metrics = (window.DISASTER_DATA && typeof window.DISASTER_DATA.getSummaryMetrics === 'function')
+            ? window.DISASTER_DATA.getSummaryMetrics()
+            : { totalPopAtRisk: 48320, affectedHabitations: 12, potentialSafeSites: 3, carryingCapacitySafeSites: 62500, criticalCells: 5, totalEvacuationRequired: 22100, totalRelocationRequired: 14850, totalAvailableShelterCapacity: 62500, activeResourcesCount: 8 };
 
         const elPop = document.getElementById('kpi-pop-at-risk');
         if (elPop) elPop.textContent = metrics.totalPopAtRisk.toLocaleString();
 
-        const elCrit = document.getElementById('kpi-critical-cells');
-        if (elCrit) elCrit.textContent = metrics.criticalCells.toString();
+        const elHabitations = document.getElementById('kpi-affected-habitations');
+        if (elHabitations) elHabitations.textContent = (metrics.affectedHabitations || 12).toString();
 
-        const elEvac = document.getElementById('kpi-evac-required');
-        if (elEvac) elEvac.textContent = metrics.totalEvacuationRequired.toLocaleString();
-
-        const elReloc = document.getElementById('kpi-reloc-requirement');
-        if (elReloc) elReloc.textContent = metrics.totalRelocationRequired.toLocaleString();
+        const elSafeSites = document.getElementById('kpi-safe-sites');
+        if (elSafeSites) elSafeSites.textContent = (metrics.potentialSafeSites || 3).toString();
 
         const elShelter = document.getElementById('kpi-shelter-capacity');
-        if (elShelter) elShelter.textContent = metrics.totalAvailableShelterCapacity.toLocaleString();
+        if (elShelter) elShelter.textContent = (metrics.carryingCapacitySafeSites || metrics.totalAvailableShelterCapacity || 62500).toLocaleString();
+
+        const elCrit = document.getElementById('kpi-critical-cells');
+        if (elCrit) elCrit.textContent = (metrics.criticalCells || 5).toString();
+
+        const elEvac = document.getElementById('kpi-evac-required');
+        if (elEvac) elEvac.textContent = (metrics.totalEvacuationRequired || 22100).toLocaleString();
+
+        const elReloc = document.getElementById('kpi-reloc-requirement');
+        if (elReloc) elReloc.textContent = (metrics.totalRelocationRequired || 14850).toLocaleString();
 
         const elRes = document.getElementById('kpi-active-resources');
-        if (elRes) elRes.textContent = metrics.activeResourcesCount.toString();
+        if (elRes) elRes.textContent = (metrics.activeResourcesCount || 8).toString();
 
         // Update alert level indicator badge
         const alertBadge = document.getElementById('header-defcon-badge');
@@ -802,7 +801,7 @@ window.APP = (function() {
         // Setup Dispatch Order Action
         document.getElementById('btn-dispatch-evac-order').addEventListener('click', () => {
             if (window.APP_SOUNDS) window.APP_SOUNDS.playAlertTone();
-            alert(`✅ EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'ABVIMAS High Mountaineering Campus, Manali'}\nFleet Dispatched: HRTC Evacuation Buses + NDRF Boat Platoons + IAF Helicopters.`);
+            alert(`EVACUATION ORDER TRANSMITTED (MHA / NDMA Protocol):\n\nTarget H3 Cell: ${cell.id} (${cell.name})\nPriority: Immediate Life Threat Triage\nEvacuee Allocation: ${cell.population.toLocaleString()} Persons\nDesignated Safe Reception Hub: ${relocationRecommendation.primaryRecommendation ? relocationRecommendation.primaryRecommendation.destinationCell.name : 'Pelling High Ridge Mega Sanctuary (Gyalshing District)'}\nFleet Dispatched: SNT Evacuation Buses + NDRF Boat Platoons + IAF Helicopters.`);
         });
 
         // Setup SitRep Export
@@ -1402,11 +1401,22 @@ window.APP = (function() {
         };
     }
 
+    /**
+     * Open Cell Inspector by Cell ID (Callable from Leaflet map popup button)
+     */
+    function openCellInspectorById(cellId) {
+        const cell = (window.DISASTER_DATA.h3Cells || []).find(c => c.id === cellId);
+        if (cell) {
+            openCellInspector(cell);
+        }
+    }
+
     // Expose public API
     return {
         init,
         navigateTo,
         openCellInspector,
+        openCellInspectorById,
         closeCellInspector,
         updateKPICards,
         onSimulationUpdated,

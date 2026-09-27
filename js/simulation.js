@@ -4,14 +4,14 @@
  */
 
 window.DISASTER_SIMULATION = (function() {
-    // Current simulation parameters for Manali Rohtang Corridor
+    // Current simulation parameters for Sikkim: Mangan & Gyalshing Districts
     let config = {
-        disasterType: 'Beas River Cloudburst Surge & Flash Inundation',
+        disasterType: 'South Lhonak GLOF & Teesta-Rangeet Fluvial Surge',
         severityLevel: 4, // 1 to 5
-        rainfallMm: 360,
-        waterLevelRiseM: 4.6,
+        rainfallMm: 385,
+        waterLevelRiseM: 6.2,
         durationHours: 24,
-        affectedSector: 'Manali · Rohtang Corridor (Palchan - Bahang - Manali - Aleo Reach)',
+        affectedSector: 'Mangan (North Sikkim) & Gyalshing (West Sikkim) Districts',
         currentHourStep: 24 // 0, 6, 12, 24
     };
 
