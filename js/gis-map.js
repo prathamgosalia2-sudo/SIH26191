@@ -68,6 +68,14 @@ window.GIS_MAP = (function() {
             attributionControl: true
         });
 
+        // Dedicated High-Priority Popup Pane (In front of all floating UI elements)
+        map.createPane('h3PopupPane');
+        const popupPane = map.getPane('h3PopupPane');
+        if (popupPane) {
+            popupPane.style.zIndex = '9999';
+            popupPane.style.pointerEvents = 'auto';
+        }
+
         // 1. ESRI Satellite Basemap
         tileLayers.satellite = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -297,7 +305,15 @@ window.GIS_MAP = (function() {
             iconAnchor: [0, 115]
         });
 
-        L.marker([anchorLat, anchorLng], { icon: popupIcon, interactive: true }).addTo(leaderLineGroup);
+        L.marker([anchorLat, anchorLng], { 
+            icon: popupIcon, 
+            interactive: true,
+            pane: 'h3PopupPane',
+            zIndexOffset: 10000 
+        }).addTo(leaderLineGroup);
+
+        // Frame the popup cleanly within view
+        map.panTo([anchorLat, anchorLng], { animate: true, duration: 0.35 });
 
         setTimeout(() => {
             const btnClose = document.getElementById('btn-close-hex-popup');

@@ -36,9 +36,9 @@
     --accent-cyan: #2563EB;
     --accent-coral: #EA580C;
 
-    --sidebar-width: 200px;
+    --sidebar-width: 215px;
     --header-height: 64px;
-    --bottom-strip-height: 90px;
+    --bottom-strip-height: 88px;
     --drawer-width: 440px;
 
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -439,11 +439,14 @@ html, body {
     position: relative;
     overflow: hidden;
     background-color: #F8FAFC;
+    display: flex;
+    flex-direction: column;
 }
 
 .command-stage {
+    flex: 1 1 auto;
     width: 100%;
-    height: calc(100% - var(--bottom-strip-height));
+    min-height: 0;
     position: relative;
     overflow: hidden;
 }
@@ -454,7 +457,7 @@ html, body {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 10;
+    z-index: auto !important;
 }
 
 #leaflet-map-inner {
@@ -463,7 +466,7 @@ html, body {
 }
 
 /* ==========================================================================
-   Floating Left Sidebar (Clean White Background, Dark Navy Text & Icons)
+   Floating Left Sidebar (Permanently Open Command Menu, Crisp Slate/Navy)
    ========================================================================== */
 .floating-left-sidebar {
     position: absolute;
@@ -476,30 +479,18 @@ html, body {
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     overflow: hidden;
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.floating-left-sidebar.collapsed {
-    width: auto;
 }
 
 .sidebar-header-menu {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
+    gap: 9px;
+    padding: 11px 14px;
     background: #F8FAFC;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--accent-navy);
-    font-weight: 700;
-    font-size: 13px;
     user-select: none;
-    transition: background 0.2s ease;
-}
-
-.sidebar-header-menu:hover {
-    background: #F1F5F9;
+    cursor: default;
 }
 
 .sidebar-header-menu svg {
@@ -507,32 +498,31 @@ html, body {
 }
 
 .sidebar-menu-title {
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 11.5px;
+    font-weight: 800;
     color: var(--accent-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
 }
 
 .sidebar-nav-list {
     list-style: none;
     margin: 0;
     padding: 6px 0;
-    transition: max-height 0.25s ease;
-}
-
-.floating-left-sidebar.collapsed .sidebar-nav-list {
-    display: none;
+    display: flex !important;
+    flex-direction: column;
 }
 
 .sidebar-nav-item {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 9px 14px;
+    padding: 8px 14px;
     font-size: 12px;
     color: #334155;
     cursor: pointer;
     transition: all 0.15s ease;
-    font-weight: 500;
+    font-weight: 600;
     border-left: 3px solid transparent;
     user-select: none;
 }
@@ -863,42 +853,42 @@ html, body {
 }
 
 /* ==========================================================================
-   Full-Width Bottom Horizontal KPI Strip (4 Pastel Cards)
+   Full-Width Bottom Horizontal KPI Strip (4 Pastel Cards - Never Cut Off)
    ========================================================================== */
 .bottom-kpi-strip {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    flex: 0 0 auto;
+    width: 100%;
     z-index: 1000;
-    height: var(--bottom-strip-height);
     background: #FFFFFF;
     border-top: 1px solid var(--border-subtle);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
-    padding: 10px 20px;
+    padding: 7px 16px 8px 16px;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
 }
 
 .kpi-banner-card {
     border-radius: 8px;
-    padding: 10px 14px;
+    padding: 7px 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     border: 1px solid;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-sizing: border-box;
+    min-width: 0;
 }
 
 .kpi-banner-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .kpi-icon-circle {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -909,6 +899,8 @@ html, body {
 .kpi-text-block {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
 }
 
 /* Card 1: Population at Risk */
@@ -925,17 +917,27 @@ html, body {
     font-weight: 700;
     color: #991B1B;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .kpi-card-pop-risk .kpi-card-value {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
     color: #DC2626;
     font-family: var(--font-mono);
+    line-height: 1.15;
+    margin: 1px 0;
 }
 .kpi-card-pop-risk .kpi-card-sub {
     font-size: 10.5px;
     color: #B91C1C;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Card 2: Affected Habitations */
@@ -952,17 +954,27 @@ html, body {
     font-weight: 700;
     color: #9A3412;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .kpi-card-habitations .kpi-card-value {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
     color: #EA580C;
     font-family: var(--font-mono);
+    line-height: 1.15;
+    margin: 1px 0;
 }
 .kpi-card-habitations .kpi-card-sub {
     font-size: 10.5px;
     color: #C2410C;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Card 3: Potential Safe Sites */
@@ -979,17 +991,27 @@ html, body {
     font-weight: 700;
     color: #1E40AF;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .kpi-card-safe-sites .kpi-card-value {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
     color: #2563EB;
     font-family: var(--font-mono);
+    line-height: 1.15;
+    margin: 1px 0;
 }
 .kpi-card-safe-sites .kpi-card-sub {
     font-size: 10.5px;
     color: #1D4ED8;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Card 4: Carrying Capacity (Safe Sites) */
@@ -1006,17 +1028,27 @@ html, body {
     font-weight: 700;
     color: #166534;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .kpi-card-capacity .kpi-card-value {
-    font-size: 20px;
+    font-size: 19px;
     font-weight: 900;
     color: #16A34A;
     font-family: var(--font-mono);
+    line-height: 1.15;
+    margin: 1px 0;
 }
 .kpi-card-capacity .kpi-card-sub {
     font-size: 10.5px;
     color: #15803D;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ==========================================================================
@@ -1025,6 +1057,14 @@ html, body {
 .mockup-popup-container {
     background: transparent;
     border: none;
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+}
+
+.leaflet-pane.leaflet-h3PopupPane-pane,
+.leaflet-h3PopupPane-pane {
+    z-index: 9999 !important;
+    pointer-events: auto !important;
 }
 
 .mockup-popup-card {
@@ -1032,10 +1072,12 @@ html, body {
     border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 14px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.2);
     width: 290px;
     color: var(--accent-navy);
     pointer-events: auto;
+    position: relative;
+    z-index: 9999 !important;
 }
 
 .mockup-popup-header, .mockup-popup-badge-row {
@@ -1257,7 +1299,7 @@ html, body {
     background: #FFFFFF;
     border: 1px solid var(--border-accent);
     border-radius: 12px;
-    z-index: 600;
+    z-index: 9998 !important;
     opacity: 0;
     visibility: hidden;
     transform: scale(0.96) translateX(12px);
@@ -1781,5 +1823,477 @@ html, body {
 
     .floating-left-sidebar {
         width: 170px;
+    }
+}
+
+/* ==========================================================================
+   OFFICIAL GOVERNMENT SITUATION REPORT (SITREP) DOCUMENT UI
+   Institutional Styling for NDMA / MHA / Sikkim SDMA
+   ========================================================================== */
+#sitrep-modal .modal-container {
+    width: 880px;
+    max-width: 96vw;
+    max-height: 92vh;
+    border-radius: 12px;
+    box-shadow: 0 25px 65px rgba(15, 23, 42, 0.25);
+    background: #FFFFFF;
+}
+
+.sitrep-doc {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    color: #0F172A;
+    font-family: var(--font-sans);
+}
+
+/* Official Institutional Header */
+.sitrep-official-header {
+    background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.sitrep-emblem-seal {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sitrep-gov-hierarchy {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--accent-navy);
+    text-transform: uppercase;
+}
+
+.sitrep-agency-sub {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    letter-spacing: 0.4px;
+    margin-bottom: 2px;
+}
+
+.sitrep-doc-title {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #0F172A;
+    margin: 6px 0;
+    text-transform: uppercase;
+}
+
+.sitrep-badges-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.sitrep-pill {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sitrep-pill-restricted {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+.sitrep-pill-priority {
+    background: #EFF6FF;
+    color: #2563EB;
+    border: 1px solid #BFDBFE;
+}
+
+.sitrep-pill-theater {
+    background: #F8FAFC;
+    color: #475569;
+    border: 1px solid #E2E8F0;
+}
+
+.sitrep-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border-subtle);
+    font-size: 11px;
+    text-align: left;
+}
+
+.sitrep-meta-item {
+    display: flex;
+    justify-content: space-between;
+    background: #F8FAFC;
+    padding: 5px 8px;
+    border-radius: 4px;
+    border: 1px solid #E2E8F0;
+}
+
+.sitrep-meta-label {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.sitrep-meta-val {
+    color: var(--accent-navy);
+    font-family: var(--font-mono);
+    font-weight: 700;
+}
+
+/* Executive KPI Grid in SITREP */
+.sitrep-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.sitrep-kpi-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.sitrep-kpi-card.card-danger {
+    border-left: 4px solid #DC2626;
+    background: #FEF2F2;
+}
+
+.sitrep-kpi-card.card-warning {
+    border-left: 4px solid #EA580C;
+    background: #FFF7ED;
+}
+
+.sitrep-kpi-card.card-info {
+    border-left: 4px solid #2563EB;
+    background: #EFF6FF;
+}
+
+.sitrep-kpi-card.card-success {
+    border-left: 4px solid #16A34A;
+    background: #F0FDF4;
+}
+
+.sitrep-kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.sitrep-kpi-num {
+    font-size: 18px;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    line-height: 1.2;
+}
+
+.sitrep-kpi-sub {
+    font-size: 10px;
+    color: var(--color-text-muted);
+}
+
+/* SitRep Content Sections */
+.sitrep-section-block {
+    background: #FFFFFF;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.sitrep-section-header {
+    background: #F8FAFC;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sitrep-sec-title {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 0;
+}
+
+.sitrep-section-body {
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #334155;
+}
+
+/* SitRep Modern Table */
+.sitrep-table-wrap {
+    overflow-x: auto;
+}
+
+.sitrep-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    text-align: left;
+}
+
+.sitrep-data-table th {
+    background: #F1F5F9;
+    color: var(--accent-navy);
+    font-weight: 700;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.sitrep-data-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #E2E8F0;
+    color: #1E293B;
+    vertical-align: middle;
+}
+
+.sitrep-data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sitrep-data-table tr:hover {
+    background: #F8FAFC;
+}
+
+.badge-risk-critical {
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    display: inline-block;
+}
+
+.badge-risk-high {
+    background: #FFEDD5;
+    color: #EA580C;
+    border: 1px solid #FED7AA;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    display: inline-block;
+}
+
+.badge-risk-moderate {
+    background: #FEF3C7;
+    color: #D97706;
+    border: 1px solid #FDE68A;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    display: inline-block;
+}
+
+.badge-risk-safe {
+    background: #DCFCE7;
+    color: #16A34A;
+    border: 1px solid #BBF7D0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    display: inline-block;
+}
+
+.corridor-pill {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.corridor-clear {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.corridor-blocked {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.corridor-caution {
+    background: #FEF3C7;
+    color: #D97706;
+}
+
+/* Focused Dossier Spotlight */
+.sitrep-focused-spotlight {
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-left: 4px solid var(--accent-blue);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.spotlight-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.spotlight-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-navy);
+}
+
+.spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    font-size: 11.5px;
+}
+
+/* Directives numbered list */
+.sitrep-directives-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sitrep-directive-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.directive-badge {
+    background: var(--accent-navy);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Formal Authorization Block */
+.sitrep-auth-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border-subtle);
+    background: #F8FAFC;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 4px;
+}
+
+.auth-sign-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.auth-officer-title {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: var(--accent-navy);
+}
+
+.auth-officer-role {
+    font-size: 10.5px;
+    color: var(--color-text-muted);
+}
+
+.auth-verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #16A34A;
+    background: #DCFCE7;
+    border: 1px solid #BBF7D0;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #sitrep-modal, #sitrep-modal * {
+        visibility: visible;
+    }
+    #sitrep-modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        background: transparent !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+    #sitrep-modal .modal-container {
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: none !important;
+    }
+    .modal-header, .modal-footer, #btn-close-sitrep-modal {
+        display: none !important;
+    }
+    .modal-content-body {
+        padding: 0 !important;
+        overflow: visible !important;
     }
 }

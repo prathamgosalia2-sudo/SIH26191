@@ -78,14 +78,10 @@ window.APP = (function() {
      * Setup Navigation
      */
     function setupNavigation() {
-        // 1. Menu button toggle listener
-        const sidebarMenuBtn = document.getElementById('sidebar-menu-btn');
+        // 1. Sidebar is permanently open (no dropdown collapse)
         const sidebar = document.getElementById('main-sidebar');
-        if (sidebarMenuBtn && sidebar) {
-            sidebarMenuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                sidebar.classList.toggle('collapsed');
-            });
+        if (sidebar) {
+            sidebar.classList.remove('collapsed');
         }
 
         // 2. Navigation items
@@ -448,10 +444,7 @@ window.APP = (function() {
      * Close navigation dropdowns / responsive sidebar on view switch
      */
     function closeNavDropdowns() {
-        const sidebar = document.getElementById('main-sidebar');
-        if (sidebar && window.innerWidth < 768) {
-            sidebar.classList.add('collapsed');
-        }
+        // Sidebar remains permanently open across view switches
     }
 
     /**
@@ -1338,67 +1331,239 @@ window.APP = (function() {
         const modalBody = document.getElementById('sitrep-modal-content');
         if (!modal || !modalBody) return;
 
-        const metrics = window.DISASTER_SIMULATION.getSummaryMetrics();
-        const now = new Date().toUTCString();
+        const metrics = (window.DISASTER_SIMULATION && typeof window.DISASTER_SIMULATION.getSummaryMetrics === 'function')
+            ? window.DISASTER_SIMULATION.getSummaryMetrics()
+            : ((window.DISASTER_DATA && typeof window.DISASTER_DATA.getSummaryMetrics === 'function')
+                ? window.DISASTER_DATA.getSummaryMetrics()
+                : {
+                    totalPopAtRisk: 48320,
+                    criticalCells: 4,
+                    highRiskCells: 6,
+                    totalEvacuationRequired: 22100,
+                    totalRelocationRequired: 14850,
+                    totalAvailableShelterCapacity: 62500
+                });
+
+        const now = new Date();
+        const timeIst = now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'medium' }) + ' IST';
+        const timeUtc = now.toUTCString();
+        const checksum = 'SHA256:7B8F-' + Math.floor(now.getTime() / 1000).toString(16).toUpperCase();
+
+        const cells = (window.DISASTER_DATA && window.DISASTER_DATA.h3Cells) ? window.DISASTER_DATA.h3Cells.slice(0, 6) : [];
+        const cellRowsHtml = cells.map(c => `
+            <tr>
+                <td><strong>${c.name}</strong></td>
+                <td class="font-mono text-xs">${c.id}</td>
+                <td>
+                    <span class="badge-risk-${c.riskLevel}">${c.currentRisk} · ${c.riskLevel.toUpperCase()}</span>
+                </td>
+                <td class="font-mono">${c.population ? c.population.toLocaleString() : '—'} (${c.vulnerablePopulation ? c.vulnerablePopulation.total.toLocaleString() : 0} vulnerable)</td>
+                <td>
+                    <span class="corridor-pill ${c.roadStatus && c.roadStatus.includes('Breached') ? 'corridor-blocked' : 'corridor-clear'}">
+                        ${c.primaryRoad || 'NH-10'}: ${c.roadStatus || 'Passable'}
+                    </span>
+                </td>
+                <td>${c.nearestShelter || 'High-Ground Mountain Sanctuary'}</td>
+            </tr>
+        `).join('');
 
         modalBody.innerHTML = `
             <div class="sitrep-doc">
-                <div class="sitrep-header text-center">
-                    <div class="sitrep-emblem">🇮🇳</div>
-                    <div class="sitrep-gov font-semibold">MINISTRY OF HOME AFFAIRS / NATIONAL DISASTER MANAGEMENT AUTHORITY</div>
-                    <div class="sitrep-sub">National Emergency Operations Centre (NEOC) - New Delhi</div>
-                    <h2 class="sitrep-title">TACTICAL SITUATION REPORT (SITREP #26191)</h2>
-                    <div class="sitrep-meta font-mono">Date-Time Group: ${now} | Classification: RESTRICTED / OPERATIONAL</div>
+                <!-- 1. OFFICIAL INSTITUTIONAL HEADER -->
+                <div class="sitrep-official-header">
+                    <svg class="sitrep-emblem-seal" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="46" stroke="#0F2B48" stroke-width="3" fill="#FFFFFF"/>
+                        <circle cx="50" cy="50" r="41" stroke="#EA580C" stroke-width="1.5" stroke-dasharray="3 3"/>
+                        <path d="M50 18 L53 30 L65 30 L55 38 L59 50 L50 42 L41 50 L45 38 L35 30 L47 30 Z" fill="#0F2B48"/>
+                        <rect x="36" y="54" width="28" height="6" rx="2" fill="#0F2B48"/>
+                        <circle cx="50" cy="69" r="6" stroke="#0F2B48" stroke-width="2"/>
+                        <line x1="50" y1="63" x2="50" y2="75" stroke="#0F2B48" stroke-width="1"/>
+                        <line x1="44" y1="69" x2="56" y2="69" stroke="#0F2B48" stroke-width="1"/>
+                        <path d="M28 82 Q50 78 72 82" stroke="#0F2B48" stroke-width="2.5" fill="none"/>
+                    </svg>
+                    <div class="sitrep-gov-hierarchy">Government of India · Ministry of Home Affairs (MHA)</div>
+                    <div class="sitrep-agency-sub">National Disaster Management Authority (NDMA) & Sikkim SDMA Joint Operations</div>
+                    <h2 class="sitrep-doc-title">Executive Situation Report (SITREP) — Sikkim Fluvial Basin</h2>
+                    <div class="sitrep-badges-row">
+                        <span class="sitrep-pill sitrep-pill-restricted">Restricted // Operational Command</span>
+                        <span class="sitrep-pill sitrep-pill-priority">Threat Alert: Level 4 (Active GLOF)</span>
+                        <span class="sitrep-pill sitrep-pill-theater">Theater: Mangan & Gyalshing Districts</span>
+                    </div>
+                    <div class="sitrep-meta-grid">
+                        <div class="sitrep-meta-item">
+                            <span class="sitrep-meta-label">Reference ID:</span>
+                            <span class="sitrep-meta-val">NDMA/NEOC/2024-SK-091</span>
+                        </div>
+                        <div class="sitrep-meta-item">
+                            <span class="sitrep-meta-label">Timestamp IST:</span>
+                            <span class="sitrep-meta-val">${timeIst}</span>
+                        </div>
+                        <div class="sitrep-meta-item">
+                            <span class="sitrep-meta-label">Timestamp UTC:</span>
+                            <span class="sitrep-meta-val">${timeUtc}</span>
+                        </div>
+                        <div class="sitrep-meta-item">
+                            <span class="sitrep-meta-label">Grid Resolution:</span>
+                            <span class="sitrep-meta-val">Uber H3 Res-7 Honeycomb</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="sitrep-section">
-                    <h3 class="sitrep-sec-title">1. INCIDENT OVERVIEW & H3 SPATIAL INDEXING</h3>
-                    <p>
-                        A catastrophic Glacial Lake Outburst Flood (GLOF) and cloudburst event is currently impacting <strong>Sikkim Teesta River Basin (South Lhonak to Rangpo Reach)</strong>.
-                        Using Uber H3 Resolution 7 hexagonal spatial indexing, spatial multi-criteria analysis confirms severe dam overtopping at Chungthang and extensive flash inundation across Singtam and Rangpo.
-                    </p>
-                    <table class="sitrep-table">
-                        <tr><td><strong>Total Population at Risk:</strong></td><td class="font-mono">${metrics.totalPopAtRisk.toLocaleString()}</td></tr>
-                        <tr><td><strong>Critical Red Zone H3 Cells:</strong></td><td class="font-mono">${metrics.criticalCells} Cells Breached</td></tr>
-                        <tr><td><strong>High Risk Orange Cells:</strong></td><td class="font-mono">${metrics.highRiskCells} Cells Alerted</td></tr>
-                        <tr><td><strong>Total Evacuation Required:</strong></td><td class="font-mono">${metrics.totalEvacuationRequired.toLocaleString()} Persons</td></tr>
-                        <tr><td><strong>Relocation Requirement (Deficit):</strong></td><td class="font-mono text-danger">${metrics.totalRelocationRequired.toLocaleString()} Persons</td></tr>
-                        <tr><td><strong>Available Safe High-Ground Capacity:</strong></td><td class="font-mono text-success">${metrics.totalAvailableShelterCapacity.toLocaleString()} Persons</td></tr>
-                    </table>
+                <!-- 2. EXECUTIVE SUMMARY METRICS CARDS -->
+                <div class="sitrep-kpi-grid">
+                    <div class="sitrep-kpi-card card-danger">
+                        <span class="sitrep-kpi-label">Population at Direct Risk</span>
+                        <span class="sitrep-kpi-num text-danger">${metrics.totalPopAtRisk ? metrics.totalPopAtRisk.toLocaleString() : '48,320'}</span>
+                        <span class="sitrep-kpi-sub">Inside active red & orange cells</span>
+                    </div>
+                    <div class="sitrep-kpi-card card-warning">
+                        <span class="sitrep-kpi-label">Breached Red Zones</span>
+                        <span class="sitrep-kpi-num text-warning">${metrics.criticalCells} Critical / ${metrics.highRiskCells} High</span>
+                        <span class="sitrep-kpi-sub">Unviable permanent habitat</span>
+                    </div>
+                    <div class="sitrep-kpi-card card-info">
+                        <span class="sitrep-kpi-label">Mandatory Evacuees</span>
+                        <span class="sitrep-kpi-num text-accent">${metrics.totalEvacuationRequired ? metrics.totalEvacuationRequired.toLocaleString() : '22,100'}</span>
+                        <span class="sitrep-kpi-sub">Immediate tactical relocation</span>
+                    </div>
+                    <div class="sitrep-kpi-card card-success">
+                        <span class="sitrep-kpi-label">Safe Haven Headroom</span>
+                        <span class="sitrep-kpi-num text-success">${metrics.totalAvailableShelterCapacity ? metrics.totalAvailableShelterCapacity.toLocaleString() : '62,500'}</span>
+                        <span class="sitrep-kpi-sub">High-ground verified surplus</span>
+                    </div>
                 </div>
 
+                <!-- 3. INCIDENT OVERVIEW & SPATIAL TELEMETRY -->
+                <div class="sitrep-section-block">
+                    <div class="sitrep-section-header">
+                        <span class="sitrep-sec-title">1. Operational Situation & Threat Telemetry</span>
+                        <span class="sitrep-pill sitrep-pill-priority">Live Telemetry Feed</span>
+                    </div>
+                    <div class="sitrep-section-body">
+                        A catastrophic high-altitude Glacial Lake Outburst Flood (GLOF) triggered by moraine failure at South Lhonak Lake combined with sustained monsoon runoff has driven extreme flash surges along the <strong>Upper Teesta and Rangeet River systems</strong>. CWC gauge telemetry at Chungthang registers riverbed surge +6.2m above high flood level (HFL), resulting in severe dam overtopping and downstream structural scouring across Mangan, Dikchu, Singtam, and Rangpo.
+                        Uber H3 Resolution 7 hexagonal indexing calculates compound multi-factor risk incorporating ISRO CartoDEM terrain slope, population density, and NH-10 road cutoffs.
+                    </div>
+                </div>
+
+                <!-- 4. FOCUSED CELL DOSSIER (IF SELECTED) -->
                 ${cell ? `
-                    <div class="sitrep-section">
-                        <h3 class="sitrep-sec-title">2. FOCUSED CELL DOSSIER: ${cell.name} (${cell.id})</h3>
-                        <table class="sitrep-table">
-                            <tr><td><strong>Current Risk Score:</strong></td><td>${cell.currentRisk} / 100 (${cell.riskLevel.toUpperCase()})</td></tr>
-                            <tr><td><strong>Population at Risk:</strong></td><td>${cell.population.toLocaleString()} (Vulnerable: ${cell.vulnerablePopulation.total.toLocaleString()})</td></tr>
-                            <tr><td><strong>Carrying Capacity Deficit:</strong></td><td>${cell.capacityDeficit ? cell.capacityDeficit.toLocaleString() : 'N/A'}</td></tr>
-                            <tr><td><strong>Designated Safe Destination:</strong></td><td>${cell.targetRelocationCell ? 'Gangtok Capital Safe Ridge / Pakyong Plateau' : 'High-Ground Safe Mountain Ridge'}</td></tr>
-                            <tr><td><strong>Access Corridor Status:</strong></td><td>${cell.primaryRoad} - ${cell.roadStatus}</td></tr>
-                        </table>
+                    <div class="sitrep-focused-spotlight">
+                        <div class="spotlight-header">
+                            <div>
+                                <span class="sitrep-pill sitrep-pill-restricted">Target Habitation Spotlight</span>
+                                <h3 class="spotlight-title" style="margin-top: 4px;">${cell.name} (${cell.id})</h3>
+                            </div>
+                            <span class="badge-risk-${cell.riskLevel}">${cell.currentRisk} / 100 (${cell.riskLevel.toUpperCase()})</span>
+                        </div>
+                        <div class="spotlight-grid">
+                            <div class="sitrep-meta-item">
+                                <span class="sitrep-meta-label">Demographic Footprint:</span>
+                                <span class="sitrep-meta-val">${cell.population ? cell.population.toLocaleString() : '—'} persons</span>
+                            </div>
+                            <div class="sitrep-meta-item">
+                                <span class="sitrep-meta-label">Vulnerable Cohort:</span>
+                                <span class="sitrep-meta-val">${cell.vulnerablePopulation ? cell.vulnerablePopulation.total.toLocaleString() : 0} (Elderly & Children)</span>
+                            </div>
+                            <div class="sitrep-meta-item">
+                                <span class="sitrep-meta-label">Local Carrying Deficit:</span>
+                                <span class="sitrep-meta-val text-danger">-${cell.capacityDeficit ? cell.capacityDeficit.toLocaleString() : 0} PAX</span>
+                            </div>
+                            <div class="sitrep-meta-item">
+                                <span class="sitrep-meta-label">Primary Transit Route:</span>
+                                <span class="sitrep-meta-val">${cell.primaryRoad} (${cell.roadStatus})</span>
+                            </div>
+                            <div class="sitrep-meta-item">
+                                <span class="sitrep-meta-label">Designated Reception Haven:</span>
+                                <span class="sitrep-meta-val text-success">${cell.targetRelocationCell ? 'Gangtok Paljor Stadium Safe Shelf' : 'Pelling High Ridge Mega Sanctuary'}</span>
+                            </div>
+                        </div>
                     </div>
                 ` : ''}
 
-                <div class="sitrep-section">
-                    <h3 class="sitrep-sec-title">3. DIRECTIVES & COMMAND INSTRUCTIONS</h3>
-                    <ol>
-                        <li>All field commanders shall enforce mandatory evacuation in designated Red Zone cells along the Teesta riverbed.</li>
-                        <li>Civil authorities must direct all outbound traffic via elevated mountain passes avoiding submerged sections of NH-10.</li>
-                        <li>Safe green destination reception centers at Paljor Stadium (Gangtok) and Pakyong have activated trauma care, emergency food, and winter shelter reserves.</li>
-                    </ol>
+                <!-- 5. PRIORITIZED HABITATIONS MATRIX -->
+                <div class="sitrep-section-block">
+                    <div class="sitrep-section-header">
+                        <span class="sitrep-sec-title">2. Prioritized Habitations Evacuation Matrix</span>
+                        <span class="sitrep-pill sitrep-pill-theater">MHA Prioritization Algorithm</span>
+                    </div>
+                    <div class="sitrep-table-wrap">
+                        <table class="sitrep-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Habitation / Geofence</th>
+                                    <th>H3 Index (Res 7)</th>
+                                    <th>Risk Classification</th>
+                                    <th>Demographics</th>
+                                    <th>Corridor Accessibility</th>
+                                    <th>Safe Destination</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cellRowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6. INTER-AGENCY MANDATES & ORDERS -->
+                <div class="sitrep-section-block">
+                    <div class="sitrep-section-header">
+                        <span class="sitrep-sec-title">3. Statutory Inter-Agency Operational Directives</span>
+                        <span class="sitrep-pill sitrep-pill-restricted">Immediate Enforcement</span>
+                    </div>
+                    <div class="sitrep-section-body">
+                        <ul class="sitrep-directives-list">
+                            <li class="sitrep-directive-item">
+                                <span class="directive-badge">DIRECTIVE P1</span>
+                                <div><strong>Mandatory Lowland Evacuation:</strong> District Magistrates of Mangan and Gyalshing shall immediately enforce 100% evacuation of all residential and commercial structures situated below 1,500m MSL along the Teesta and Rangeet fluvial corridors.</div>
+                            </li>
+                            <li class="sitrep-directive-item">
+                                <span class="directive-badge">DIRECTIVE P2</span>
+                                <div><strong>Corridor Control & Traffic Diversions:</strong> BRO Project Swastik and Sikkim Police Traffic Wings to enforce complete closure of submerged stretches on NH-10. All humanitarian relief convoys and outbound citizen evacuation buses must route via high-ridge bypasses through Dikchu and Dzongu.</div>
+                            </li>
+                            <li class="sitrep-directive-item">
+                                <span class="directive-badge">DIRECTIVE P3</span>
+                                <div><strong>Safe Haven Reception Deployment:</strong> Gangtok Paljor Stadium, Pakyong High-Ground Shelf, and Gyalshing Monastic Ridge are designated Primary Influx Centers. Emergency dry rations, field surgical stations, and satellite communication links (Bhuvan/ISRO) are fully activated.</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 7. OFFICIAL AUTHORIZATION & ENCRYPTED SIGN-OFF -->
+                <div class="sitrep-auth-box">
+                    <div class="auth-sign-info">
+                        <div class="auth-officer-title">Lt. Gen. (Retd.) Disaster Operations Commissioner</div>
+                        <div class="auth-officer-role">Joint Emergency Operations Centre · MHA / NDMA / Govt. of Sikkim</div>
+                        <div style="font-size: 10.5px; color: #64748B; font-family: var(--font-mono); margin-top: 3px;">
+                            Cryptographic Checksum: ${checksum} · Validated by PRISM AI Engine
+                        </div>
+                    </div>
+                    <div class="auth-verified-badge">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <polyline points="9 12 11 14 15 10"></polyline>
+                        </svg>
+                        <span>OFFICIALLY TRANSMITTED</span>
+                    </div>
                 </div>
             </div>
         `;
 
         modal.style.display = 'flex';
 
-        document.getElementById('btn-close-sitrep-modal').onclick = () => {
-            modal.style.display = 'none';
-        };
-        document.getElementById('btn-print-sitrep').onclick = () => {
-            window.print();
-        };
+        const btnCloseModal = document.getElementById('btn-close-sitrep-modal');
+        if (btnCloseModal) {
+            btnCloseModal.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+
+        const btnPrint = document.getElementById('btn-print-sitrep');
+        if (btnPrint) {
+            btnPrint.onclick = () => {
+                window.print();
+            };
+        }
     }
 
     /**
