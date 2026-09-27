@@ -56,11 +56,10 @@ The system features and operational capabilities are mapped below in numbered po
 - **🟡 Moderate Risk Zone (Risk Score: 36–60)**: Active surveillance zone, logistical and supply standby.
 - **🟢 Safe / Low Hazard Zone (Risk Score: 0–35)**: Stable high-ground receiving sanctuaries (ABVIMAS Campus, Vashisht Ridge, Solang High Plateau, Naggar) designated for relocation.
 
-### Point 5: Real-Time User Pinpoint Geolocation & Proximity Detection
-- **Live User Location Pin**: Integrates browser GPS Geolocation to render the exact position of field responders or citizens using a Google Maps-style red drop-pin marker.
-- **Streamlined Status Badge**: Displays a clean, high-visibility `⚠️ HAZARD` or `✓ SAFE` status pill directly above the red marker, highlighting instantaneous zone safety without visual clutter.
-- **Concentric Radar Wave Animation**: Live pulsing wave indicating proximity to breached river channels and active red zones.
-- **One-Click Re-Center Button**: Dedicated HUD locate button (`📍`) instantly centers and zooms the map onto the user's live coordinates.
+### Point 5: Multi-Criteria Decision Analysis (MCDA) Dynamic Risk Engine
+- **Composite Scoring Matrix**: Combines rainfall intensity, slope steepness, population density, infrastructure vulnerability, and road accessibility.
+- **Dynamic Threshold Evaluation**: Continuously recalculates cell risk scores (0–100) as environmental sensor telemetry changes.
+- **Zero-Edge Distortion**: Uniform hexagonal spatial neighborhood ensures objective, unbiased risk modeling across rugged mountain terrain.
 
 ### Point 6: Multi-Provider Real GIS Leaflet Basemap Engine
 - **Hardware-Accelerated Vector Engine**: Powered by Leaflet.js rendering smooth SVG vectors and interactive polygons directly over geographic tiles.

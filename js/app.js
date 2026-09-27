@@ -561,9 +561,6 @@ window.APP = (function() {
      * Setup Map Control Buttons & Layer Toggles
      */
     function setupMapControls() {
-        const btnLocate = document.getElementById('btn-map-locate');
-        if (btnLocate) btnLocate.addEventListener('click', () => { if (window.GIS_MAP && typeof window.GIS_MAP.recenterUserLocation === 'function') window.GIS_MAP.recenterUserLocation(); });
-
         const btnZoomIn = document.getElementById('btn-map-zoom-in');
         if (btnZoomIn) btnZoomIn.addEventListener('click', () => { window.GIS_MAP.zoomIn(); });
 
