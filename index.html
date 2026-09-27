@@ -747,73 +747,168 @@
     </div>
 
     <!-- ==========================================================================
-         MODAL: SIH26191 DECISION SUPPORT WORKFLOW ARCHITECTURE
+         FIRST POPUP PAGE: SIH26191 WELCOME, BASIC WORKFLOW & IMPORTANT FEATURES
          ========================================================================== -->
     <div id="workflow-modal" class="modal-overlay">
         <div class="modal-container">
-            <div class="modal-header">
-                <span class="modal-title">SIH26191 Intelligent Decision Pipeline Architecture</span>
-                <button class="btn-close-inspector" id="btn-close-workflow-modal">✕</button>
+            <div class="welcome-modal-header">
+                <div>
+                    <span class="welcome-modal-badge">⚡ SMART INDIA HACKATHON 2024 — SIH26191</span>
+                    <h2 class="welcome-modal-title">PRISM: Intelligent Disaster Decision Support Platform</h2>
+                    <p class="welcome-modal-sub">Hazard-Based Red Zone Identification · H3 Carrying Capacity Assessment · Proactive Relocation Intelligence</p>
+                </div>
+                <button class="btn-close-inspector" id="btn-close-workflow-modal" title="Close and Enter Map">✕</button>
             </div>
+            
             <div class="modal-content-body">
-                <p class="mb-4 text-muted">
-                    This platform implements the complete end-to-end intelligent disaster management workflow mandated by SIH26191 for the Ministry of Home Affairs / National Disaster Management Authority:
-                </p>
+                <div class="welcome-intro-card">
+                    <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #E2E8F0;">
+                        Welcome to <strong>PRISM</strong>, an intelligent GIS-enabled command platform designed for the 
+                        <strong>Ministry of Home Affairs (MHA)</strong> and <strong>National Disaster Management Authority (NDMA)</strong>. 
+                        It replaces reactive post-disaster evacuation with <em>evidence-based, proactive relocation planning</em> 
+                        using discrete Uber H3 hexagonal spatial grids and multi-criteria mathematical modeling.
+                    </p>
+                </div>
 
+                <!-- SECTION 1: BASIC OPERATIONAL WORKFLOW -->
+                <div class="welcome-section-header">
+                    <span>🔄 1. End-to-End Decision Workflow Pipeline</span>
+                </div>
                 <div class="workflow-pipeline-visual">
                     <div class="pipeline-step-node">
                         <div class="step-node-num">1</div>
                         <div>
-                            <div class="step-node-title">Multi-Source Disaster Data Ingestion</div>
-                            <div class="step-node-desc">CWC river gauges, IMD Doppler rainfall telemetry, ISRO Bhuvan DEM elevation, and Census 2021 demographic grids.</div>
+                            <div class="step-node-title">Multi-Source Disaster Telemetry Ingestion</div>
+                            <div class="step-node-desc">Continuous sensor feeds: CWC river gauges (Beas water surge +4.6m), IMD Doppler radar rainfall, ISRO Bhuvan DEM elevation, and Census 2021 demographic micro-grids.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">2</div>
                         <div>
-                            <div class="step-node-title">Uber H3 Hexagonal Spatial Indexing</div>
-                            <div class="step-node-desc">Uniform discrete global grid representation (Res 7/8). Eliminates projection edge distortion and guarantees equidistant 6-neighbor spatial calculations.</div>
+                            <div class="step-node-title">Uber H3 Hexagonal Spatial Indexing (Res 9)</div>
+                            <div class="step-node-desc">The territory is tessellated into discrete H3 hexagonal cells (~174m edge length). This eliminates edge projection distortions and guarantees equidistant 6-neighbor spatial calculations.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">3</div>
                         <div>
-                            <div class="step-node-title">Hazard & Multi-Factor Risk Assessment</div>
-                            <div class="step-node-desc">Multi-criteria decision analysis (MCDA) combining historical disaster frequency, elevation vulnerability, population density, and infrastructure fragility.</div>
+                            <div class="step-node-title">Multi-Criteria Dynamic Risk Scoring (MCDA)</div>
+                            <div class="step-node-desc">Dynamically computes composite risk scores (0–100) using rainfall intensity, slope steepness, population density, infrastructure fragility, and road accessibility to classify Critical Red, Orange, Yellow, and Safe Green zones.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">4</div>
                         <div>
-                            <div class="step-node-title">Population & Carrying Capacity Assessment</div>
-                            <div class="step-node-desc">Evaluates safe local structural holding capacity during extreme events. Computes carrying capacity deficit: Deficit = PopAtRisk - SafeCapacity.</div>
+                            <div class="step-node-title">H3-Based Sustainable Carrying Capacity & Deficit</div>
+                            <div class="step-node-desc">Calculates effective safe carrying capacity based on available land, water supply, healthcare, and road access. Computes exact population deficits (Deficit = Population − SafeCapacity) to prevent relocation site overcrowding.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">5</div>
                         <div>
-                            <div class="step-node-title">Evacuation Route & Priority Planning</div>
-                            <div class="step-node-desc">Identifies vulnerable demographic pockets (infants, elderly, PwD). Dynamically routes around high-risk H3 cells and submerged road corridors.</div>
+                            <div class="step-node-title">3-Tier Relocation Prioritization</div>
+                            <div class="step-node-desc">Categorizes habitations into: 🔴 <strong>Immediate (&lt;24h)</strong> for active Red Zone life threats; 🟠 <strong>Short-Term (1–4 Weeks)</strong> for high-risk orange buffers; 🟡 <strong>Medium-Term (3–12 Months)</strong> for permanent planned resettlement from chronic floodplains.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">6</div>
                         <div>
                             <div class="step-node-title">Intelligent Safe Relocation Matching Engine</div>
-                            <div class="step-node-desc">Multi-objective matching pairing critical Red Zone deficit cells with high-ground Green Zone safe cells based on capacity surplus, travel time, and medical proximity.</div>
+                            <div class="step-node-desc">Pairs deficit Red cells with resilient high-ground Green sanctuaries (ABVIMAS Ridge, Solang High Plateau, Naggar) optimized for travel duration, surplus bed capacity, and hospital access.</div>
                         </div>
                     </div>
                     <div class="pipeline-step-node">
                         <div class="step-node-num">7</div>
                         <div>
-                            <div class="step-node-title">National Emergency Operations Command Center Dashboard</div>
-                            <div class="step-node-desc">Real-time situational awareness, fleet dispatch orders, scenario simulation, and official automated SITREP generation for decision-makers.</div>
+                            <div class="step-node-title">National Emergency Operations Center & SITREP</div>
+                            <div class="step-node-desc">Real-time tactical awareness, convoy dispatch coordination (NDRF 14th Bn, SDRF HP, HRTC buses), scenario simulation scrubbing, and formal automated Situation Report (SITREP) exports.</div>
                         </div>
                     </div>
                 </div>
+
+                <!-- SECTION 2: IMPORTANT FEATURES EXPLAINED -->
+                <div class="welcome-section-header">
+                    <span>⚡ 2. Important Features & Interactive Controls</span>
+                </div>
+                <div class="welcome-features-grid">
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">🎛️</span>
+                            <span class="feature-card-title">H3 Hexagon Slider Toggle</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Located right in the top navigation bar beside "⚡ SIH Workflow Pipeline". Features a smooth, left-right sliding circle knob with a mint-to-blue gradient track. Toggle it <strong>ON/OFF</strong> at any time to inspect the underlying high-resolution ESRI satellite imagery clearly.
+                        </p>
+                    </div>
+
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">📍</span>
+                            <span class="feature-card-title">GPS Field Pinpoint & Safety Detection</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Real-time Google Maps-style red drop-pin marking responder or tourist coordinates. Displays a clean <strong>⚠️ HAZARD</strong> or <strong>✓ SAFE</strong> badge above the pin, immediately indicating whether your current location is inside a flood danger zone.
+                        </p>
+                    </div>
+
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">🗺️</span>
+                            <span class="feature-card-title">High-Res ESRI Satellite Basemap</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Orbital real satellite imagery covering the <strong>Manali · Rohtang Corridor (Beas River Basin)</strong>, including Old Manali, Bahang, Vashisht, Palchan, and Solang Valley with realistic mountain terrain contours.
+                        </p>
+                    </div>
+
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">🏠</span>
+                            <span class="feature-card-title">H3 Sustainable Carrying Capacity</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Each relocation cell is evaluated against land, water, hospitals, and power supply. If a cell has land for 1,500 people but water for only 900, the system caps its capacity at 900 to ensure sustainable humanitarian safety.
+                        </p>
+                    </div>
+
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">⏱️</span>
+                            <span class="feature-card-title">24-Hour Disaster Simulation Studio</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Scrub between Hour 0 (baseline), Hour 6 (monsoon surge), Hour 12 (dam breach), and Hour 24 (peak deluge). Watch the H3 hexagons dynamically shift colors and recalculate relocation corridors in real time.
+                        </p>
+                    </div>
+
+                    <div class="welcome-feature-card">
+                        <div class="feature-card-header">
+                            <span class="feature-card-icon">📄</span>
+                            <span class="feature-card-title">Automated SITREP Export</span>
+                        </div>
+                        <p class="feature-card-desc">
+                            Instantly compiles formal, print-ready National Disaster Management Authority Situation Reports complete with population at risk, casualty prevention figures, and convoy dispatch logs.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: SCROLLED CLOSE ACTION BUTTON -->
+                <div class="welcome-scroll-cta-container">
+                    <button class="btn-welcome-enter" id="btn-scroll-close-modal">
+                        <span>🚀</span> Enter PRISM Command System &amp; Explore Map
+                    </button>
+                    <div class="welcome-cta-subtext">
+                        Click above or use the header close button to dismiss this guide. You can reopen this guide anytime by clicking "⚡ SIH Workflow Pipeline" in the top bar.
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="btn-dismiss-workflow-modal">Close</button>
+
+            <div class="modal-footer" style="justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; color: #10B981; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
+                    SYSTEM READY · ALL H3 GEOFENCES ACTIVE
+                </span>
+                <button class="btn btn-secondary" id="btn-dismiss-workflow-modal">✕ Close</button>
             </div>
         </div>
     </div>
@@ -835,15 +930,42 @@
             // Initialize main application
             window.APP.init();
 
-            // Setup SIH Workflow Modal triggers
+            // Setup SIH Welcome / Workflow Modal
             const modal = document.getElementById('workflow-modal');
             const btnOpen = document.getElementById('btn-open-pipeline');
             const btnClose = document.getElementById('btn-close-workflow-modal');
             const btnDismiss = document.getElementById('btn-dismiss-workflow-modal');
+            const btnScrollClose = document.getElementById('btn-scroll-close-modal');
 
-            if (btnOpen) btnOpen.onclick = () => { modal.style.display = 'flex'; };
-            if (btnClose) btnClose.onclick = () => { modal.style.display = 'none'; };
-            if (btnDismiss) btnDismiss.onclick = () => { modal.style.display = 'none'; };
+            function closeModal() {
+                if (modal) modal.style.display = 'none';
+            }
+
+            function openModal() {
+                if (modal) modal.style.display = 'flex';
+            }
+
+            // Pop up automatically on first open
+            openModal();
+
+            if (btnClose) btnClose.onclick = closeModal;
+            if (btnDismiss) btnDismiss.onclick = closeModal;
+            if (btnScrollClose) btnScrollClose.onclick = closeModal;
+            if (btnOpen) btnOpen.onclick = openModal;
+
+            // Close on background click
+            if (modal) {
+                modal.onclick = (e) => {
+                    if (e.target === modal) closeModal();
+                };
+            }
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
 
             // Setup SITREP Header Button Trigger
             const btnSitrep = document.getElementById('btn-open-sitrep');
