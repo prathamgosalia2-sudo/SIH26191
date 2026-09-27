@@ -315,22 +315,32 @@ window.GIS_MAP = (function() {
         // Frame the popup cleanly within view
         map.panTo([anchorLat, anchorLng], { animate: true, duration: 0.35 });
 
-        setTimeout(() => {
-            const btnClose = document.getElementById('btn-close-hex-popup');
-            if (btnClose) {
-                btnClose.onclick = (e) => {
-                    e.stopPropagation();
-                    clearSelection();
-                };
+        // Wire button clicks via event delegation on the entire map container
+        // (more reliable than getElementById inside Leaflet panes)
+        if (container._h3PopupHandler) {
+            container.removeEventListener('click', container._h3PopupHandler, true);
+        }
+
+        container._h3PopupHandler = function(e) {
+            const closeBtn = e.target.closest('#btn-close-hex-popup');
+            if (closeBtn) {
+                e.stopPropagation();
+                clearSelection();
+                container.removeEventListener('click', container._h3PopupHandler, true);
+                container._h3PopupHandler = null;
+                return;
             }
-            const btnDossier = document.getElementById('btn-view-cell-dossier');
-            if (btnDossier) {
-                btnDossier.onclick = (e) => {
-                    e.stopPropagation();
-                    selectCell(cell.id);
-                };
+            const dossierBtn = e.target.closest('#btn-view-cell-dossier');
+            if (dossierBtn) {
+                e.stopPropagation();
+                selectCell(cell.id);
+                container.removeEventListener('click', container._h3PopupHandler, true);
+                container._h3PopupHandler = null;
+                return;
             }
-        }, 15);
+        };
+
+        container.addEventListener('click', container._h3PopupHandler, true);
     }
 
     /**
