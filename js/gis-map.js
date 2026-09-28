@@ -269,40 +269,59 @@ window.GIS_MAP = (function() {
             className: 'mockup-popup-container',
             html: `
                 <div class="mockup-popup-card click-popup-card">
-                    <button class="popup-card-close" id="btn-close-hex-popup" title="Close Popup">&times;</button>
-                    <div class="mockup-popup-badge-row">
-                        <span class="mockup-popup-badge badge-${cell.riskLevel}">${cell.riskLevel === 'critical' ? 'CRITICAL RED ZONE' : (cell.riskLevel === 'orange' ? 'HIGH RISK' : (cell.riskLevel === 'moderate' ? 'MODERATE WATCH' : 'SAFE ZONE'))}</span>
-                        <span class="mockup-popup-district">${cell.district || 'Sikkim'}</span>
+                    <div class="popup-top-bar">
+                        <button class="popup-card-close" id="btn-close-hex-popup" title="Close Popup" aria-label="Close">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                        <div class="popup-top-badges">
+                            <span class="mockup-popup-badge badge-${cell.riskLevel}">${cell.riskLevel === 'critical' ? 'CRITICAL RED ZONE' : (cell.riskLevel === 'orange' ? 'HIGH RISK' : (cell.riskLevel === 'moderate' ? 'MODERATE WATCH' : 'SAFE ZONE'))}</span>
+                            <span class="mockup-popup-district">${cell.district || 'Sikkim'}</span>
+                        </div>
                     </div>
-                    <div class="mockup-popup-id">H3 Cell: ${cell.id}</div>
+                    <div class="mockup-popup-id">
+                        <span class="id-label">H3:</span>
+                        <span class="id-value font-mono">${cell.id}</span>
+                    </div>
                     <div class="mockup-popup-name">${cell.name}</div>
                     <div class="mockup-popup-body">
                         <div class="mockup-row">
                             <span class="mockup-label">Risk Score:</span>
-                            <strong class="mockup-val mockup-score" style="color: ${riskColor}">${cell.currentRisk} / 100</strong>
+                            <strong class="mockup-val mockup-score">
+                                <span class="score-pill" style="background: ${riskColor}18; color: ${riskColor}; border: 1px solid ${riskColor}40;">${cell.currentRisk} / 100</span>
+                            </strong>
                         </div>
                         <div class="mockup-row">
                             <span class="mockup-label">Elevation:</span>
-                            <span class="mockup-val">${cell.elevation.toLocaleString()} m</span>
+                            <span class="mockup-val">${cell.elevation.toLocaleString()} m MSL</span>
                         </div>
                         <div class="mockup-row">
                             <span class="mockup-label">Population:</span>
-                            <span class="mockup-val">${cell.population.toLocaleString()}</span>
+                            <span class="mockup-val">${cell.population.toLocaleString()} pax</span>
                         </div>
                         <div class="mockup-row">
                             <span class="mockup-label">Status:</span>
-                            <span class="mockup-val text-deficit" style="color: ${cell.capacityDeficit > 0 ? '#DC2626' : '#16A34A'}">${cell.capacityDeficit > 0 ? 'PAX DEFICIT (-' + cell.capacityDeficit.toLocaleString() + ')' : 'BUFFER SURPLUS'}</span>
+                            <span class="mockup-val text-deficit" style="color: ${cell.capacityDeficit > 0 ? '#DC2626' : '#16A34A'}">
+                                ${cell.capacityDeficit > 0 ? 'PAX DEFICIT (-' + cell.capacityDeficit.toLocaleString() + ')' : 'BUFFER SURPLUS'}
+                            </span>
                         </div>
                         <div class="mockup-row mockup-safe-site">
                             <span class="mockup-label">Nearest Safe Site:</span>
-                            <span class="mockup-val">${cell.nearestShelter || 'Pelling High Ridge Mega Sanctuary'}</span>
+                            <span class="mockup-val font-semibold text-accent">${cell.nearestShelter || 'Pelling High Ridge Mega Sanctuary'}</span>
                         </div>
                     </div>
-                    <button class="mockup-popup-btn" id="btn-view-cell-dossier" data-cell-id="${cell.id}">View Full Intelligence Dossier</button>
+                    <button class="mockup-popup-btn" id="btn-view-cell-dossier" data-cell-id="${cell.id}">
+                        <span>View Full Intelligence Dossier</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
                 </div>
             `,
-            iconSize: [285, 235],
-            iconAnchor: [0, 115]
+            iconSize: [295, 275],
+            iconAnchor: [0, 135]
         });
 
         L.marker([anchorLat, anchorLng], { 

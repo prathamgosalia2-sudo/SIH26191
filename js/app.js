@@ -53,9 +53,6 @@ window.APP = (function() {
             }
         }, 150);
 
-        // Setup Simulation event listeners
-        setupSimulationView();
-
         // 7. Wire header buttons: Export Report & View Workflow
         const btnSitrep = document.getElementById('btn-open-sitrep');
         if (btnSitrep) {
@@ -544,8 +541,6 @@ window.APP = (function() {
             refreshResourcesView();
         } else if (pageId === 'historical') {
             refreshHistoricalView();
-        } else if (pageId === 'simulation') {
-            refreshSimulationView();
         }
     }
 
@@ -948,6 +943,24 @@ window.APP = (function() {
 
         const cells = window.DISASTER_DATA.h3Cells;
         tableBody.innerHTML = '';
+
+        // Compute and update Capacity KPIs summary strip
+        let totalPop = 0, totalSafe = 0, totalDeficit = 0, totalHaven = 0;
+        cells.forEach(c => {
+            const capEval = window.H3_ENGINE.evaluateCarryingCapacity(c);
+            totalPop += c.population || 0;
+            totalSafe += capEval.effectiveSafeCapacity || 0;
+            if (capEval.isDeficit) totalDeficit += capEval.deficit;
+            else totalHaven += (capEval.surplusCapacity || 0);
+        });
+        const elPop = document.getElementById('cap-summary-pop');
+        if (elPop) elPop.textContent = totalPop.toLocaleString();
+        const elSafe = document.getElementById('cap-summary-safe');
+        if (elSafe) elSafe.textContent = totalSafe.toLocaleString();
+        const elDef = document.getElementById('cap-summary-deficit');
+        if (elDef) elDef.textContent = totalDeficit.toLocaleString();
+        const elHav = document.getElementById('cap-summary-haven');
+        if (elHav) elHav.textContent = '+' + totalHaven.toLocaleString();
 
         // Render comparative bar chart
         if (window.DISASTER_CHARTS) {
