@@ -2235,33 +2235,138 @@ html, body {
     color: #D97706;
 }
 
-/* Focused Dossier Spotlight */
+/* Focused Cell Spotlight in SITREP Report */
 .sitrep-focused-spotlight {
-    background: #F8FAFC;
-    border: 1px solid #CBD5E1;
-    border-left: 4px solid var(--accent-blue);
-    border-radius: 8px;
-    padding: 12px 14px;
+    background: #FFFFFF;
+    border: 2px solid #2563EB;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .spotlight-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 12px;
+    gap: 12px;
 }
 
 .spotlight-title {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 800;
     color: var(--accent-navy);
+    margin: 2px 0 4px 0;
 }
 
-.spotlight-grid {
+.spotlight-subtitle {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.spotlight-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 8px;
-    font-size: 11.5px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .spotlight-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .spotlight-cards-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.spotlight-card {
+    background: #F8FAFC;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.spotlight-card-title {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--accent-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.spotlight-stat-main {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.2;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.spotlight-stat-main .unit {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.spotlight-vulnerable-breakdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.vuln-pill {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.spotlight-stat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.spotlight-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #E2E8F0;
+    padding-bottom: 3px;
+}
+
+.spotlight-stat-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.badge-status-danger {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-block;
 }
 
 /* Directives numbered list */

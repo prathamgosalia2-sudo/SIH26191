@@ -812,8 +812,8 @@ window.APP = (function() {
                 <button class="btn btn-primary btn-block" id="btn-dispatch-evac-order">
                     🚨 Dispatch Evacuation Order (${cell.population.toLocaleString()} Pax)
                 </button>
-                <button class="btn btn-secondary btn-block" id="btn-generate-cell-sitrep">
-                    📄 Export H3 Cell Operational SitRep
+                <button class="btn btn-secondary btn-block" id="btn-generate-cell-sitrep" title="Open Full Operational Situation & Risk Report">
+                    📄 View Full Report
                 </button>
             </div>
         `;
@@ -1453,7 +1453,7 @@ window.APP = (function() {
                     <div class="sitrep-meta-grid">
                         <div class="sitrep-meta-item">
                             <span class="sitrep-meta-label">Reference ID:</span>
-                            <span class="sitrep-meta-val">NDMA/NEOC/2024-SK-091</span>
+                            <span class="sitrep-meta-val">NDMA/NEOC/2026-SK-091 · SIH 2026</span>
                         </div>
                         <div class="sitrep-meta-item">
                             <span class="sitrep-meta-label">Timestamp IST:</span>
@@ -1506,36 +1506,104 @@ window.APP = (function() {
                     </div>
                 </div>
 
-                <!-- 4. FOCUSED CELL DOSSIER (IF SELECTED) -->
+                <!-- 4. FOCUSED CELL COMPREHENSIVE DOSSIER (IF SELECTED) -->
                 ${cell ? `
                     <div class="sitrep-focused-spotlight">
                         <div class="spotlight-header">
                             <div>
-                                <span class="sitrep-pill sitrep-pill-restricted">Target Habitation Spotlight</span>
-                                <h3 class="spotlight-title" style="margin-top: 4px;">${cell.name} (${cell.id})</h3>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="sitrep-pill sitrep-pill-restricted">Target Habitation Deep Intelligence Dossier</span>
+                                    <span class="sitrep-pill sitrep-pill-theater">${cell.district || 'Sikkim Command Sector'}</span>
+                                </div>
+                                <h3 class="spotlight-title">${cell.name}</h3>
+                                <div class="spotlight-subtitle">H3 Spatial Index: <strong class="font-mono">${cell.id}</strong> · Sector: <strong>${cell.sector || cell.district}</strong> · Coordinates: <strong class="font-mono">${cell.lat ? cell.lat.toFixed(4) : 27.60}°N, ${cell.lng ? cell.lng.toFixed(4) : 88.64}°E</strong></div>
                             </div>
-                            <span class="badge-risk-${cell.riskLevel}">${cell.currentRisk} / 100 (${cell.riskLevel.toUpperCase()})</span>
+                            <div class="text-right">
+                                <span class="badge-risk-${cell.riskLevel} text-sm font-bold">${cell.currentRisk} / 100</span>
+                                <div class="text-xs font-bold text-muted mt-1">${cell.riskLevel === 'critical' ? 'CRITICAL RED ZONE' : (cell.riskLevel === 'orange' ? 'HIGH RISK' : (cell.riskLevel === 'moderate' ? 'MODERATE WATCH' : 'SAFE ZONE'))}</div>
+                            </div>
                         </div>
-                        <div class="spotlight-grid">
-                            <div class="sitrep-meta-item">
-                                <span class="sitrep-meta-label">Demographic Footprint:</span>
-                                <span class="sitrep-meta-val">${cell.population ? cell.population.toLocaleString() : '—'} persons</span>
+
+                        <!-- 6-Card Detailed Telemetry Grid -->
+                        <div class="spotlight-cards-grid">
+                            <!-- Card 1: Demographics -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Resident Demographics & Vulnerability</div>
+                                <div class="spotlight-stat-main font-mono">${(cell.population || 0).toLocaleString()} <span class="unit">Total Residents</span></div>
+                                <div class="spotlight-vulnerable-breakdown">
+                                    <div class="vuln-pill"><span>👶 Infants (0-5y):</span> <strong>${cell.vulnerablePopulation ? cell.vulnerablePopulation.infants : 0}</strong></div>
+                                    <div class="vuln-pill"><span>👴 Elderly (65+y):</span> <strong>${cell.vulnerablePopulation ? cell.vulnerablePopulation.elderly : 0}</strong></div>
+                                    <div class="vuln-pill"><span>♿ PwD / Impaired:</span> <strong>${cell.vulnerablePopulation ? cell.vulnerablePopulation.disabled : 0}</strong></div>
+                                    <div class="vuln-pill"><span>🤰 Expectant:</span> <strong>${cell.vulnerablePopulation ? cell.vulnerablePopulation.pregnant : 0}</strong></div>
+                                </div>
+                                <div class="text-xs text-danger font-semibold mt-2">
+                                    Priority Triage Cohort: ${cell.vulnerablePopulation ? cell.vulnerablePopulation.total.toLocaleString() : 0} Individuals (${Math.round(((cell.vulnerablePopulation ? cell.vulnerablePopulation.total : 0) / (cell.population || 1)) * 100)}% of population)
+                                </div>
                             </div>
-                            <div class="sitrep-meta-item">
-                                <span class="sitrep-meta-label">Vulnerable Cohort:</span>
-                                <span class="sitrep-meta-val">${cell.vulnerablePopulation ? cell.vulnerablePopulation.total.toLocaleString() : 0} (Elderly & Children)</span>
+
+                            <!-- Card 2: Hydrology & Terrain -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Hydrological & Terrain Severity</div>
+                                <div class="spotlight-stat-main font-mono text-danger">${cell.waterLevelM || 0} m <span class="unit">Surge above HFL</span></div>
+                                <div class="spotlight-stat-list">
+                                    <div class="spotlight-stat-row"><span>Terrain Elevation:</span> <strong class="font-mono">${cell.elevation ? cell.elevation.toLocaleString() : 0} m MSL</strong></div>
+                                    <div class="spotlight-stat-row"><span>Monsoon Rainfall:</span> <strong class="font-mono">${cell.rainfallMm || 280} mm / 24h</strong></div>
+                                    <div class="spotlight-stat-row"><span>Hazard Nature:</span> <strong>${cell.hazardType}</strong></div>
+                                    <div class="spotlight-stat-row"><span>Slope Vulnerability:</span> <strong class="font-mono text-warning">${cell.factors ? cell.factors.elevationVulnerability : 85} / 100</strong></div>
+                                </div>
                             </div>
-                            <div class="sitrep-meta-item">
-                                <span class="sitrep-meta-label">Local Carrying Deficit:</span>
-                                <span class="sitrep-meta-val text-danger">-${cell.capacityDeficit ? cell.capacityDeficit.toLocaleString() : 0} PAX</span>
+
+                            <!-- Card 3: Carrying Capacity & Deficit -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Carrying Capacity Diagnostics</div>
+                                <div class="spotlight-stat-main font-mono ${(cell.capacityDeficit > 0) ? 'text-danger' : 'text-success'}">
+                                    ${(cell.capacityDeficit > 0) ? '-' + cell.capacityDeficit.toLocaleString() : '+' + (cell.surplusCapacity || 1500).toLocaleString()} 
+                                    <span class="unit">${(cell.capacityDeficit > 0) ? 'Pax Deficit (Exhausted)' : 'Pax Buffer Surplus'}</span>
+                                </div>
+                                <div class="spotlight-stat-list">
+                                    <div class="spotlight-stat-row"><span>Safe Holding Threshold:</span> <strong class="font-mono">${(cell.safeCapacityThreshold || cell.carryingCapacity || 1000).toLocaleString()} pax</strong></div>
+                                    <div class="spotlight-stat-row"><span>Resident Population:</span> <strong class="font-mono">${(cell.population || 0).toLocaleString()} pax</strong></div>
+                                    <div class="spotlight-stat-row"><span>Mandatory Relocation:</span> <strong class="font-mono text-danger">${(cell.capacityDeficit > 0) ? cell.capacityDeficit.toLocaleString() : 0} pax</strong></div>
+                                    <div class="spotlight-stat-row"><span>Habitability Status:</span> <strong>${(cell.capacityDeficit > 0) ? 'Mandatory Relocation Red Zone' : 'Resilient Mountain Refuge'}</strong></div>
+                                </div>
                             </div>
-                            <div class="sitrep-meta-item">
-                                <span class="sitrep-meta-label">Primary Transit Route:</span>
-                                <span class="sitrep-meta-val">${cell.primaryRoad} (${cell.roadStatus})</span>
+
+                            <!-- Card 4: Evacuation Logistics -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Corridor Status & Evacuation Routing</div>
+                                <div class="spotlight-stat-main font-mono text-accent">${cell.evacuationTimeHours || 1.8} hrs <span class="unit">Est. Fleet Transit Time</span></div>
+                                <div class="spotlight-stat-list">
+                                    <div class="spotlight-stat-row"><span>Primary Road:</span> <strong>${cell.primaryRoad}</strong></div>
+                                    <div class="spotlight-stat-row"><span>Corridor Clearance:</span> <span class="road-pill road-pill-${(cell.roadStatus || 'open').toLowerCase()}">${(cell.roadStatus || 'Open').toUpperCase()}</span></div>
+                                    <div class="spotlight-stat-row"><span>Designated Haven:</span> <strong class="text-success">${cell.nearestShelter || 'Pelling High Ridge Sanctuary'}</strong></div>
+                                    <div class="spotlight-stat-row"><span>Haven Distance:</span> <strong class="font-mono">${cell.shelterDistanceKm || 4.2} km</strong></div>
+                                </div>
                             </div>
-                            <div class="sitrep-meta-item">
-                                <span class="sitrep-meta-label">Designated Reception Haven:</span>
-                                <span class="sitrep-meta-val text-success">${cell.targetRelocationCell ? 'Gangtok Paljor Stadium Safe Shelf' : 'Pelling High Ridge Mega Sanctuary'}</span>
+
+                            <!-- Card 5: Medical & Hospital Support -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Trauma & Medical Referral Network</div>
+                                <div class="spotlight-stat-main font-mono text-dark">${Array.isArray(cell.nearbyHospitals) ? cell.nearbyHospitals.length : 2} <span class="unit">Designated Trauma Centers</span></div>
+                                <div class="spotlight-stat-list">
+                                    <div class="spotlight-stat-row"><span>Primary Facility:</span> <strong>${Array.isArray(cell.nearbyHospitals) ? cell.nearbyHospitals[0] : 'District Hospital Mangan'}</strong></div>
+                                    <div class="spotlight-stat-row"><span>Tertiary ICU Referral:</span> <strong>STNM Multi-Specialty Hospital, Gangtok</strong></div>
+                                    <div class="spotlight-stat-row"><span>ALS Ambulance Fleet:</span> <strong>4x 4WD High-Altitude Ambulances Allocated</strong></div>
+                                    <div class="spotlight-stat-row"><span>Triage Stage:</span> <span class="badge-status-danger">Stage 1 Emergency Triage Active</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Card 6: Tactical Directives -->
+                            <div class="spotlight-card">
+                                <div class="spotlight-card-title">Tactical Operations Directive</div>
+                                <div class="spotlight-stat-main font-mono text-danger">DIRECTIVE P1 <span class="unit">Enforced</span></div>
+                                <p class="text-xs text-muted mb-2" style="line-height: 1.45;">
+                                    ${cell.recommendedAction || 'Execute immediate population extraction along high-ridge arterial bypass. Stage SNT transport buses and deploy NDRF swift-water rescue craft.'}
+                                </p>
+                                <div class="flex items-center gap-2 mt-auto">
+                                    <button class="btn btn-sm btn-primary w-full" onclick="alert('🚨 FLEET DISPATCH CONFIRMED for ${cell.name}: SNT Transport Convoy + NDRF 2nd Battalion units deployed under MHA protocol.')">
+                                        🚨 Dispatch Evacuation Fleet
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
